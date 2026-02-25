@@ -14,7 +14,7 @@ import DirectionProvider from "@/providers/direction-provider";
 import AuthProvider from "@/providers/auth.provider";
 
 export const metadata: Metadata = {
-  title: "DrugZA",
+  title: "DENTZONE",
   icons: {
     icon: "/LOGO.png",
   }

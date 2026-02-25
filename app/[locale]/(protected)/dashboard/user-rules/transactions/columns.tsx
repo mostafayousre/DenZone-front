@@ -11,22 +11,23 @@ import {Link} from "@/i18n/routing";
 
 export type DataProps = {
   id: string | number;
-  userName: string;
+  fullName: string;
   email: string;
   phoneNumber: string;
   businessName: string;
   isPharmacy: boolean;
   regionName: string;
+  isActive: boolean;
   action: React.ReactNode;
 };
 export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<DataProps>[] => [
   {
-    accessorKey: "userName",
-    header: "Username",
+    accessorKey: "fullName",
+    header: "Full Name",
     cell: ({ row }) => {
-      const user = row.original.userName;
+      const fullName = row.original.fullName;
       return (
-          <div className="text-sm text-default-600">{user}</div>
+          <div className="text-sm text-default-600">{fullName}</div>
       );
     },
   },
@@ -40,16 +41,16 @@ export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<Dat
       );
     },
   },
-  {
-    accessorKey: "businessName",
-    header: "Business Name",
-    cell: ({ row }) => {
-      const businessName = row.original.businessName;
-      return (
-          <div className="text-sm text-default-600">{businessName}</div>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "businessName",
+  //   header: "Business Name",
+  //   cell: ({ row }) => {
+  //     const businessName = row.original.businessName;
+  //     return (
+  //         <div className="text-sm text-default-600">{businessName}</div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "phoneNumber",
     header: "Phone Number",
@@ -59,21 +60,21 @@ export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<Dat
     },
   },
   {
-    accessorKey: "isPharmacy",
-    header: "Is Pharmacy?",
+    accessorKey: "isActive",
+    header: "Active",
     cell: ({ row }) => {
-      const isPharmacy = row.original.isPharmacy;
-      return <div className="text-sm text-default-600">{isPharmacy === true ? "Yes" : "No"}</div>;
+      const isActive = row.original.isActive;
+      return <div className="text-sm text-default-600">{isActive === true ? "Yes" : "No"}</div>;
     },
   },
-  {
-    accessorKey: "region",
-    header: "Region",
-    cell: ({ row }) => {
-      const region = row.original.regionName;
-      return <div className="text-sm text-default-600">{region || "N/A"}</div>;
-    },
-  },
+  // {
+  //   accessorKey: "region",
+  //   header: "Region",
+  //   cell: ({ row }) => {
+  //     const region = row.original.regionName;
+  //     return <div className="text-sm text-default-600">{region || "N/A"}</div>;
+  //   },
+  // },
   {
     id: "actions",
     accessorKey: "action",

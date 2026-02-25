@@ -12,14 +12,13 @@ import HorizontalMenu from "./horizontal-menu"
 import LocalSwitcher from './locale-switcher'
 import HeaderLogo from "./header-logo"
 
-
 const DashCodeHeader = async () => {
     return (
         <>
             <HeaderContent>
                 <div className=' flex gap-3 items-center'>
                     <HeaderLogo />
-                    <SidebarToggle />
+                    {/* <SidebarToggle /> */}
                     {/*<HeaderSearch />*/}
                 </div>
                 <div className="nav-tools flex items-center  md:gap-4 gap-3">
@@ -28,7 +27,11 @@ const DashCodeHeader = async () => {
                     {/*<Messages />*/}
                     {/*<Notifications />*/}
                     <ProfileInfo />
-                    <SheetMenu />
+                    
+                   
+                    <div className="lg:hidden">
+                         <SheetMenu />
+                    </div>
                 </div>
             </HeaderContent>
             <HorizontalMenu />

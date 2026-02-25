@@ -64,7 +64,7 @@ export const baseColumns = ({ t }: {
     },
   },
 
-  // ⭐ بإمكانك إعادة تفعيل عمود الأكشن لو احتجته
+  
   // {
   //   id: "actions",
   //   accessorKey: "action",

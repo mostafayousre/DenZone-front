@@ -1,14 +1,14 @@
-import { Card } from "@/components/ui/card";
-import TransactionsTable from "./transactions";
+// import { Card } from "@/components/ui/card";
+// import TransactionsTable from "./transactions";
 
-const ActiveIngredients = () => {
-  return (
-    <div>
-      <Card>
-        <TransactionsTable />
-      </Card>
-    </div>
-  );
-};
+// const ActiveIngredients = () => {
+//   return (
+//     <div>
+//       <Card>
+//         <TransactionsTable />
+//       </Card>
+//     </div>
+//   );
+// };
 
-export default ActiveIngredients;
+// export default ActiveIngredients;

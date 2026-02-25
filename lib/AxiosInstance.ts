@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Cookies from "js-cookie";
 
 const AxiosInstance = axios.create({
-    baseURL: 'https://drugzabackend.runasp.net/',
+    baseURL: 'http://dentzone.runasp.net/',
 });
 
 AxiosInstance.interceptors.request.use(

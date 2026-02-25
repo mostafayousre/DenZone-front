@@ -23,7 +23,7 @@ const Register = () => {
                 </div>
                   <h4 className="font-medium">Sign up</h4>
                   <div className="text-default-500  text-base">
-                    Create an account to start using DrugZA
+                    Create an account to start using DENTZONE
                   </div>
                 </div>
                 <RegForm />

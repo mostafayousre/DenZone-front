@@ -8,11 +8,11 @@ const LayoutContentProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (config.sidebar === 'two-column') {
         return (
-            <main className={cn('flex-1 xl:ms-[300px]  ', {
-                'xl:ms-[72px]': config.subMenu || !config.hasSubMenu,
+            <main className={cn('flex-1 lg:ms-[300px]  ', {
+                'lg:ms-[72px]': config.subMenu || !config.hasSubMenu,
                 'bg-default-100 dark:bg-background': config.skin === 'default',
                 'bg-transparent': config.skin === 'bordered',
-                'xl:ms-0': config.menuHidden || config.layout === "horizontal",
+                'lg:ms-0': config.menuHidden || config.layout === "horizontal",
 
             })}>
                 <div className={cn('p-6 mb-24 md:mb-0', {
@@ -29,12 +29,12 @@ const LayoutContentProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
 
-            <main className={cn('flex-1 xl:ms-[248px]', {
-                'xl:ms-[72px]': config.collapsed,
+            <main className={cn('flex-1 lg:ms-[248px]', {
+                'lg:ms-[72px]': config.collapsed,
                 'bg-default-100 dark:bg-background': config.skin === 'default',
                 'bg-transparent': config.skin === 'bordered',
-                'xl:ms-0': config.menuHidden || config.layout === "horizontal",
-                'xl:ms-28': config.sidebar === 'compact',
+                'lg:ms-0': config.menuHidden || config.layout === "horizontal",
+                'lg:ms-28': config.sidebar === 'compact',
                 'pt-6': config.navbar === 'floating' && config.layout !== 'semi-box'
             })}>
                 <div className={cn('mb-24 md:mb-0', {

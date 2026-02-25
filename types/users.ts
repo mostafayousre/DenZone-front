@@ -1,6 +1,7 @@
 export type UserType = {
     id: string ;
     userName: string;
+    fullName: string;
     email: string;
     phoneNumber: string;
     businessName: string;

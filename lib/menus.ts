@@ -137,13 +137,13 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "heroicons:document-text",
             },
-            {
-              href: "/dashboard/ActiveIngredients",
-              label: t("ActiveIngredients"),
-              active: pathname === "/dashboard/ActiveIngredients",
-              children: [],
-              icon: "heroicons:document-text",
-            },
+            // {
+            //   href: "/dashboard/ActiveIngredients",
+            //   label: t("ActiveIngredients"),
+            //   active: pathname === "/dashboard/ActiveIngredients",
+            //   children: [],
+            //   icon: "heroicons:document-text",
+            // },
             {
               href: "/dashboard/modules",
               label: t("modules"),
@@ -287,12 +287,10 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
     const filteredMenus: Menu[] = [];
 
     for (const menu of group.menus) {
-      // 🚫 Skip /dashboard/inventory-management for admin
       if (role == "Admin" && menu.href == "/dashboard/inventory-management") {
         continue;
       }
       const filteredSubmenus: Submenu[] = menu.submenus?.filter((sub) => {
-        // 🚫 Skip /dashboard/inventory-management for admin
         if (role === "Admin" && sub.href === "/dashboard/inventory-management") {
           return false;
         } if (role === "Inventory" && sub.href === "/dashboard/inventory-management") {
@@ -316,7 +314,6 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
       }
     }
 
-    // Only include groups that have visible menus
     if (filteredMenus.length > 0) {
       filteredGroups.push({
         ...group,
@@ -331,16 +328,13 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
 export function getHorizontalMenuList(pathname: string, t: any, role: string, locale: string = 'en'): Group[] {
   const rawAllowedRoutes = roleRoutes[role] || [];
 
-  // Normalize routes by removing locale prefixes for comparison
   const normalizedRoutes = rawAllowedRoutes.map(route =>
       route === "*" ? route : route.replace(/^\/[a-z]{2}\//, '/')
   );
 
-  // Function to localize href
   const localizeHref = (href: string): string => {
     if (!href.startsWith('/')) return href;
 
-    // Don't add locale prefix to paths that already have one
     if (/^\/[a-z]{2}\//.test(href)) return href;
 
     return `/${locale}${href}`;
@@ -349,7 +343,6 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
   const isAllowed = (href: string) => {
     if (normalizedRoutes.includes("*")) return true;
 
-    // Strip locale prefix for comparison
     const normalizedHref = href.replace(/^\/[a-z]{2}\//, '/');
     return normalizedRoutes.includes(normalizedHref);
   };
