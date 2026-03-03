@@ -1,13 +1,13 @@
 export enum UserRole {
     Admin = "8C2F4F3A-7F6D-4DB8-8B02-4A04D31F35D6",
     Inventory = "1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D",
-    Pharmacy = "E48E5A9F-2074-4DE9-A849-5C69FDD45E4E",
+    User = "E48E5A9F-2074-4DE9-A849-5C69FDD45E4E",
 }
 
 export const UserRoleLabel: Record<UserRole, string> = {
     [UserRole.Admin]: "Admin",
     [UserRole.Inventory]: "Inventory",
-    [UserRole.Pharmacy]: "Pharmacy",
+    [UserRole.User]: "User",
 };
 
 export enum OrderStatus {

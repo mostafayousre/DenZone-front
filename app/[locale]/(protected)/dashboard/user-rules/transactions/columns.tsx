@@ -81,7 +81,6 @@ export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<Dat
     header: "Actions",
     enableHiding: false,
     cell: ({ row }) => {
-      // getting the selected user Id
       const id: string | number = row.original.id;
       const { deleteUser, loading, isDeleted, error } = useDeleteUser();
       const pathname = window.location.pathname;

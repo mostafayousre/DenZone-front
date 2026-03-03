@@ -5,8 +5,9 @@ import { Link } from '@/i18n/routing';
 import { Badge } from "@/components/ui/badge";
 
 export type DataProps = {
+  [x: string]: any;
   id: string | number;
-  phone: string;
+  phoneNumber: string;
   userName: string;
   date: string;
   email: string;
@@ -19,16 +20,17 @@ export type DataProps = {
     arabicName: string;
     englishName: string;
     phoneNumber: string;
+    fullName: string;
   }
 };
 export const baseColumn = ({t} : {
   t: (key: string) => string;
 }) : ColumnDef<DataProps>[] => [
   {
-    accessorKey: "userName",
-    header: t("userName"),
+    accessorKey: "fullName",
+    header: t("fullName"),
     cell: ({ row }) => {
-      const user = row.original.userName;
+      const user = row.original.fullName;
       return (
         <div className="font-medium text-card-foreground/80">
           <div className="flex gap-3 items-center">
@@ -50,32 +52,32 @@ export const baseColumn = ({t} : {
     header: t("email"),
     cell: ({ row }) => <span>{row.getValue("email")}</span>,
   },
-  {
-    accessorKey: "pharmacyDetails",
-    header: t("arabicName"),
-    cell: ({ row }) => {
-      return <span> {row.original?.pharmacyDetails?.arabicName || "N/A"}</span>;
-    },
-  },
-  {
-    accessorKey: "pharmacyDetails",
-    header: t("englishName"),
-    cell: ({ row }) => {
-      return <span> {row.original?.pharmacyDetails?.englishName || "N/A"}</span>;
-    },
-  },
+  // {
+  //   accessorKey: "pharmacyDetails",
+  //   header: t("arabicName"),
+  //   cell: ({ row }) => {
+  //     return <span> {row.original?.pharmacyDetails?.arabicName || "N/A"}</span>;
+  //   },
+  // },
+  // {
+  //   accessorKey: "pharmacyDetails",
+  //   header: t("englishName"),
+  //   cell: ({ row }) => {
+  //     return <span> {row.original?.pharmacyDetails?.englishName || "N/A"}</span>;
+  //   },
+  // },
   {
     accessorKey: "phoneNumber",
     header: t("phoneNumber"),
     cell: ({ row }) => {
-      return <span> {row.original?.pharmacyDetails?.phoneNumber || "N/A"}</span>;
+      return <span> {row.original.phoneNumber || "N/A"}</span>;
     },
   },
   {
-    accessorKey: "area",
-    header: t("area"),
+    accessorKey: "addresses",
+    header: t("addresses"),
     cell: ({ row }) => {
-      return <span>{row.original?.regionName || "N/A"}</span>;
+      return <span>{row.original.addresses || "N/A"}</span>;
     },
   },
   {

@@ -8,6 +8,7 @@ export type ProductType = {
     name: string,
     arabicName?: string,
     preef: string,
+    arabicPreef?: string,
     description: string,
     category: CategoryType,
     activeIngredient: ActiveIngredient,

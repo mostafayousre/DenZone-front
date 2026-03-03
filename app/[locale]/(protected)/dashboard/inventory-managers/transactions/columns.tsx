@@ -7,6 +7,7 @@ import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import useDeleteUser from "@/services/users/DeleteUser";
 import {Link} from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export type DataProps = {
   id: string | number;
@@ -17,13 +18,17 @@ export type DataProps = {
   isPharmacy: boolean;
   regionName: string;
   action: React.ReactNode;
+  addresses: string;
+  fullName: string;
 };
-export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<DataProps>[] => [
+export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<DataProps>[] => {
+  const t = useTranslations();
+  return [
   {
-    accessorKey: "userName",
-    header: "Username",
+    accessorKey: "fullName",
+    header: "Full Name",
     cell: ({ row }) => {
-      const user = row.original.userName;
+      const user = row.original.fullName;
       return (
           <div className="text-sm text-default-600">{user}</div>
       );
@@ -66,11 +71,18 @@ export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<Dat
   //   },
   // },
   {
-    accessorKey: "regionName",
-    header: "Region",
+    accessorKey: "phoneNumber",
+    header: t("phoneNumber"),
     cell: ({ row }) => {
-      const region = row.original.regionName;
-      return <div className="text-sm text-default-600">{region || "N/A"}</div>;
+      return <span> {row.original.phoneNumber || "N/A"}</span>;
+    },
+  },
+  {
+    accessorKey: "addresses",
+    header: "Addresses",
+    cell: ({ row }) => {
+      const addresses = row.original.addresses;
+      return <div className="text-sm text-default-600">{addresses || "N/A"}</div>;
     },
   },
   {
@@ -142,3 +154,4 @@ export const baseColumns = ({ refresh }: { refresh: () => void }): ColumnDef<Dat
     },
   },
 ];
+};

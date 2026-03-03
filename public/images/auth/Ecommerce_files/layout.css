@@ -950,8 +950,8 @@
   .h-72 {
     height: calc(var(--spacing) * 72);
   }
-  .h-\[\$\{height\}px\] {
-    height: ${height}px;
+  .h-\[var\(--height\)\] {
+    height: var(--height);
   }
   .h-\[1\.2rem\] {
     height: 1.2rem;
