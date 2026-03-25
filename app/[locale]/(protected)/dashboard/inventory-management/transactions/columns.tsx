@@ -23,11 +23,7 @@ export const baseColumns = ({ t }: {
       );
     },
   },
-  {
-    accessorKey: "categoryName",
-    header: t("category"),
-    cell: ({ row }) => <span>{row.getValue("categoryName")}</span>,
-  },
+  
   {
     accessorKey: "purchasePrice",
     header: t("purchasePrice"),

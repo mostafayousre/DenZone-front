@@ -154,7 +154,7 @@ const TransactionsTable = () => {
               disabled={downloadLoading}
               className="gap-2"
             >
-              {downloadLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              {downloadLoading ? <Loader2 className="h-8 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Export Prices
             </Button>
           </div>

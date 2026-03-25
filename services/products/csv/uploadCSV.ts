@@ -27,7 +27,7 @@ function useUploadCsv() {
       formData.append("file", file);
 
       const response = await AxiosInstance.post(
-        `/api/Products/ImportAddProductsFromExcel?returnFile=${returnFile}`,
+        `/api/ProductPrices/ImportAddProductsFromExcel?returnFile=${returnFile}`,
         formData,
         {
           headers: {
@@ -45,7 +45,6 @@ function useUploadCsv() {
 
         let downloadedFile = null;
 
-        // Check if response is a file (failed entries)
         if (
           contentType?.includes("spreadsheet") ||
           contentType?.includes("excel") ||
@@ -53,7 +52,6 @@ function useUploadCsv() {
         ) {
           console.log("File detected! Starting download...");
 
-          // Extract filename from content-disposition header
           let filename = "Failed_Prices.xlsx";
           if (contentDisposition) {
             const filenameMatch = contentDisposition.match(
@@ -64,7 +62,6 @@ function useUploadCsv() {
             }
           }
 
-          // Create blob and download file
           const blob = new Blob([response.data], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           });
@@ -77,7 +74,6 @@ function useUploadCsv() {
             document.body.appendChild(link);
             link.click();
 
-            // Cleanup
             setTimeout(() => {
               document.body.removeChild(link);
               window.URL.revokeObjectURL(url);
