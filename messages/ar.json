@@ -124,6 +124,9 @@
   },
   "Menu": {
     "price-management": "الإدارة السعرية",
+    "User Management": "إدارة المستخدمين",
+    "Providers details": "تفاصيل الموردون",
+    "Doctors details": "تفاصيل الأطباء  ",
     "brands": "العلامات التجارية",
     "dashboard": "لوحة التحكم",
     "analytics": "تحليلات",

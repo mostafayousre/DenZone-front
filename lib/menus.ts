@@ -95,13 +95,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               icon: "",
               children: [],
             },
-            {
-              href: "/dashboard/pharmacy-list",
-              label: t("Doctors"),
-              active: pathname === "/dashboard/pharmacy-list",
-              children: [],
-              icon: "",
-            },
+            
             {
               href: "/dashboard/order-list",
               label: t("orders"),
@@ -151,28 +145,36 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
-            
-            {
-              href: "/dashboard/inventory-managers",
-              label: t("Providers"),
-              active: pathname === "/dashboard/inventory-managers",
-              children: [],
-              icon: "",
-            },
-            {
+             {
               href: "/dashboard/register",
               label: t("register"),
               active: pathname === "/dashboard/register",
               icon: "",
               children: [],
             },
+            
             {
               href: "/dashboard/user-rules",
-              label: t("User Rules"),
+              label: t("User Management"),
               active: pathname === "/dashboard/user-rules",
               children: [],
               icon: "",
             },
+            {
+              href: "/dashboard/pharmacy-list",
+              label: t("Doctors details"),
+              active: pathname === "/dashboard/pharmacy-list",
+              children: [],
+              icon: "",
+            },
+            {
+              href: "/dashboard/inventory-managers",
+              label: t("Providers details"),
+              active: pathname === "/dashboard/inventory-managers",
+              children: [],
+              icon: "",
+            },
+           
             {
               href: "/dashboard/reports",
               label: t("Reports"),

@@ -129,6 +129,9 @@
   },
   "Menu": {
     "price-management": "Price Management",
+    "User Management": "User Management",
+    "Providers details": "Providers details",
+    "Doctors details": "Doctors details",
     "brands": "Brands",
     "dashboard": "Dashboard",
     "analytics": "Analytics",

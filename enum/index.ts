@@ -6,8 +6,8 @@ export enum UserRole {
 
 export const UserRoleLabel: Record<UserRole, string> = {
     [UserRole.Admin]: "Admin",
-    [UserRole.Inventory]: "Inventory",
-    [UserRole.User]: "User",
+    [UserRole.Inventory]: "Provider",
+    [UserRole.User]: "Doctor",
 };
 
 export enum OrderStatus {

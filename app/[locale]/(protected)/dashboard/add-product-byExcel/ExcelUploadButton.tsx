@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, AlertTriangle, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -94,11 +94,11 @@ const ExcelUploadButton: React.FC<ExcelUploadButtonProps> = ({ onSuccess }) => {
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
         disabled={loading}
       />
-
       <Button
         size="md"
+        color="success"
         disabled={loading}
-        className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+        className="gap-2 bg-green-600 hover:bg-green-200 hover:text-green-800 hover:ring-green-300 text-white transition-colors duration-200"
       >
         {loading ? (
           <>

@@ -1,17 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
+  flexRender,
 } from "@tanstack/react-table";
 import { baseColumns } from "./columns";
 import {
@@ -27,7 +22,7 @@ import { useParams } from "next/navigation";
 import { CardContent } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 
@@ -43,81 +38,62 @@ const TransactionsTable = () => {
   const t = useTranslations("productList");
   const params = useParams();
   const locale = params?.locale as string;
-  
   const userRole = Cookies.get("userRole");
   const isAdmin = userRole === "Admin";
 
   const {
     loading,
     getAllProducts,
+    refreshProducts,
     products: data,
-    error,
-    includeDeleted,
     totalItems,
     totalPages: apiTotalPages,
   } = useGettingAllProducts();
 
-  const {
-    loading: categoriesLoading,
-    gettingAllCategories,
-  } = GetCategories();
+  const { loading: categoriesLoading, gettingAllCategories } = GetCategories();
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
 
-  const columns = baseColumns({ 
-    refresh: () => { getAllProducts("false") }, 
-    t, 
-    locale 
+  const handleRefresh = useCallback(() => {
+    refreshProducts("false");
+  }, [refreshProducts]);
+
+  const columns = baseColumns({
+    refresh: handleRefresh,
+    t,
+    locale,
   });
 
   const table = useReactTable({
-    data: filteredProducts ?? [],
+    data: filteredProducts,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    initialState: {
-      pagination: {
-        pageSize: 50,
-      },
-    },
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
+    initialState: { pagination: { pageSize: 50 } },
   });
 
   useEffect(() => {
     gettingAllCategories();
-    getAllProducts(includeDeleted);
-  }, [includeDeleted]);
+    getAllProducts("false");
+  }, []);
 
   useEffect(() => {
-    if (data) setFilteredProducts(data);
+    if (data) {
+      setFilteredProducts([...data]);
+    }
   }, [data]);
 
   if (categoriesLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-6 h-6 animate-spin" />
+        <Loader2 className="animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-4 px-6 gap-4 border-b border-solid border-default-200">
+      <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6 gap-4 border-b">
         <div className="flex-1 w-full max-w-sm">
           <SearchInput
             data={data ?? []}
@@ -127,18 +103,23 @@ const TransactionsTable = () => {
         </div>
 
         {isAdmin && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            {/* All three buttons use size="md" → h-9, same padding, same font */}
+
             <Link href="/dashboard/add-product">
-              <Button size="md" variant="outline" className="font-medium">
+              <Button size="md" variant="outline" className="gap-2">
+                <PlusCircle className="w-4 h-4" />
                 {t("addProduct")}
               </Button>
             </Link>
 
+            {/* ExportCSVButton internally uses size="md" variant="outline" */}
             <ExportCSVButton />
 
+            {/* ExcelUploadButton internally uses size="md" color="success" */}
             <ExcelUploadButton
               onSuccess={() => {
-                getAllProducts(includeDeleted);
+                refreshProducts("false");
                 toast.success(t("dataRefreshed"));
               }}
             />
@@ -148,40 +129,48 @@ const TransactionsTable = () => {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-6 h-6 animate-spin" />
+          <Loader2 className="animate-spin" />
         </div>
       ) : (
         <>
           <CardContent className="pt-6">
-            <div className="border border-solid border-default-200 rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader className="bg-default-200">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead className="last:text-start" key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
+                  {table.getHeaderGroups().map((group) => (
+                    <TableRow key={group.id}>
+                      {group.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </TableHead>
                       ))}
                     </TableRow>
                   ))}
                 </TableHeader>
+
                 <TableBody>
                   {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
                       <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id} className="h-[75px]">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
+                      <TableCell
+                        colSpan={columns.length}
+                        className="text-center h-24"
+                      >
                         {t("noProductsFound")}
                       </TableCell>
                     </TableRow>
@@ -190,9 +179,12 @@ const TransactionsTable = () => {
               </Table>
             </div>
           </CardContent>
+
           <TablePagination table={table} />
+
           <div className="text-center text-sm text-muted-foreground pb-4">
-            {t("totalProducts")}: {totalItems} | {t("totalPages")}: {apiTotalPages}
+            {t("totalProducts")}: {totalItems} | {t("totalPages")}:{" "}
+            {apiTotalPages}
           </div>
         </>
       )}
