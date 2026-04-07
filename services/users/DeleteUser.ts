@@ -14,17 +14,14 @@ function useDeleteUser() {
         setError(null);
 
         try {
-            // التعديل: استخدام DELETE وإضافة الـ ID في الـ URL مباشرة
-            const response = await fetch(`http://dentzone.runasp.net/api/Users/delete-user/${userId}`, {
+            const response = await fetch(`https://dentzoneapi.runasp.net/api/Users/delete-user/${userId}`, {
                 method: "DELETE",
                 headers: {
                     "Accept": "*/*",
                 },
             });
 
-            // التأكد من نجاح العملية (Status 200 أو 204)
             if (response.ok) { 
-                // تحديث القائمة تلقائياً بعد الحذف
                 if (typeof gettingAllUsers === "function") {
                     gettingAllUsers();
                 }
