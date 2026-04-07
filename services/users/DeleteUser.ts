@@ -2,7 +2,6 @@ import { useState } from "react";
 import GetUsers from "@/services/users/GetAllUsers";
 
 function useDeleteUser() {
-    // جلب دالة التحديث من الـ Hook الخاص بجلب المستخدمين
     const { gettingAllUsers } = GetUsers(); 
     const [loading, setLoading] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);

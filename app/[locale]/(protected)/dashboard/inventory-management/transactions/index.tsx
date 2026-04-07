@@ -133,11 +133,11 @@ const TransactionsTable = () => {
           <div className="flex-1 flex justify-between items-center gap-4">
             <Select onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[200px] cursor-pointer">
-                <SelectValue placeholder="Select Inventory" />
+                <SelectValue placeholder="Select provider" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Select Inventory</SelectLabel>
+                  <SelectLabel>Select provider</SelectLabel>
                   {users?.map((user: any) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.fullName}
@@ -184,7 +184,7 @@ const TransactionsTable = () => {
       </div>
 
       {isAdmin && !selectedUserId ? (
-        <div className="text-center text-gray-500 py-10">Please select an inventory manager to view their prices.</div>
+        <div className="text-center text-gray-500 py-10">Please select a provider to view their prices.</div>
       ) : isLoading ? (
         <div className="flex items-center justify-center h-48">
           <Loader2 className="w-6 h-6 animate-spin" />
