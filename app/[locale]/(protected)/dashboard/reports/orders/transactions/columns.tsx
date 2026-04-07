@@ -15,10 +15,10 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
   },
   {
-    accessorKey: "pharmacyName",
-    header: "Pharmacy Name",
+    accessorKey: "fullName",
+    header: "Doctor",
     cell: ({ row }) => {
-      const name = row.original.pharmacyName;
+      const name = row.original.fullName;
       return (
         <div className="font-medium text-card-foreground/80">
           <span className="text-sm text-default-600 whitespace-nowrap">
@@ -28,6 +28,7 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
       );
     },
   },
+  
   {
     accessorKey: "cashPaid",
     header: "Cash Paid",

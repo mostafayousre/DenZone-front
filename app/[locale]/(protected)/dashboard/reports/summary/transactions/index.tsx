@@ -52,9 +52,8 @@ export default function TransactionsTable() {
         from: subDays(new Date(), 30),
         to: new Date(),
     });
-    const [pharmacyUserId, setPharmacyUserId] = useState<string>("");
+    const [UserId, setPharmacyUserId] = useState<string>("");
     const [inventoryUserId, setInventoryUserId] = useState<string>("");
-    const [regionId, setRegionId] = useState<string>("");
     const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(undefined);
 
@@ -82,15 +81,13 @@ export default function TransactionsTable() {
         if (dateRange?.to) {
             params.set('EndDate', dateRange.to.toISOString());
         }
-        if (pharmacyUserId) {
-            params.set('PharmacyUserId', pharmacyUserId);
+        if (UserId) {
+            params.set('UserId', UserId);
         }
         if (inventoryUserId) {
             params.set('InventoryUserId', inventoryUserId);
         }
-        if (regionId) {
-            params.set('RegionId', regionId);
-        }
+       
         if (status !== undefined) {
             params.set('Status', status.toString());
         }
@@ -114,7 +111,6 @@ export default function TransactionsTable() {
         });
         setPharmacyUserId("");
         setInventoryUserId("");
-        setRegionId("");
         setStatus(undefined);
         setPaymentMethod(undefined);
 
@@ -193,17 +189,17 @@ export default function TransactionsTable() {
 
                     {/* Pharmacy User Select */}
                     <Select
-                        value={pharmacyUserId}
+                        value={UserId}
                         onValueChange={(value) => setPharmacyUserId(value)}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Select Pharmacy User" />
+                            <SelectValue placeholder="Select Doctor" />
                         </SelectTrigger>
                         <SelectGroup>
                             <SelectContent>
                                 {pharmacies.map((user: UserType) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
+                                        {user.fullName}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -216,38 +212,20 @@ export default function TransactionsTable() {
                         onValueChange={(value) => setInventoryUserId(value)}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Select Inventory User" />
+                            <SelectValue placeholder="Select Provider" />
                         </SelectTrigger>
                         <SelectGroup>
                             <SelectContent>
                                 {users.map((user: UserType) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
+                                        {user.fullName}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </SelectGroup>
                     </Select>
 
-                    {/* Region Select */}
-                    <Select
-                        value={regionId}
-                        onValueChange={(value) => setRegionId(value)}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select Region" />
-                        </SelectTrigger>
-                        <SelectGroup>
-                            <SelectContent>
-                                {mainAreas.map((region: MainArea) => (
-                                    <SelectItem key={region.id} value={region.id || ""}>
-                                        {region.regionName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </SelectGroup>
-                    </Select>
-
+                   
                     {/* Status Filter */}
                     <Select
                         value={status === undefined ? "" : status.toString()}

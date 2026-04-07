@@ -10,15 +10,15 @@ function BalanceReports() {
         <>
             <Tabs defaultValue="account-balances" className="w-full space-y-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-300 rounded-md"} value="account-balances"
+                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-800 rounded-md"} value="account-balances"
                     >
                         Account Balances
                     </TabsTrigger>
-                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-300 rounded-md"} value="transactions-balances"
+                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-800 rounded-md"} value="transactions-balances"
                     >
                         Transactions Balances
                     </TabsTrigger>
-                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-300 rounded-md"} value="summary"
+                    <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-800 rounded-md"} value="summary"
                     >
                         Summary
                     </TabsTrigger>

@@ -66,9 +66,8 @@ export default function TransactionsTable() {
         from: subDays(new Date(), 30),
         to: new Date(),
     });
-    const [pharmacyUserId, setPharmacyUserId] = useState<string>("");
+    const [UserId, setPharmacyUserId] = useState<string>("");
     const [inventoryUserId, setInventoryUserId] = useState<string>("");
-    const [regionId, setRegionId] = useState<string>("");
     const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(undefined);    const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(20);
@@ -127,15 +126,13 @@ export default function TransactionsTable() {
         if (dateRange?.to) {
             params.set('EndDate', dateRange.to.toISOString());
         }
-        if (pharmacyUserId) {
-            params.set('PharmacyUserId', pharmacyUserId);
+        if (UserId) {
+            params.set('UserId', UserId);
         }
         if (inventoryUserId) {
             params.set('InventoryUserId', inventoryUserId);
         }
-        if (regionId) {
-            params.set('RegionId', regionId);
-        }
+       
         if (status !== undefined) {
             params.set('Status', status.toString());
         }
@@ -162,7 +159,6 @@ export default function TransactionsTable() {
         });
         setPharmacyUserId("");
         setInventoryUserId("");
-        setRegionId("");
         setStatus(undefined);
         setPaymentMethod(undefined);
         setPageNumber(1);
@@ -229,20 +225,20 @@ export default function TransactionsTable() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="pharmacyUserId">Pharmacy User</Label>
+                    <Label htmlFor="UserId">Doctor</Label>
                     <Select
-                        value={pharmacyUserId}
+                        value={UserId}
                         disabled={inventoryUserId !== ""}
                         onValueChange={(value) => setPharmacyUserId(value)}
                     >
                         <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Select Pharmacy User" />
+                            <SelectValue placeholder="Select Doctor" />
                         </SelectTrigger>
                         <SelectGroup>
                             <SelectContent>
                                 {pharmacies.map((user: UserType) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
+                                        {user.fullName}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -251,20 +247,20 @@ export default function TransactionsTable() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="inventoryUserId">Inventory User</Label>
+                    <Label htmlFor="inventoryUserId">Provider</Label>
                     <Select
                         value={inventoryUserId}
-                        disabled={pharmacyUserId !== ""}
+                        disabled={UserId !== ""}
                         onValueChange={(value) => setInventoryUserId(value)}
                     >
                         <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Select Inventory User" />
+                            <SelectValue placeholder="Select Provider" />
                         </SelectTrigger>
                         <SelectGroup>
                             <SelectContent>
                                 {users.map((user: UserType) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
+                                        {user.fullName}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -272,7 +268,7 @@ export default function TransactionsTable() {
                     </Select>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                     <Label htmlFor="regionId">Region</Label>
                     <Select
                         value={regionId}
@@ -291,9 +287,37 @@ export default function TransactionsTable() {
                             </SelectContent>
                         </SelectGroup>
                     </Select>
-                </div>
+                </div> */}
 
+               
+
+               
                 <div className="flex items-center gap-2">
+                    <Label htmlFor="paymentMethod">Payment Method</Label>
+                    <Select
+                        value={paymentMethod === undefined ? "" : paymentMethod}
+                        onValueChange={(value) => {
+                            if (value === "all") {
+                                setPaymentMethod(undefined);
+                            } else if (Object.values(PaymentMethod).includes(value as PaymentMethod)) {
+                                setPaymentMethod(value as PaymentMethod);
+                            }
+                        }}
+                    >
+                        <SelectTrigger className={"flex-1"}>
+                            <SelectValue placeholder="Filter by Payment Method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Payment Methods</SelectItem>
+                            {Object.values(PaymentMethod).map((method) => (
+                                <SelectItem key={method} value={method}>
+                                    {PaymentMethodLabel[method]}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="flex items-center gap-2">
                     <Label htmlFor="status">Status</Label>
                     <Select
                         value={status === undefined ? "" : status.toString()}
@@ -319,33 +343,6 @@ export default function TransactionsTable() {
                                         </SelectItem>
                                     );
                                 })}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-               
-                <div className="flex items-center gap-2">
-                    <Label htmlFor="paymentMethod">Payment Method</Label>
-                    <Select
-                        value={paymentMethod === undefined ? "" : paymentMethod}
-                        onValueChange={(value) => {
-                            if (value === "all") {
-                                setPaymentMethod(undefined);
-                            } else if (Object.values(PaymentMethod).includes(value as PaymentMethod)) {
-                                setPaymentMethod(value as PaymentMethod);
-                            }
-                        }}
-                    >
-                        <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Filter by Payment Method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Payment Methods</SelectItem>
-                            {Object.values(PaymentMethod).map((method) => (
-                                <SelectItem key={method} value={method}>
-                                    {PaymentMethodLabel[method]}
-                                </SelectItem>
-                            ))}
                         </SelectContent>
                     </Select>
                 </div>

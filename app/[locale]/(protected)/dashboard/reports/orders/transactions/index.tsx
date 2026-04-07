@@ -12,8 +12,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import {baseColumns} from "./columns";
-import { Input } from "@/components/ui/input";
+import { baseColumns } from "./columns";
 import {
     Table,
     TableBody,
@@ -23,19 +22,17 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import {useRouter} from "@/i18n/routing";
-import {useEffect, useState} from "react";
-import {Loader2} from "lucide-react";
-import {Orders} from "@/types/orders";
-import {Button} from "@/components/ui/button";
-import {OrderStatus, OrderStatusLabel, PaymentMethod, PaymentMethodLabel} from "@/enum";
+import { useRouter } from "@/i18n/routing";
+import { useEffect, useState } from "react";
+import { Loader2, CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { OrderStatus, OrderStatusLabel, PaymentMethod, PaymentMethodLabel } from "@/enum";
 import useOrderReports from "@/services/Reports/Orders/orderReports";
 import {
     Select,
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
@@ -43,34 +40,29 @@ import { DateRange } from "react-day-picker";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import useGettingAllMainAreas from "@/services/area/gettingAllMainAreas";
 import useGettingAllPharmacies from "@/services/users/gettingAllPharmacies";
-import {UserType} from "@/types/users";
-import {AreaType, MainArea} from "@/types/areas";
-import {Label} from "@/components/ui/label";
+import { UserType } from "@/types/users";
+import { Label } from "@/components/ui/label";
 
 export default function TransactionsTable() {
     const router = useRouter();
-    const {loading: loadingOrderReports, orderReports, fetchOrderReports} = useOrderReports();
-
-    const {loading: loadingUsers, error: errorUsers, users, getUsersByRoleId} = useGetUsersByRoleId()
-
-    const {loading: loadingMainAreas, error: errorMainAreas, mainAreas, getAllMainAreas} = useGettingAllMainAreas()
-
-    const {loading: loadingPharmacies, error: errorPharmacies, pharmacies, gettingAllPharmacies} = useGettingAllPharmacies()
+    const { loading: loadingOrderReports, orderReports, fetchOrderReports } = useOrderReports();
+    const { loading: loadingUsers, users, getUsersByRoleId } = useGetUsersByRoleId();
+    const { loading: loadingMainAreas, getAllMainAreas } = useGettingAllMainAreas();
+    const { pharmacies, gettingAllPharmacies } = useGettingAllPharmacies();
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: subDays(new Date(), 30),
         to: new Date(),
     });
-    const [pharmacyUserId, setPharmacyUserId] = useState<string>("");
+    const [userId, setUserId] = useState<string>("");
     const [inventoryUserId, setInventoryUserId] = useState<string>("");
-    const [regionId, setRegionId] = useState<string>("");
     const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(undefined);    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | undefined>(undefined);
+    const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(20);
 
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -103,15 +95,13 @@ export default function TransactionsTable() {
         const fetchDataInitail = async () => {
             try {
                 await getUsersByRoleId("1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D");
-
                 await getAllMainAreas();
             } catch (error) {
-                console.error("Error during fetch sequence:", error);
+                console.error(error);
             }
         };
-
         fetchDataInitail();
-        gettingAllPharmacies()
+        gettingAllPharmacies();
     }, []);
 
     useEffect(() => {
@@ -121,31 +111,15 @@ export default function TransactionsTable() {
     const fetchData = () => {
         const params = new URLSearchParams();
 
-        if (dateRange?.from) {
-            params.set('StartDate', dateRange.from.toISOString());
-        }
-        if (dateRange?.to) {
-            params.set('EndDate', dateRange.to.toISOString());
-        }
-        if (pharmacyUserId) {
-            params.set('PharmacyUserId', pharmacyUserId);
-        }
-        if (inventoryUserId) {
-            params.set('InventoryUserId', inventoryUserId);
-        }
-        if (regionId) {
-            params.set('RegionId', regionId);
-        }
-        if (status !== undefined) {
-            params.set('Status', status.toString());
-        }
-        if (paymentMethod) {
-            params.set('PaymentMethod', paymentMethod);
-        }
+        if (dateRange?.from) params.set('StartDate', dateRange.from.toISOString());
+        if (dateRange?.to) params.set('EndDate', dateRange.to.toISOString());
+        if (userId) params.set('UserId', userId);
+        if (inventoryUserId) params.set('InventoryUserId', inventoryUserId);
+        if (status !== undefined) params.set('Status', status.toString());
+        if (paymentMethod) params.set('PaymentMethod', paymentMethod);
 
         params.set('PageNumber', pageNumber.toString());
         params.set('PageSize', pageSize.toString());
-        console.log(params.toString())
 
         fetchOrderReports(params.toString());
     };
@@ -160,14 +134,12 @@ export default function TransactionsTable() {
             from: subDays(new Date(), 30),
             to: new Date(),
         });
-        setPharmacyUserId("");
+        setUserId("");
         setInventoryUserId("");
-        setRegionId("");
         setStatus(undefined);
         setPaymentMethod(undefined);
         setPageNumber(1);
         setPageSize(20);
-
         fetchData();
     };
 
@@ -175,7 +147,7 @@ export default function TransactionsTable() {
         setPageNumber(newPage);
     };
 
-    if (loadingMainAreas || loadingUsers ) {
+    if (loadingMainAreas || loadingUsers) {
         return (
             <div className="flex items-center justify-center h-full py-8">
                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -203,10 +175,7 @@ export default function TransactionsTable() {
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {dateRange?.from ? (
                                     dateRange.to ? (
-                                        <>
-                                            {format(dateRange.from, "LLL dd, y")} -{" "}
-                                            {format(dateRange.to, "LLL dd, y")}
-                                        </>
+                                        <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>
                                     ) : (
                                         format(dateRange.from, "LLL dd, y")
                                     )
@@ -229,96 +198,45 @@ export default function TransactionsTable() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="pharmacyUser">Pharmacy User</Label>
+                    <Label htmlFor="userId">Doctor</Label>
                     <Select
-                        value={pharmacyUserId}
+                        value={userId}
                         disabled={inventoryUserId !== ""}
-                        onValueChange={(value) => setPharmacyUserId(value)}
+                        onValueChange={(value) => setUserId(value)}
                     >
-                        <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Select Pharmacy User" />
+                        <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Select Doctor" />
                         </SelectTrigger>
-                        <SelectGroup>
-                            <SelectContent>
+                        <SelectContent>
+                            <SelectGroup>
                                 {pharmacies.map((user: UserType) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
+                                        {user.fullName}
                                     </SelectItem>
                                 ))}
-                            </SelectContent>
-                        </SelectGroup>
+                            </SelectGroup>
+                        </SelectContent>
                     </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="inventoryUser">Inventory User</Label>
+                    <Label htmlFor="inventoryUser">Provider</Label>
                     <Select
                         value={inventoryUserId}
                         onValueChange={(value) => setInventoryUserId(value)}
-                        disabled={pharmacyUserId !== ""}
+                        disabled={userId !== ""}
                     >
-                        <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Select Inventory User" />
-                        </SelectTrigger>
-                        <SelectGroup>
-                            <SelectContent>
-                                {users.map((user: UserType) => (
-                                    <SelectItem key={user.id} value={user.id}>
-                                        {user.userName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </SelectGroup>
-                    </Select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Label htmlFor="region">Region</Label>
-                    <Select
-                        value={regionId}
-                        onValueChange={(value) => setRegionId(value)}
-                    >
-                        <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Select Region" />
-                        </SelectTrigger>
-                        <SelectGroup>
-                            <SelectContent>
-                                {mainAreas.map((region:MainArea) => (
-                                    <SelectItem key={region.id} value={region.id || ""}>
-                                        {region.regionName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </SelectGroup>
-                    </Select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                        value={status === undefined ? "" : status.toString()}
-                        onValueChange={(value) => {
-                            const statusValue = parseInt(value);
-                            if (Object.values(OrderStatus).includes(statusValue)) {
-                                setStatus(statusValue as OrderStatus);
-                            }
-                        }}
-                    >
-                        <SelectTrigger className={"flex-1"}>
-                            <SelectValue placeholder="Filter by status" />
+                        <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Select Provider" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
-                            {Object.keys(OrderStatus)
-                                .filter(key => !isNaN(Number(key)))
-                                .map((key) => {
-                                    const status = Number(key) as OrderStatus;
-                                    return (
-                                        <SelectItem key={status} value={status.toString()}>
-                                            {OrderStatusLabel[status]}
-                                        </SelectItem>
-                                    );
-                                })}
+                            <SelectGroup>
+                                {users.map((user: UserType) => (
+                                    <SelectItem key={user.id} value={user.id}>
+                                        {user.fullName}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
                         </SelectContent>
                     </Select>
                 </div>
@@ -326,16 +244,13 @@ export default function TransactionsTable() {
                 <div className="flex items-center gap-2">
                     <Label htmlFor="paymentMethod">Payment Method</Label>
                     <Select
-                        value={paymentMethod === undefined ? "" : paymentMethod}
+                        value={paymentMethod === undefined ? "all" : paymentMethod}
                         onValueChange={(value) => {
-                            if (value === "all") {
-                                setPaymentMethod(undefined);
-                            } else if (Object.values(PaymentMethod).includes(value as PaymentMethod)) {
-                                setPaymentMethod(value as PaymentMethod);
-                            }
+                            if (value === "all") setPaymentMethod(undefined);
+                            else setPaymentMethod(value as PaymentMethod);
                         }}
                     >
-                        <SelectTrigger className={"flex-1"}>
+                        <SelectTrigger className="flex-1">
                             <SelectValue placeholder="Filter by Payment Method" />
                         </SelectTrigger>
                         <SelectContent>
@@ -349,15 +264,39 @@ export default function TransactionsTable() {
                     </Select>
                 </div>
 
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                        value={status === undefined ? "all" : status.toString()}
+                        onValueChange={(value) => {
+                            if (value === "all") setStatus(undefined);
+                            else setStatus(parseInt(value) as OrderStatus);
+                        }}
+                    >
+                        <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            {Object.keys(OrderStatus)
+                                .filter(key => !isNaN(Number(key)))
+                                .map((key) => {
+                                    const statusVal = Number(key) as OrderStatus;
+                                    return (
+                                        <SelectItem key={statusVal} value={statusVal.toString()}>
+                                            {OrderStatusLabel[statusVal]}
+                                        </SelectItem>
+                                    );
+                                })}
+                        </SelectContent>
+                    </Select>
+                </div>
+
                 <div className="flex gap-2">
                     <Button onClick={handleApplyFilters} className="w-full">
                         Apply Filters
                     </Button>
-                    <Button
-                        variant="outline"
-                        onClick={handleResetFilters}
-                        className="w-full"
-                    >
+                    <Button variant="outline" onClick={handleResetFilters} className="w-full">
                         Reset Filters
                     </Button>
                 </div>
@@ -375,13 +314,8 @@ export default function TransactionsTable() {
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => (
-                                            <TableHead className="last:text-start" key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                             </TableHead>
                                         ))}
                                     </TableRow>
@@ -390,28 +324,17 @@ export default function TransactionsTable() {
                             <TableBody>
                                 {table.getRowModel().rows?.length ? (
                                     table.getRowModel().rows.map((row) => (
-                                        <TableRow
-                                            key={row.id}
-                                            data-state={row.getIsSelected() && "selected"}
-                                        >
+                                        <TableRow key={row.id}>
                                             {row.getVisibleCells().map((cell) => (
                                                 <TableCell key={cell.id} className="h-[75px]">
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )}
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </TableCell>
                                             ))}
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell
-                                            colSpan={columns.length}
-                                            className="h-24 text-center"
-                                        >
-                                            No results.
-                                        </TableCell>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">No results.</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -423,14 +346,12 @@ export default function TransactionsTable() {
             {orderReports && (
                 <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
                     <div className="flex items-center gap-2">
-                        <p className="text-sm text-muted-foreground">
-                            Page {pageNumber} of {orderReports.totalPages}
-                        </p>
+                        <p className="text-sm text-muted-foreground">Page {pageNumber} of {orderReports.totalPages}</p>
                         <Select
                             value={pageSize.toString()}
                             onValueChange={(value) => {
                                 setPageSize(Number(value));
-                                setPageNumber(1); 
+                                setPageNumber(1);
                             }}
                         >
                             <SelectTrigger className="h-8 w-[70px]">
@@ -438,33 +359,17 @@ export default function TransactionsTable() {
                             </SelectTrigger>
                             <SelectContent side="top">
                                 {[10, 20, 30, 40, 50].map((size) => (
-                                    <SelectItem key={size} value={`${size}`}>
-                                        {size}
-                                    </SelectItem>
+                                    <SelectItem key={size} value={`${size}`}>{size}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handlePageChange(pageNumber - 1)}
-                            disabled={pageNumber <= 1}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handlePageChange(pageNumber + 1)}
-                            disabled={pageNumber >= orderReports.totalPages}
-                        >
-                            Next
-                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePageChange(pageNumber - 1)} disabled={pageNumber <= 1}>Previous</Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePageChange(pageNumber + 1)} disabled={pageNumber >= orderReports.totalPages}>Next</Button>
                     </div>
                 </div>
             )}
         </Card>
     );
-};
+}

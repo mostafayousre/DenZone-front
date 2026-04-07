@@ -13,9 +13,9 @@ export const baseColumns = ({
   if (type === "account") {
     return [
       {
-        accessorKey: "userName",
+        accessorKey: "fullName",
         header: "Username",
-        cell: ({ row }) => <span>{row.getValue("userName")}</span>,
+        cell: ({ row }) => <span>{row.getValue("fullName")}</span>,
       },
       {
         accessorKey: "accountType",

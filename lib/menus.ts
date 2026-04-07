@@ -182,72 +182,19 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
-            {
-              href: "/dashboard/sales",
-              label: t("sales"),
-              active: pathname === "/dashboard/sales",
-              children: [],
-              icon: "",
-            },
-            {
-              href: "/dashboard/settings",
-              label: t("settings"),
-              active: pathname === "/dashboard/settings",
-              children: [],
-              icon: "",
-            },
+            // {
+            //   href: "/dashboard/sales",
+            //   label: t("sales"),
+            //   active: pathname === "/dashboard/sales",
+            //   children: [],
+            //   icon: "",
+            // },
+           
           ],
         },
       ],
     },
-    {
-      groupLabel: t("Upcoming Features"),
-      id: "app",
-      menus: [
-        {
-          id: "chat",
-          href: "/app/chat",
-          label: t("chat"),
-          active: pathname.includes("/app/chat"),
-          icon: "heroicons-outline:chat",
-          submenus: [],
-        },
-        {
-          id: "email",
-          href: "/app/email",
-          label: t("email"),
-          active: pathname.includes("/app/email"),
-          icon: "heroicons-outline:mail",
-          submenus: [],
-        },
-        {
-          id: "kanban",
-          href: "/app/kanban",
-          label: t("kanban"),
-          active: pathname.includes("/app/kanban"),
-          icon: "heroicons-outline:view-boards",
-          submenus: [],
-        },
-        {
-          id: "calendar",
-          href: "/app/calendar",
-          label: t("calendar"),
-          active:pathname.includes("/app/calendar"),
-          icon: "heroicons-outline:calendar",
-          submenus: [],
-        },
-        {
-          id: "todo",
-          href: "/app/todo",
-          label: t("todo"),
-          active:pathname.includes("/app/todo"),
-          icon: "heroicons-outline:clipboard-check",
-          submenus: [],
-        },
-      ],
-    },
   ];
-
   const filteredGroups: Group[] = [];
 
   for (const group of allMenus) {
