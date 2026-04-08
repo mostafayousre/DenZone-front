@@ -7,8 +7,9 @@ function useGetCategoryById() {
     const [category, setCategory] = useState<CategoryType>({
         description: "",
         name: "",
-        pref: ""
-    })
+        pref: "",
+        companyPercentage: "",
+        })
 
     const gettingCategoryById = async (id: string | string[] | undefined) => {
        await AxiosInstance.get(`/api/Categories/${id}?lang=3`).then((response) => {
