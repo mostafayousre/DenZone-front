@@ -44,22 +44,21 @@ const EditProduct = () => {
     gettingAllCategories();
     if (productId) getProductById(productId);
   }, [productId]);
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.productName || "",
-        arabicName: product.productArabicName || "",
-        pref: product.preef || "",
-        arabicPreef: product.arabicPreef || "",
-        description: product.description || "",
-        arabicDescription: product.arabicDescription || "",
-        categoryId: product.categoryId ? String(product.categoryId) : "",
-        images: [],
-        existingImages: product.images?.map((img: any) => img.imageName) || [],
-      });
-    }
-  }, [product]);
+useEffect(() => {
+  if (product) {
+    setFormData({
+      name: product.productName || "",
+      arabicName: product.productArabicName || "",
+      pref: product.preef || "",
+      arabicPreef: product.arabicPreef || "",
+      description: product.description || "",
+      arabicDescription: product.arabicDescription || "",
+      categoryId: product.categoryId ? String(product.categoryId) : "",
+      images: [],
+      existingImages: Array.isArray(product.images) ? product.images : [],
+    });
+  }
+}, [product]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
