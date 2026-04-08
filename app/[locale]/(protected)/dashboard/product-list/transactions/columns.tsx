@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2, Eye } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { ProductType } from "@/types/product";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ const ActionCell = ({
   refresh: () => void;
   t: (key: string) => string;
 }) => {
-  const { loading, deleteProductById } = useDeleteProductById(); 
+  const { loading, deleteProductById } = useDeleteProductById();
 
   const handleDelete = (id: string) => {
     const toastId = toast(t("warning"), {
@@ -40,7 +40,7 @@ const ActionCell = ({
               const { success } = await deleteProductById(id);
               if (success) {
                 toast.success(t("delete_product_success"));
-                refresh(); 
+                refresh();
               }
             }}
           >
@@ -53,15 +53,29 @@ const ActionCell = ({
 
   return (
     <div className="flex items-center gap-2">
+      {/* زر العرض - View Details */}
+      <Link
+  href={`/dashboard/product-list/${row.original.id}`} 
+  className="p-2 text-primary bg-primary/10 rounded-full hover:bg-primary hover:text-white transition-all"
+  title={t("view")}
+>
+  <Eye className="w-4 h-4" />
+</Link>
+
+      {/* زر التعديل - Edit */}
       <Link
         href={`/dashboard/edit-product/${row.original.id}`}
         className="p-2 text-info bg-info/10 rounded-full hover:bg-info hover:text-white transition-all"
+        title={t("edit")}
       >
         <SquarePen className="w-4 h-4" />
       </Link>
+
+      {/* زر الحذف - Delete */}
       <button
         onClick={() => row.original.id && handleDelete(row.original.id)}
         className="p-2 text-destructive bg-destructive/10 rounded-full hover:bg-destructive hover:text-white transition-all"
+        title={t("delete")}
       >
         <Trash2 className="w-4 h-4" />
       </button>
@@ -128,9 +142,7 @@ export const baseColumns = ({
     columns.push({
       id: "actions",
       header: isArabic ? "الإجراءات" : "Actions",
-      cell: ({ row }) => (
-        <ActionCell row={row} refresh={refresh} t={t} />
-      ),
+      cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} />,
     });
   }
 

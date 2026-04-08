@@ -5,6 +5,7 @@ export type ProductType = {
     id?: string,
      productCode: string;
     productName: string;
+    productId?: string;
      productArabicName?: string;
     name: string,
     arabicName?: string,
@@ -16,4 +17,8 @@ export type ProductType = {
     categoryId: string,
     images: any,
     prices?: Price[]
+    inventories?: any[]
+    inventoryUserId?: string;
+    createdAt: string;
+    updatedAt: string;
 }

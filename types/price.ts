@@ -11,4 +11,5 @@ export type Price = {
     inventoryUserName: string;
     stockQuantity?: string| number;
     maxQuantity?: string | number;
+    discountRate?: number;
 }
