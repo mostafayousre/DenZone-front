@@ -4,32 +4,22 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 
 interface SearchInputProps {
-    data: any[];
-    setFilteredData: (data: any[]) => void;
-    filterKey: string;
+    // هنغير الـ type بتاع setFilteredData عشان يستقبل string (نص البحث)
+    setFilteredData: (value: string) => void; 
+    placeholder?: string;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ data, setFilteredData, filterKey }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ setFilteredData, placeholder }) => {
     const [searchValue, setSearchValue] = useState("");
 
     useEffect(() => {
-        if (!searchValue.trim()) {
-            setFilteredData(data); 
-        } else {
-            const filtered = data.filter((item) => {
-                const targetValue = item[filterKey];
-                return targetValue 
-                    ? targetValue.toString().toLowerCase().includes(searchValue.toLowerCase())
-                    : false;
-            });
-            setFilteredData(filtered);
-        }
-    }, [searchValue, data, filterKey, setFilteredData]);
+        setFilteredData(searchValue);
+    }, [searchValue, setFilteredData]);
 
     return (
         <Input
             type="text"
-            placeholder={`Search...`}
+            placeholder={placeholder || "Search products..."}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             className="w-full max-w-xl"

@@ -4,7 +4,6 @@ import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
 import {
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
@@ -25,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { useDebounce } from "use-debounce";
 
 import useGettingAllProducts from "@/services/products/gettingAllProducts";
 import GetCategories from "@/services/categories/getCategories";
@@ -32,7 +32,6 @@ import { ExportCSVButton } from "@/components/partials/export-csv/ExportCSVButto
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import ExcelUploadButton from "@/app/[locale]/(protected)/dashboard/add-product-byExcel/ExcelUploadButton";
 import { useTranslations } from "next-intl";
-import { ProductType } from "@/types/product";
 
 const PAGE_SIZE = 50;
 
@@ -42,6 +41,9 @@ const TransactionsTable = () => {
   const locale = params?.locale as string;
   const userRole = Cookies.get("userRole");
   const isAdmin = userRole === "Admin";
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
   const {
     loading,
@@ -59,19 +61,21 @@ const TransactionsTable = () => {
     refreshProducts("false");
   }, [refreshProducts]);
 
+  useEffect(() => {
+    getAllProducts("false", 1, PAGE_SIZE, debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
   const columns = baseColumns({ refresh: handleRefresh, t, locale });
 
-  // Server-side pagination: manual mode, no client-side pagination
   const table = useReactTable({
     data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    // Use manual pagination — TanStack won't slice data itself
     manualPagination: true,
     pageCount: apiTotalPages,
     state: {
       pagination: {
-        pageIndex: currentPage - 1, // TanStack is 0-based
+        pageIndex: currentPage - 1,
         pageSize: PAGE_SIZE,
       },
     },
@@ -80,14 +84,12 @@ const TransactionsTable = () => {
         typeof updater === "function"
           ? updater({ pageIndex: currentPage - 1, pageSize: PAGE_SIZE })
           : updater;
-      // Fetch the new page from the API (convert back to 1-based)
-      getAllProducts("false", newPagination.pageIndex + 1, PAGE_SIZE);
+      getAllProducts("false", newPagination.pageIndex + 1, PAGE_SIZE, debouncedSearchTerm);
     },
   });
 
   useEffect(() => {
     gettingAllCategories();
-    getAllProducts("false", 1, PAGE_SIZE);
   }, []);
 
   if (categoriesLoading) {
@@ -102,16 +104,9 @@ const TransactionsTable = () => {
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6 gap-4 border-b">
         <div className="flex-1 w-full max-w-sm">
-          {/* 
-            NOTE: SearchInput currently filters client-side.
-            For 9996 products you'll want to wire this to:
-            getAllProducts("false", 1, PAGE_SIZE, searchValue)
-            and pass the search string up.
-          */}
           <SearchInput
-            data={data ?? []}
-            filterKey={locale === "ar" ? "productArabicName" : "productName"}
-            setFilteredData={() => {}} // disable local filter — data comes from API
+            placeholder={t("search")}
+            setFilteredData={setSearchTerm} 
           />
         </div>
 
@@ -190,8 +185,7 @@ const TransactionsTable = () => {
           <TablePagination table={table} />
 
           <div className="text-center text-sm text-muted-foreground pb-4">
-            {t("totalProducts")}: {totalItems} | {t("totalPages")}:{" "}
-            {apiTotalPages}
+            {t("totalProducts")}: {totalItems} | {t("totalPages")}: {apiTotalPages}
           </div>
         </>
       )}

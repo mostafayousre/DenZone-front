@@ -656,6 +656,7 @@
   "productList": {
     "productList": "Product List",
     "productName": "Product Name",
+    "search": "Search by product name",
     "arabicName": "Arabic Name",
     "productCode": "Product Code",
     "product": "Product",
