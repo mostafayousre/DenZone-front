@@ -160,20 +160,20 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
-            {
-              href: "/dashboard/pharmacy-list",
-              label: t("Doctors details"),
-              active: pathname === "/dashboard/pharmacy-list",
-              children: [],
-              icon: "",
-            },
-            {
-              href: "/dashboard/inventory-managers",
-              label: t("Providers details"),
-              active: pathname === "/dashboard/inventory-managers",
-              children: [],
-              icon: "",
-            },
+            // {
+            //   href: "/dashboard/pharmacy-list",
+            //   label: t("Doctors details"),
+            //   active: pathname === "/dashboard/pharmacy-list",
+            //   children: [],
+            //   icon: "",
+            // },
+            // {
+            //   href: "/dashboard/inventory-managers",
+            //   label: t("Providers details"),
+            //   active: pathname === "/dashboard/inventory-managers",
+            //   children: [],
+            //   icon: "",
+            // },
            
             {
               href: "/dashboard/reports",

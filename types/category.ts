@@ -5,4 +5,5 @@ export type CategoryType = {
     pref: string;
     mainCategoryId?: string;
     description: string;
+    companyPercentage: string;
 };

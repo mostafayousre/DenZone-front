@@ -28,6 +28,7 @@ const EditCategory = () => {
   const [arabicName, setArabicName] = useState("");
   const [pref, setPref] = useState("");
   const [description, setDescription] = useState("");
+  const [companyPercentage, setCompanyPercentage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ const EditCategory = () => {
       setArabicName(category.arabicName || "");
       setPref(category.pref || "");
       setDescription(category.description || "");
+      setCompanyPercentage(category.companyPercentage || "");
     }
   }, [category]);
 
@@ -60,6 +62,7 @@ const EditCategory = () => {
     formData.append("ArabicName", arabicName);
     formData.append("Pref", pref);
     formData.append("Description", description);
+    formData.append("CompanyPercentage", companyPercentage);
     
     if (imageFile) {
       formData.append("ImageFile", imageFile);
@@ -134,6 +137,7 @@ const EditCategory = () => {
                 onChange={(e) => setPref(e.target.value)}
               />
             </div>
+            
 
             <div className="flex items-start flex-wrap gap-2">
               <Label className="w-[180px] flex-none text-sm font-medium mt-3" htmlFor="category-description">
@@ -147,7 +151,25 @@ const EditCategory = () => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-
+        <div className="flex items-center flex-wrap gap-2">
+  <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="companyPercentage">
+    {t("company_percentage")}
+  </Label>
+  
+  <div className="relative flex-1 min-w-[300px]">
+    <Input
+      id="companyPercentage"
+      type="number" 
+      className="pr-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+      placeholder={t("company_percentage")}
+      value={companyPercentage}
+      onChange={(e) => setCompanyPercentage(e.target.value)}
+    />
+    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground font-bold">
+      %
+    </div>
+  </div>
+</div>
             <div className="flex items-center flex-wrap gap-2">
               <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="imageFile">
                 {t("category_image")}

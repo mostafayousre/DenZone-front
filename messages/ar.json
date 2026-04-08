@@ -762,6 +762,7 @@
   "categories": {
     "category_name": "اسم الفئة",
     "category_arabic_name": "اسم الفئة بالعربية",
+    "company_percentage": "نسبة الشركة",
     "pref": "الأفضلية",
     "description": "الوصف",
     "actions": "الإجراءات",

@@ -34,6 +34,8 @@ import ExcelUploadButton from "@/app/[locale]/(protected)/dashboard/add-product-
 import { useTranslations } from "next-intl";
 import { ProductType } from "@/types/product";
 
+const PAGE_SIZE = 50;
+
 const TransactionsTable = () => {
   const t = useTranslations("productList");
   const params = useParams();
@@ -48,40 +50,45 @@ const TransactionsTable = () => {
     products: data,
     totalItems,
     totalPages: apiTotalPages,
+    currentPage,
   } = useGettingAllProducts();
 
   const { loading: categoriesLoading, gettingAllCategories } = GetCategories();
-
-  const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
 
   const handleRefresh = useCallback(() => {
     refreshProducts("false");
   }, [refreshProducts]);
 
-  const columns = baseColumns({
-    refresh: handleRefresh,
-    t,
-    locale,
-  });
+  const columns = baseColumns({ refresh: handleRefresh, t, locale });
 
+  // Server-side pagination: manual mode, no client-side pagination
   const table = useReactTable({
-    data: filteredProducts,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 50 } },
+    // Use manual pagination — TanStack won't slice data itself
+    manualPagination: true,
+    pageCount: apiTotalPages,
+    state: {
+      pagination: {
+        pageIndex: currentPage - 1, // TanStack is 0-based
+        pageSize: PAGE_SIZE,
+      },
+    },
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function"
+          ? updater({ pageIndex: currentPage - 1, pageSize: PAGE_SIZE })
+          : updater;
+      // Fetch the new page from the API (convert back to 1-based)
+      getAllProducts("false", newPagination.pageIndex + 1, PAGE_SIZE);
+    },
   });
 
   useEffect(() => {
     gettingAllCategories();
-    getAllProducts("false");
+    getAllProducts("false", 1, PAGE_SIZE);
   }, []);
-
-  useEffect(() => {
-    if (data) {
-      setFilteredProducts([...data]);
-    }
-  }, [data]);
 
   if (categoriesLoading) {
     return (
@@ -95,28 +102,28 @@ const TransactionsTable = () => {
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6 gap-4 border-b">
         <div className="flex-1 w-full max-w-sm">
+          {/* 
+            NOTE: SearchInput currently filters client-side.
+            For 9996 products you'll want to wire this to:
+            getAllProducts("false", 1, PAGE_SIZE, searchValue)
+            and pass the search string up.
+          */}
           <SearchInput
             data={data ?? []}
             filterKey={locale === "ar" ? "productArabicName" : "productName"}
-            setFilteredData={setFilteredProducts}
+            setFilteredData={() => {}} // disable local filter — data comes from API
           />
         </div>
 
         {isAdmin && (
           <div className="flex items-center gap-2">
-            {/* All three buttons use size="md" → h-9, same padding, same font */}
-
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
                 <PlusCircle className="w-4 h-4" />
                 {t("addProduct")}
               </Button>
             </Link>
-
-            {/* ExportCSVButton internally uses size="md" variant="outline" */}
             <ExportCSVButton />
-
-            {/* ExcelUploadButton internally uses size="md" color="success" */}
             <ExcelUploadButton
               onSuccess={() => {
                 refreshProducts("false");

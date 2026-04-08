@@ -8,7 +8,6 @@ import Cookies from "js-cookie";
 import { useLocale } from "next-intl";
 import useDeleteProductById from "@/services/products/deleteProductById";
 
-// ✅ Separate component so hooks are used legally inside a real React component
 const ActionCell = ({
   row,
   refresh,
@@ -18,7 +17,7 @@ const ActionCell = ({
   refresh: () => void;
   t: (key: string) => string;
 }) => {
-  const { loading, deleteProductById } = useDeleteProductById(); // ✅ hook inside a component
+  const { loading, deleteProductById } = useDeleteProductById(); 
 
   const handleDelete = (id: string) => {
     const toastId = toast(t("warning"), {
@@ -41,7 +40,7 @@ const ActionCell = ({
               const { success } = await deleteProductById(id);
               if (success) {
                 toast.success(t("delete_product_success"));
-                refresh(); // ✅ called after await, so mutation is done
+                refresh(); 
               }
             }}
           >
@@ -129,7 +128,6 @@ export const baseColumns = ({
     columns.push({
       id: "actions",
       header: isArabic ? "الإجراءات" : "Actions",
-      // ✅ Render the ActionCell component — hooks are now legal here
       cell: ({ row }) => (
         <ActionCell row={row} refresh={refresh} t={t} />
       ),
