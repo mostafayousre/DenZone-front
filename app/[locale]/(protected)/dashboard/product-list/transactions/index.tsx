@@ -44,6 +44,7 @@ const TransactionsTable = () => {
   
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
   const {
     loading,
@@ -67,8 +68,14 @@ const TransactionsTable = () => {
 
   const columns = baseColumns({ refresh: handleRefresh, t, locale });
 
+  useEffect(() => {
+    if (data) {
+      setFilteredProducts(data);
+    }
+  }, [data]);
+
   const table = useReactTable({
-    data: data ?? [],
+    data: filteredProducts ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -105,8 +112,10 @@ const TransactionsTable = () => {
       <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6 gap-4 border-b">
         <div className="flex-1 w-full max-w-sm">
           <SearchInput
+            data={data ?? []}
+            setFilteredData={setFilteredProducts}
+            filterKey="name"
             placeholder={t("search")}
-            setFilteredData={setSearchTerm} 
           />
         </div>
 

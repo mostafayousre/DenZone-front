@@ -14,10 +14,10 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
     cell: ({ row }) => <span>{row.getValue("id")}</span>,
   },
   {
-    accessorKey: "pharmacyName",
-    header: "Pharmacy Name",
+    accessorKey: "fullName",
+    header: "Doctor Name",
     cell: ({ row }) => {
-      const name = row.original.pharmacyName;
+      const name = row.original.fullName;
       return (
         <div className="font-medium text-card-foreground/80">
           <span className="text-sm text-default-600 whitespace-nowrap">
@@ -85,17 +85,7 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
       );
     },
   },
-  {
-    accessorKey: "deliverDate",
-    header: "Deliver Date",
-    cell: ({ row }) => {
-      
-        if (!row.original.deliverDate) {
-            return <span className="text-gray-500">No Date Scheduled Yet</span>;
-        }
-      return <span>{formatDateToDMY(row.original.deliverDate)}</span>;
-    },
-  },
+ 
   {
     accessorKey: "orderDate",
     header: "Order Date",

@@ -2,7 +2,8 @@ import {ProductType} from "@/types/product";
 
 export type Orders = {
     id: string;
-    pharmacyUserId: string;
+    UserId: string;
+    fullName: string;
     pharmacyName?: string;
     inventoryUserName?: string;
     inventoryUserId: string;

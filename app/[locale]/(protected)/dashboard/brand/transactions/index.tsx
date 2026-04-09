@@ -84,7 +84,7 @@ const BrandsTable = () => {
     return (
         <div className="w-full">
             <div className="flex flex-wrap justify-end items-center py-4 px-6 border-b border-solid border-default-200">
-                <SearchInput data={data ?? []} setFilteredData={setFilteredBrands} filterKey={"name"} />
+                <SearchInput data={data ?? []} setFilteredData={setFilteredBrands} filterKey={"name"} placeholder="Search brands..." />
                 <div className="#flex-none">
                     <div className="flex items-center gap-4 flex-wrap">
                         <Link href="/dashboard/add-brand">

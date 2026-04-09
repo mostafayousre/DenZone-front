@@ -5,7 +5,9 @@ export interface InvoiceReportItem {
     id: string;
     invoiceNumber: string;
     date: string;
+    orderDate: string;
     pharmacyName?: string;
+    fullName?: string;
     inventoryName?: string;
     regionName?: string;
     status: OrderStatus;
@@ -27,6 +29,10 @@ export interface SummaryReport {
     totalCredit: number;
     totalOrders: number;
     totalInvoices: number;
+    activeUsers?: number;
+    inactiveUsers?: number;
+    totalActiveUser?: number;
+    totalNonActiveUser?: number;
 }
 
 export interface AccountBalanceItem {

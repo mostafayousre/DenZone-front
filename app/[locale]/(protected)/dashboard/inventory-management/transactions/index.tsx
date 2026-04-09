@@ -149,7 +149,6 @@ const TransactionsTable = () => {
 
             <Button 
               variant="outline" 
-              size="sm" 
               onClick={downloadPriceCSV} 
               disabled={downloadLoading}
               className="gap-2"
@@ -163,7 +162,6 @@ const TransactionsTable = () => {
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                size="sm" 
                 onClick={downloadPriceCSV} 
                 disabled={downloadLoading}
                 className="gap-2"

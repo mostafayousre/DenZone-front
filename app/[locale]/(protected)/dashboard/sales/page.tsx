@@ -25,7 +25,7 @@ function Sales() {
                 </TabsTrigger>
                 <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-300 rounded-md"} value="pharmacy-statistics"
                 >
-                    Pharmacies Statistics
+                   Doctor Statistics
                 </TabsTrigger>
                 <TabsTrigger className={"cursor-pointer hover:text-white hover:bg-gray-300 rounded-md"} value="inventory-statistics"
                 >
@@ -53,9 +53,9 @@ function Sales() {
 
             <TabsContent value="pharmacy-statistics">
                 <Card>
-                    <CardHeader>Pharmacies Statistics</CardHeader>
+                    <CardHeader>Doctor Statistics</CardHeader>
                     <CardContent>
-                        <TransactionsTable type={"pharmacy"} />
+                        <TransactionsTable type={"user"} />
                     </CardContent>
                 </Card>
             </TabsContent>

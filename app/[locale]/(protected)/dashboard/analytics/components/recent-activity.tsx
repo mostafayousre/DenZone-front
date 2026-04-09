@@ -1,7 +1,7 @@
 interface RecentActivityProps {
     data: {
         id: string;
-        pharmacyName: string;
+        fullName: string;
         orderDate: string;
     }[];
 }
@@ -16,7 +16,7 @@ const RecentActivity = ({ data }: RecentActivityProps) => {
                 >
                     <div className="flex-1 text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]">
                         <div className="text-sm text-default-600 overflow-hidden text-ellipsis whitespace-nowrap">
-                            <span className="font-medium">{item.pharmacyName}</span> placed an order
+                            <span className="font-medium">{item.fullName}</span> placed an order
                         </div>
                     </div>
                     <div className="flex-none">

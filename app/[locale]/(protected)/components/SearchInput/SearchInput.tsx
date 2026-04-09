@@ -4,17 +4,25 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 
 interface SearchInputProps {
-    // هنغير الـ type بتاع setFilteredData عشان يستقبل string (نص البحث)
-    setFilteredData: (value: string) => void; 
+    data?: any[];
+    setFilteredData: (value: any[]) => void; 
+    filterKey?: string;
     placeholder?: string;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ setFilteredData, placeholder }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ data = [], setFilteredData, filterKey = "name", placeholder }) => {
     const [searchValue, setSearchValue] = useState("");
 
     useEffect(() => {
-        setFilteredData(searchValue);
-    }, [searchValue, setFilteredData]);
+        if (!searchValue) {
+            setFilteredData(data);
+        } else {
+            const filtered = data.filter((item) =>
+                String(item[filterKey]).toLowerCase().includes(searchValue.toLowerCase())
+            );
+            setFilteredData(filtered);
+        }
+    }, [searchValue, data, filterKey, setFilteredData]);
 
     return (
         <Input

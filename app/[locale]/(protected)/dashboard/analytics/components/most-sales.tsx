@@ -88,10 +88,18 @@ const MostSales = ({ onRegionSummaryFetched }: MostSalesProps) => {
               attribution="© OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {mainAreas.map((region) => (
-              <Marker
+          {mainAreas.map((region) => {
+              const lat = parseFloat(region.lat);
+              const lng = parseFloat(region.lang);
+
+              if (Number.isNaN(lat) || Number.isNaN(lng)) {
+                return null;
+              }
+
+              return (
+                <Marker
                   key={region.id}
-                  position={[parseFloat(region.lat), parseFloat(region.lang)]}
+                  position={[lat, lng]}
                   eventHandlers={{
                     click: () => handleRegionClick(region.id as string),
                   }}
@@ -99,28 +107,15 @@ const MostSales = ({ onRegionSummaryFetched }: MostSalesProps) => {
                     className: "custom-icon",
                     html: `<div style="width: 120px;text-align: center; background:#1474AE;color:white;padding:5px 8px;border-radius:5px;">${region.regionName}</div>`,
                   })}
-              >
-                  {mainAreas.map((region) => (
-                      <Marker
-                          key={region.id}
-                          position={[parseFloat(region.lat), parseFloat(region.lang)]}
-                          eventHandlers={{
-                              click: () => handleRegionClick(region.id as string),
-                          }}
-                          icon={L.divIcon({
-                              className: "custom-icon",
-                              html: `<div style="width: 100px;text-align: center; background:#1474AE;color:white;padding:5px 8px;border-radius:5px;">${region.regionName}</div>`,
-                          })}
-                      >
-                          <Popup>
-                              {region.regionName} - {regionSummaries[region.id as string]?.totalSales != null
-                              ? `${regionSummaries[region.id as string].totalSales} EGP`
-                              : "Loading..."}
-                          </Popup>
-                      </Marker>
-                  ))}
-              </Marker>
-          ))}
+                >
+                  <Popup>
+                    {region.regionName} - {regionSummaries[region.id as string]?.totalSales != null
+                      ? `${regionSummaries[region.id as string].totalSales} EGP`
+                      : "Loading..."}
+                  </Popup>
+                </Marker>
+              );
+            })}
         </MapContainer>
       </div>
   );

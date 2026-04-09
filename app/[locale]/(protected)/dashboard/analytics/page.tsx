@@ -49,7 +49,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const end = new Date();
     const start = new Date();
-    start.setDate(end.getDate() - 7);
+    start.setDate(end.getDate() - 10);
 
     setStartDate(start);
     setEndDate(end);
@@ -115,6 +115,8 @@ const DashboardPage = () => {
   ];
 
   const months = monthlySummary.map((item) => item.month);
+  const totalActiveUsers = (regionSummary?.activeUsers ?? regionSummary?.totalActiveUser ?? summaryReports?.activeUsers ?? summaryReports?.totalActiveUser) ?? "--";
+  const totalInactiveUsers = (regionSummary?.inactiveUsers ?? regionSummary?.totalNonActiveUser ?? summaryReports?.inactiveUsers ?? summaryReports?.totalNonActiveUser) ?? "--";
 
   return (
       <div>
@@ -137,7 +139,7 @@ const DashboardPage = () => {
                     )}
                   </CardHeader>
                   <CardContent className="p-4">
-                    <div className="grid md:grid-cols-3 gap-4">
+                    <div className="grid md:grid-cols-5 gap-4">
                       <StatisticsBlock
                           title={"Total Orders"}
                           total={(regionSummary?.totalOrders ?? summaryReports?.totalOrders) ?? "--"}
@@ -152,6 +154,16 @@ const DashboardPage = () => {
                           title={"Total Invoices"}
                           total={(regionSummary?.totalInvoices ?? summaryReports?.totalInvoices) ?? "--"}
                           className="bg-primary/10 border-none shadow-none"
+                      />
+                      <StatisticsBlock
+                          title={"Total Active Users"}
+                          total={totalActiveUsers}
+                          className="bg-success/10 border-none shadow-none"
+                      />
+                      <StatisticsBlock
+                          title={"Total Inactive Users"}
+                          total={totalInactiveUsers}
+                          className="bg-destructive/10 border-none shadow-none"
                       />
                     </div>
                   </CardContent>
@@ -256,8 +268,8 @@ const DashboardPage = () => {
                     <RecentActivity
                         data={(orderReports?.items?.slice(0, 10) || []).map(item => ({
                           id: item.id,
-                          pharmacyName: item.pharmacyName || 'Unknown Pharmacy',
-                          orderDate: item.date
+                          fullName: item.fullName || 'Unknown User',
+                          orderDate: item.orderDate
                         }))}
                     />
                 )}

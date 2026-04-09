@@ -54,7 +54,7 @@ import {Label} from "@/components/ui/label";
 import useSummaryReports from "@/services/Reports/summary/summaryReports";
 
 interface TransactionsTableProps {
-    type: "pharmacy" | "inventory" | "area" | "status" | "summary";
+    type: "user" | "inventory" | "area" | "status" | "summary";
 }
 
 
@@ -88,8 +88,8 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
     const {loading: loadingPharmacies, error: errorPharmacies, pharmacies, gettingAllPharmacies} = useGettingAllPharmacies()
 
     
-    const showDateRange = ["pharmacy", "inventory", "area", "status", "summary"].includes(type);
-    const showPharmacyUser = type === "pharmacy";
+    const showDateRange = ["user", "inventory", "area", "status", "summary"].includes(type);
+    const showUser = type === "user";
     const showInventoryUser = type === "inventory";
     const showRegion = type === "area";
     const showStatus = type === "status";
@@ -101,7 +101,7 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
         from: subDays(new Date(), 30),
         to: new Date(),
     });
-    const [pharmacyUserId, setPharmacyUserId] = useState<string>("");
+    const [UserId, setUserId] = useState<string>("");
     const [inventoryUserId, setInventoryUserId] = useState<string>("");
     const [regionId, setRegionId] = useState<string>("");
     const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
@@ -164,8 +164,8 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
         if (showDateRange && dateRange?.to) {
             params.set('EndDate', dateRange.to.toISOString());
         }
-        if (showPharmacyUser && pharmacyUserId) {
-            params.set('PharmacyUserId', pharmacyUserId);
+        if (showUser && UserId) {
+            params.set('UserId', UserId);
         }
         if (showInventoryUser && inventoryUserId) {
             params.set('InventoryUserId', inventoryUserId);
@@ -204,7 +204,7 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
             from: subDays(new Date(), 30),
             to: new Date(),
         });
-        setPharmacyUserId("");
+        setUserId("");
         setInventoryUserId("");
         setRegionId("");
         setStatus(undefined);
@@ -280,22 +280,22 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
                     )}
 
 
-                    {showPharmacyUser && pharmacies.length > 0 && (
+                    {showUser && pharmacies.length > 0 && (
                         <div className="flex items-center gap-2">
-                            <Label htmlFor="pharmacyUser">Pharmacy User</Label>
+                            <Label htmlFor="User">Doctor</Label>
                             <Select
-                                value={pharmacyUserId}
+                                value={UserId}
                                 disabled={inventoryUserId !== ""}
-                                onValueChange={(value) => setPharmacyUserId(value)}
+                                onValueChange={(value) => setUserId(value)}
                             >
                                 <SelectTrigger className={"flex-1"}>
-                                    <SelectValue placeholder="Select Pharmacy User" />
+                                    <SelectValue placeholder="Select Doctor" />
                                 </SelectTrigger>
                                 <SelectGroup>
                                     <SelectContent>
                                         {pharmacies.map((user: UserType) => (
                                             <SelectItem key={user.id} value={user.id}>
-                                                {user.userName}
+                                                {user.fullName}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -311,7 +311,7 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
                             <Select
                                 value={inventoryUserId}
                                 onValueChange={(value) => setInventoryUserId(value)}
-                                disabled={pharmacyUserId !== ""}
+                                disabled={UserId !== ""}
                             >
                                 <SelectTrigger className={"flex-1"}>
                                     <SelectValue placeholder="Select Inventory User" />

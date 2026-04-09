@@ -5,7 +5,8 @@ import {Orders} from "@/types/orders";
 function useGettingOrderById() {
     const [order, setOrder] = React.useState<Orders>({
         id: '',
-        pharmacyUserId: '',
+       UserId: '',
+        fullName: '',
         inventoryUserId: '',
         orderDate: '',
         status: 0,
