@@ -29,7 +29,6 @@ import { useDebounce } from "use-debounce";
 import useGettingAllProducts from "@/services/products/gettingAllProducts";
 import GetCategories from "@/services/categories/getCategories";
 import { ExportCSVButton } from "@/components/partials/export-csv/ExportCSVButton";
-import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import ExcelUploadButton from "@/app/[locale]/(protected)/dashboard/add-product-byExcel/ExcelUploadButton";
 import { useTranslations } from "next-intl";
 
@@ -39,12 +38,13 @@ const TransactionsTable = () => {
   const t = useTranslations("productList");
   const params = useParams();
   const locale = params?.locale as string;
+
   const userRole = Cookies.get("userRole");
   const isAdmin = userRole === "Admin";
-  
+
+  // ✅ state واحد للسيرش فقط
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
   const {
     loading,
@@ -62,20 +62,15 @@ const TransactionsTable = () => {
     refreshProducts("false");
   }, [refreshProducts]);
 
+  // ✅ API Search فقط
   useEffect(() => {
     getAllProducts("false", 1, PAGE_SIZE, debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
   const columns = baseColumns({ refresh: handleRefresh, t, locale });
 
-  useEffect(() => {
-    if (data) {
-      setFilteredProducts(data);
-    }
-  }, [data]);
-
   const table = useReactTable({
-    data: filteredProducts ?? [],
+    data: data ?? [], // ✅ مباشرة من API
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -91,7 +86,13 @@ const TransactionsTable = () => {
         typeof updater === "function"
           ? updater({ pageIndex: currentPage - 1, pageSize: PAGE_SIZE })
           : updater;
-      getAllProducts("false", newPagination.pageIndex + 1, PAGE_SIZE, debouncedSearchTerm);
+
+      getAllProducts(
+        "false",
+        newPagination.pageIndex + 1,
+        PAGE_SIZE,
+        debouncedSearchTerm
+      );
     },
   });
 
@@ -110,12 +111,15 @@ const TransactionsTable = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-center py-4 px-6 gap-4 border-b">
+        
+        {/* ✅ Input عادي بدل SearchInput */}
         <div className="flex-1 w-full max-w-sm">
-          <SearchInput
-            data={data ?? []}
-            setFilteredData={setFilteredProducts}
-            filterKey="name"
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t("search")}
+            className="w-full border rounded-md px-3 py-2"
           />
         </div>
 
