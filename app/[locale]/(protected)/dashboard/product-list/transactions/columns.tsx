@@ -136,6 +136,15 @@ export const baseColumns = ({
         );
       },
     },
+    {
+      accessorKey: "isPopular",
+      header: isArabic ? "شائع" : "Popular",
+      cell: ({ row }) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.original.isPopular ? "bg-success/20 text-success" : "bg-red-500 text-white"}`}>
+          {row.original.isPopular ? "yes" : "No"}
+        </span>
+      ),
+    },
   ];
 
   if (userRole === "Admin") {

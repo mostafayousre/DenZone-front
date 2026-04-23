@@ -132,6 +132,7 @@
     "analytics": "تحليلات",
     "orders": "الطلبات",
     "returns": "الارجاع",
+    "favorites": "المفضلة",
     "banking": "بنكية",
     "edit-user": "الملف الشخصى",
     "Providers": "الموردون",
@@ -619,6 +620,10 @@
   "productList": {
     "productList": "قائمة المنتجات",
     "productName": "اسم المنتج",
+    "isPopular": "منتج شائع",
+    "popular": "شائع",
+    "notPopular": "غير شائع",
+    "favorites": "المفضلة",
     "arabicName": "الاسم بالعربية",
     "productCode": "كود المنتج",
     "ArabicName": "الاسم بالعربية",
@@ -700,6 +705,9 @@
   },
   "inventoryManagement": {
     "productName": "اسم المنتج",
+    "isPopular": "منتج شائع",
+    "popular": "شائع",
+    "notPopular": "غير شائع",
     "arabicName": "الاسم بالعربية",
     "unknown": "غير معروف",
     "category": "الفئة",
