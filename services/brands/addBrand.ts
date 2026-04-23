@@ -4,10 +4,14 @@ import { useState } from "react";
 function useAddBrand() {
     const [loading, setLoading] = useState(false);
 
-    const addBrand = async (brandData: { brandName: string; brandArName: string }) => {
+    const addBrand = async (formData: FormData) => {
         setLoading(true);
         try {
-            const response = await AxiosInstance.post("/api/Brands/add-brand", brandData);
+            const response = await AxiosInstance.post("/api/Brands/add-brand", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             
             return response.status === 200 || response.status === 201;
         } catch (err: any) {

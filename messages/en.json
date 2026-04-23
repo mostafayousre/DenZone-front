@@ -296,7 +296,8 @@
     "typography": "Typography",
     "colors": "Colors",
     "coupons": "Coupons",
-    "modules": "Modules"
+    "modules": "Modules",
+    "banners": "Banners"
   },
   "Changelog": {
     "version": "Version's",
@@ -864,5 +865,30 @@
     "brand_description_required": "Brand description is required.",
     "brand_information": "Brand Information"
 
+  },
+  "banners": {
+    "image": "Image",
+    "order": "Order",
+    "actions": "Actions",
+    "unknown": "Unknown",
+    "delete_banner": "Delete Banner",
+    "delete_banner_confirm": "Are you sure you want to delete this banner?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "banner_deleted_success": "Banner deleted successfully.",
+    "error": "Error",
+    "add_banner": "Add Banner",
+    "edit_banner": "Edit Banner",
+    "banner_image": "Banner Image",
+    "choose_image": "Choose Image",
+    "image_required": "Image is required",
+    "banner_added_success": "Banner added successfully.",
+    "banner_updated_success": "Banner updated successfully.",
+    "add_error": "Failed to add banner",
+    "update_error": "Failed to update banner",
+    "banner_not_found": "Banner not found",
+    "search_placeholder": "Search by ID...",
+    "no_results": "No banners found."
   }
 }
+

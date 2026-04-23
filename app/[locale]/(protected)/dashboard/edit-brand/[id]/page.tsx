@@ -24,7 +24,14 @@ const EditBrand = () => {
 
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
   const [fetching, setFetching] = useState(true);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPhoto(e.target.files[0]);
+    }
+  };
 
   useEffect(() => {
     const getBrandData = async () => {
@@ -51,13 +58,15 @@ const EditBrand = () => {
       return;
     }
 
-    const payload = {
-      brandName: name,
-      brandArName: arabicName,
-    };
+    const formData = new FormData();
+    formData.append("brandName", name);
+    formData.append("brandArName", arabicName);
+    if (photo) {
+      formData.append("imageFile", photo);
+    }
 
     try {
-      const success = await updateBrand(id, payload);
+      const success = await updateBrand(id, formData);
       if (success) {
         toast.success(t("brand_updated_success"));
         setTimeout(() => {
@@ -108,6 +117,19 @@ const EditBrand = () => {
                 placeholder={t("brand_arabic_name")}
                 value={arabicName}
                 onChange={(e) => setArabicName(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="brand-photo">
+                {t("brand_photo") || "Brand Photo"}
+              </Label>
+              <Input
+                id="brand-photo"
+                type="file"
+                accept="image/*"
+                className="flex-1 min-w-[300px]"
+                onChange={handleFileChange}
               />
             </div>
           </CardContent>

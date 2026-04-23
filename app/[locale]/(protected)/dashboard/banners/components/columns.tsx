@@ -3,50 +3,35 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { SquarePen, Trash2 } from "lucide-react";
 import { Link } from '@/i18n/routing';
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BrandType } from "@/types/brand";
-import useDeleteBrand from "@/services/brands/deleteBrand";
+import { BannerType } from "@/types/banner";
+import useDeleteBanner from "@/services/banners/deleteBanner";
 import Image from "next/image";
 
-export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<BrandType>[] => [
+export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<BannerType>[] => [
     {
-        accessorKey: "imagePath",
-        header: t("brand_image") || "Image",
+        accessorKey: "imageName",
+        header: t("image"),
         cell: ({ row }) => {
-            const imageUrl = row.getValue("imagePath") as string;
+            const imageUrl = row.getValue("imageName") as string;
             return (
-                <div className="relative w-12 h-12 overflow-hidden rounded-md border border-default-200">
-                    {imageUrl ? (
-                        <Image 
-                            src={imageUrl} 
-                            alt="Brand" 
-                            fill 
-                            className="object-cover"
-                            unoptimized
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-default-100 flex items-center justify-center text-[10px] text-default-400">
-                            No Img
-                        </div>
-                    )}
+                <div className="relative w-20 h-12 overflow-hidden rounded-md border border-default-200">
+                    <Image 
+                        src={imageUrl} 
+                        alt="Banner" 
+                        fill 
+                        className="object-cover"
+                        unoptimized
+                    />
                 </div>
             );
         },
     },
     {
-        accessorKey: "name",
-        header: t("brand name"),
-        cell: ({ row }) => <span>{row.getValue("name") || t("unknown")}</span>,
-    },
-  {
-        accessorKey: "arName", 
-        header: t("brand arabic name"),
-        cell: ({ row }) => {
-            const value = row.getValue("arName") as string;
-            return <span>{value || t("unknown")}</span>;
-        },
+        accessorKey: "order", 
+        header: t("order"),
+        cell: ({ row }) => <span>{row.getValue("order")}</span>,
     },
     {
         id: "actions",
@@ -55,11 +40,11 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
         enableHiding: false,
         cell: ({ row }) => {
             const id = row.original.id;
-            const { deleteBrand, loading } = useDeleteBrand();
+            const { deleteBanner, loading } = useDeleteBanner();
 
             const handleDelete = () => {
-                const toastId = toast(t("delete_brand"), {
-                    description: t("delete_brand_confirm"),
+                const toastId = toast(t("delete_banner"), {
+                    description: t("delete_banner_confirm"),
                     action: (
                         <div className="flex justify-end mx-auto items-center my-auto gap-2">
                             <Button
@@ -77,14 +62,12 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
                                 className="px-3 py-1 rounded-md text-white bg-red-600 border-red-600 hover:bg-red-700"
                                 onClick={async () => {
                                     try {
-                                        const isSuccess = await deleteBrand(id as string);
+                                        const isSuccess = await deleteBanner(id);
                                         
                                         toast.dismiss(toastId);
 
                                         if (isSuccess) {
-                                            toast.success(t("brand_deleted"), {
-                                                description: t("brand_deleted_success"),
-                                            });
+                                            toast.success(t("banner_deleted_success"));
                                             refresh(); 
                                         } else {
                                             throw new Error("Failed to delete");
@@ -107,7 +90,7 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
             return (
                 <div className="flex items-center gap-1">
                     <Link
-                        href={`/dashboard/edit-brand/${id}`}
+                        href={`/dashboard/edit-banner/${id}`}
                         className="flex items-center p-2 border-b text-info hover:text-info-foreground bg-info/40 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
                     >
                         <SquarePen className="w-4 h-4" />

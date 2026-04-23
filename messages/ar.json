@@ -291,7 +291,8 @@
     "area": "المناطق",
     "colors": "الألوان",
     "coupons": "الكوبونات",
-    "modules": "الوحدات"
+    "modules": "الموديولات",
+    "banners": "البانرات"
   },
   "overall": {
     "Available": "متاح",
@@ -824,5 +825,29 @@
     "brand_description_required": "وصف العلامة التجارية مطلوب.",
     "brand_information": "معلومات العلامة التجارية"
 
+  },
+  "banners": {
+    "image": "الصورة",
+    "order": "الترتيب",
+    "actions": "الإجراءات",
+    "unknown": "غير معروف",
+    "delete_banner": "حذف البانر",
+    "delete_banner_confirm": "هل أنت متأكد أنك تريد حذف هذا البانر؟",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "banner_deleted_success": "تم حذف البانر بنجاح.",
+    "error": "خطأ",
+    "add_banner": "إضافة بانر",
+    "edit_banner": "تعديل البانر",
+    "banner_image": "صورة البانر",
+    "choose_image": "اختر صورة",
+    "image_required": "الصورة مطلوبة",
+    "banner_added_success": "تم إضافة البانر بنجاح.",
+    "banner_updated_success": "تم تحديث البانر بنجاح.",
+    "add_error": "فشل في إضافة البانر",
+    "update_error": "فشل في تحديث البانر",
+    "banner_not_found": "البانر غير موجود",
+    "search_placeholder": "البحث بواسطة المعرف...",
+    "no_results": "لم يتم العثور على بانرات."
   }
 }

@@ -125,6 +125,13 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               icon: "",
             },
             {
+                href: "/dashboard/banners",
+                label: t("banners"),
+                active: pathname === "/dashboard/banners",
+                children: [],
+                icon: "",
+            },
+            {
               href: "/dashboard/product-list",
               label: t("products"),
               active: pathname === "/dashboard/product-list",

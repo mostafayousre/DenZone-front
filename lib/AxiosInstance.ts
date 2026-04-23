@@ -3,7 +3,7 @@ import axios, {
     AxiosResponse,
     InternalAxiosRequestConfig
 } from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import Cookies from "js-cookie";
 
 const AxiosInstance = axios.create({
@@ -26,11 +26,13 @@ AxiosInstance.interceptors.response.use(
     async (error: AxiosError) => {
         const status = error.response?.status;
         if ([401, 403].includes(status ?? 0)) {
-            await AsyncStorage.removeItem('Token');
+            // await AsyncStorage.removeItem('Token');
             Cookies.remove('authToken');
             Cookies.remove('userRole');
             Cookies.remove('userId');
-            window.location.href = '/en';
+            if (typeof window !== "undefined") {
+                window.location.href = '/en';
+            }
         } else if ([400, 404, 500].includes(status ?? 0)) {
             return Promise.reject(error);
         }

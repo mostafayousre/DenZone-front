@@ -33,6 +33,18 @@ const nextConfig = {
         hostname: "avatars.githubusercontent.com",
       },
       {
+        protocol: "http",
+        hostname: "dentzone.runasp.net",
+      },
+      {
+        protocol: "https",
+        hostname: "dentzone.runasp.net",
+      },
+      {
+        protocol: "https",
+        hostname: "dentzoneapi.runasp.net",
+      },
+      {
         protocol: "https",
         hostname: "i.pravatar.cc",
       },

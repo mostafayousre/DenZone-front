@@ -18,23 +18,29 @@ const AddBrandPage = () => {
 
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
+  const [imagePath, setImagePath] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImagePath(e.target.files[0]);
+    }
+  };
 
   const handleAddBrandSubmit = async () => {
-    if (!name.trim() || !arabicName.trim()) {
+    if (!name.trim() || !arabicName.trim() || !imagePath) {
       toast.error(t("validationError"), { 
-        description: t("fill_required_fields") 
+        description: t("fill_required_fields_and_photo") || "Please fill all fields and select a photo"
       });
       return;
     }
 
-    // بناء الكائن بناءً على الـ Swagger المرفق
-    const brandData = {
-      brandName: name,
-      brandArName: arabicName
-    };
+    const formData = new FormData();
+    formData.append("brandName", name);
+    formData.append("brandArName", arabicName);
+    formData.append("imageFile", imagePath);
 
     try {
-      const success = await addBrand(brandData as any);
+      const success = await addBrand(formData);
       
       if (success) {
         toast.success(t("brand_added_success"));
@@ -82,6 +88,19 @@ const AddBrandPage = () => {
                 placeholder={t("brand arabic name")}
                 value={arabicName}
                 onChange={(e) => setArabicName(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="brandPhoto">
+                {t("brand_photo") || "Brand Photo"}
+              </Label>
+              <Input
+                id="brandPhoto"
+                type="file"
+                accept="image/*"
+                className="flex-1 min-w-[300px]"
+                onChange={handleFileChange}
               />
             </div>
            

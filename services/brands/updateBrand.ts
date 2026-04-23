@@ -4,10 +4,14 @@ import { useState } from "react";
 function useUpdateBrand() {
     const [loading, setLoading] = useState(false);
 
-    const updateBrand = async (id: string, data: { brandName: string; brandArName: string }) => {
+    const updateBrand = async (id: string, formData: FormData) => {
         setLoading(true);
         try {
-            const response = await AxiosInstance.put(`/api/Brands/update-brand?id=${id}`, data);
+            const response = await AxiosInstance.put(`/api/Brands/update-brand?id=${id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             
             return response.status === 200 || response.status === 204;
         } catch (err: any) {

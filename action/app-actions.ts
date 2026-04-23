@@ -8,5 +8,4 @@ export const  postMessageAction = async (id: string, message: string,) => {
     const response = await postMessage(id, message)
     revalidatePath("/");
      return response;
-   
 }
