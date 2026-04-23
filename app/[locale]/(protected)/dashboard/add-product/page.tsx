@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import GetCategories from "@/services/categories/getCategories";
 import useGetBrands from "@/services/brands/getAllBrands"; 
 import { Loader2, X } from "lucide-react";
@@ -34,6 +35,7 @@ const AddProduct = () => {
   const [arabicDescription, setArabicDescription] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [brandId, setBrandId] = useState<string>("");
+  const [isPopular, setIsPopular] = useState<boolean>(false);
   
   const [photos, setPhotos] = useState<File[]>([]);
   
@@ -96,6 +98,7 @@ const AddProduct = () => {
     formData.append("ArabicDescription", arabicDescription);
     formData.append("CategoryId", categoryId);
     formData.append("BrandId", brandId);
+    formData.append("IsPopular", isPopular.toString());
     
     photos.forEach((file) => {
       formData.append("Photos", file);
@@ -234,6 +237,17 @@ const AddProduct = () => {
             <div className="space-y-2">
               <Label>Arabic Description</Label>
               <Textarea value={arabicDescription} onChange={(e) => setArabicDescription(e.target.value)} />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Switch 
+                id="isPopular" 
+                checked={isPopular} 
+                onCheckedChange={setIsPopular} 
+              />
+              <Label htmlFor="isPopular" className="cursor-pointer font-semibold">
+                {t("isPopular")}
+              </Label>
             </div>
 
           </CardContent>

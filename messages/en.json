@@ -143,6 +143,7 @@
     "crm": "Crm",
     "orders":"Orders",
      "returns": "Returns",
+    "favorites": "Favorites",
     "edit-user": "Profile",
     "ecommerce": "Ecommerce",
     "project": "Project",
@@ -657,6 +658,10 @@
   "productList": {
     "productList": "Product List",
     "productName": "Product Name",
+    "isPopular": "Popular Product",
+    "popular": "Popular",
+    "notPopular": "Not Popular",
+    "favorites": "Favorites",
     "search": "Search by product name",
     "arabicName": "Arabic Name",
     "productCode": "Product Code",
@@ -740,6 +745,9 @@
   },
   "inventoryManagement": {
     "productName": "Product Name",
+    "isPopular": "Popular Product",
+    "popular": "Popular",
+    "notPopular": "Not Popular",
     "arabicName": "Arabic Name",
     "unknown": "Unknown",
     "category": "Category",

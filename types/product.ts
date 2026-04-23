@@ -19,6 +19,7 @@ export type ProductType = {
     prices?: Price[]
     inventories?: any[]
     inventoryUserId?: string;
+    isPopular?: boolean;
     createdAt: string;
     updatedAt: string;
 }

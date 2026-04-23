@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/routing";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ const EditProduct = () => {
     arabicDescription: "",
     categoryId: "",
     images: [] as File[],
+    isPopular: false,
     existingImages: [] as string[],
   });
 
@@ -55,6 +57,7 @@ useEffect(() => {
       arabicDescription: product.arabicDescription || "",
       categoryId: product.categoryId ? String(product.categoryId) : "",
       images: [],
+      isPopular: product.isPopular || false,
       existingImages: Array.isArray(product.images) ? product.images : [],
     });
   }
@@ -91,6 +94,7 @@ useEffect(() => {
     data.append("Description", formData.description);
     data.append("ArabicDescription", formData.arabicDescription);
     data.append("CategoryId", formData.categoryId);
+    data.append("IsPopular", formData.isPopular.toString());
 
     if (formData.images.length > 0) {
       formData.images.forEach((file) => {
@@ -195,6 +199,17 @@ useEffect(() => {
                 value={formData.arabicDescription} 
                 onChange={(e) => setFormData({...formData, arabicDescription: e.target.value})} 
               />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Switch 
+                id="isPopular" 
+                checked={formData.isPopular} 
+                onCheckedChange={(val) => setFormData({...formData, isPopular: val})} 
+              />
+              <Label htmlFor="isPopular" className="cursor-pointer font-semibold">
+                {t("isPopular")}
+              </Label>
             </div>
 
             {formData.existingImages.length > 0 && (
