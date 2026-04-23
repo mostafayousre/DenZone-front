@@ -2,6 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import {
   Eye,
   Trash2,
+  Pencil
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -147,12 +148,21 @@ export const baseColumns = ({ refresh, t }: {
                     <Trash2 className="w-4 h-4" />
                   </div>
                 ) : (
-                  <Link
-                    href={`/dashboard/remove-item/${row.original.id}`}
-                    className="flex items-center p-2 text-destructive bg-destructive/40 duration-200 transition-all hover:bg-destructive/80 hover:text-destructive-foreground rounded-full cursor-pointer"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Link>
+                  <>
+                    <Link
+                      href={`/dashboard/edit-order/${row.original.id}`}
+                      className="flex items-center p-2 text-primary bg-primary/20 duration-200 transition-all hover:bg-primary/80 hover:text-primary-foreground rounded-full cursor-pointer"
+                      title="Edit Order"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/dashboard/remove-item/${row.original.id}`}
+                      className="flex items-center p-2 text-destructive bg-destructive/40 duration-200 transition-all hover:bg-destructive/80 hover:text-destructive-foreground rounded-full cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Link>
+                  </>
                 )}
 
                 {/*<ChangeInventoryUserDialog*/}

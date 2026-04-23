@@ -23,6 +23,10 @@ type Inputs = {
     RoleId: string;
     AddressLines: { value: string }[]; 
     IsActive: boolean;
+    Area?: string;
+    SubArea?: string;
+    Country?: string;
+    Zone?: string;
 };
 
 const RegForm = () => {
@@ -34,14 +38,22 @@ const RegForm = () => {
         handleSubmit,
         control,
         reset,
+        watch,
         formState: { errors }
     } = useForm<Inputs>({
         defaultValues: {
             IsActive: true,
             RoleId: "",
             AddressLines: [{ value: "" }], 
+            Area: "",
+            SubArea: "",
+            Country: "",
+            Zone: "",
         },
     });
+
+    const selectedRoleId = watch("RoleId");
+    const isProvider = selectedRoleId === "1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D";
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -62,6 +74,13 @@ const RegForm = () => {
             data.AddressLines.forEach((addr, index) => {
                 formData.append(`AddressLines[${index}]`, addr.value);
             });
+
+            if (isProvider) {
+                if (data.Area) formData.append("Area", data.Area);
+                if (data.SubArea) formData.append("SubArea", data.SubArea);
+                if (data.Country) formData.append("Country", data.Country);
+                if (data.Zone) formData.append("Zone", data.Zone);
+            }
 
             const result = await registerUser(formData);
 
@@ -156,6 +175,31 @@ const RegForm = () => {
                     )}
                 />
             </div>
+
+            {isProvider && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input id="country" {...register("Country", { required: "Required for Provider" })} />
+                        {errors.Country && <span className="text-sm text-red-500">{errors.Country.message}</span>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="zone">Zone</Label>
+                        <Input id="zone" {...register("Zone", { required: "Required for Provider" })} />
+                        {errors.Zone && <span className="text-sm text-red-500">{errors.Zone.message}</span>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="area">Area</Label>
+                        <Input id="area" {...register("Area", { required: "Required for Provider" })} />
+                        {errors.Area && <span className="text-sm text-red-500">{errors.Area.message}</span>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="subArea">SubArea</Label>
+                        <Input id="subArea" {...register("SubArea", { required: "Required for Provider" })} />
+                        {errors.SubArea && <span className="text-sm text-red-500">{errors.SubArea.message}</span>}
+                    </div>
+                </div>
+            )}
 
             <Button type="submit" className="w-full">Create An Account</Button>
         </form>
