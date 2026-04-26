@@ -9,7 +9,8 @@ function useGettingAllOrders() {
     const gettingAllOrders = async () => {
         setLoading(true);
         setError(null);
-        await AxiosInstance.get(`/api/Orders/orders`).then((res) => {
+        const timestamp = new Date().getTime();
+        await AxiosInstance.get(`/api/Orders/orders?t=${timestamp}`).then((res) => {
             if (res.status === 200 || res.status === 201 || !res.data.errors) {
                 setOrders(res.data);
             } else {
