@@ -40,6 +40,7 @@ const EditProduct = () => {
     images: [] as File[],
     isPopular: false,
     existingImages: [] as string[],
+    imageToDelete: [] as string[],
   });
 
   useEffect(() => {
@@ -59,6 +60,7 @@ useEffect(() => {
       images: [],
       isPopular: product.isPopular || false,
       existingImages: Array.isArray(product.images) ? product.images : [],
+      imageToDelete: [],
     });
   }
 }, [product]);
@@ -99,6 +101,12 @@ useEffect(() => {
     if (formData.images.length > 0) {
       formData.images.forEach((file) => {
         data.append("Photos", file);
+      });
+    }
+
+    if (formData.imageToDelete.length > 0) {
+      formData.imageToDelete.forEach((fileName) => {
+        data.append("ImageToDelete", fileName);
       });
     }
 
@@ -217,8 +225,25 @@ useEffect(() => {
                 <Label className="w-[180px] flex-none text-sm font-medium mt-2">Current Photos</Label>
                 <div className="flex flex-wrap gap-2">
                   {formData.existingImages.map((url, idx) => (
-                    <div key={idx} className="relative w-24 h-24 border rounded-md overflow-hidden bg-muted">
+                    <div key={idx} className="relative w-24 h-24 border rounded-md overflow-hidden bg-muted group">
                       <img src={url} alt="product" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const fileName = url.split('/').pop() || url;
+                            setFormData(prev => ({
+                              ...prev,
+                              existingImages: prev.existingImages.filter(img => img !== url),
+                              imageToDelete: [...prev.imageToDelete, fileName]
+                            }));
+                          }}
+                          className="bg-destructive text-white p-1 rounded-full hover:bg-destructive/90"
+                          title="Delete"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

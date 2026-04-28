@@ -1,10 +1,11 @@
 import {useState} from 'react';
 import AxiosInstance from "@/lib/AxiosInstance";
+import { UserType } from "@/types/users";
 
 function useGetUsersByRoleId() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<UserType[]>([]);
 
     const getUsersByRoleId = async (roleId: string | string[] | undefined) => {
         setLoading(true);
