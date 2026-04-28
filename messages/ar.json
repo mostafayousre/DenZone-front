@@ -154,6 +154,9 @@
     "projects": "المشاريع",
     "pages": "صفحات",
     "Reports": "التقارير",
+    "invoices": "الفواتير",
+    "balance": "الرصيد",
+    "summary": "الملخص",
     "authentication": "المصادقة",
     "signInOne": "تسجيل الدخول",
     "signInTwo": "تسجيل الدخول",
@@ -293,7 +296,9 @@
     "colors": "الألوان",
     "coupons": "الكوبونات",
     "modules": "الموديولات",
-    "banners": "البانرات"
+    "banners": "البانرات",
+    "cities": "المدن",
+    "send-notification": "إرسال إشعار"
   },
   "overall": {
     "Available": "متاح",
@@ -618,6 +623,9 @@
     "updateActiveIngredient": "تحديث المكون النشط"
   },
   "productList": {
+    "view": "عرض",
+    "edit": "تعديل",
+    "delete": "حذف",
     "productList": "قائمة المنتجات",
     "productName": "اسم المنتج",
     "isPopular": "منتج شائع",

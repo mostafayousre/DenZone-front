@@ -138,13 +138,20 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
-            {
-              href: "/dashboard/favorites",
-              label: t("favorites"),
-              active: pathname === "/dashboard/favorites",
-              children: [],
-              icon: "heroicons-outline:heart",
-            },
+            // {
+            //   href: "/dashboard/cities",
+            //   label: t("cities"),
+            //   active: pathname === "/dashboard/cities",
+            //   children: [],
+            //   icon: "",
+            // },
+            // {
+            //   href: "/dashboard/favorites",
+            //   label: t("favorites"),
+            //   active: pathname === "/dashboard/favorites",
+            //   children: [],
+            //   icon: "heroicons-outline:heart",
+            // },
              {
               href: "/dashboard/inventory-management",
               label: t("price-management"),
@@ -192,18 +199,38 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
             {
               href: "/dashboard/reports",
               label: t("Reports"),
-              active: pathname === "/dashboard/reports",
-              children: [],
+              active: pathname === "/dashboard/reports" || pathname.startsWith("/dashboard/reports/"),
               icon: "",
+              children: [
+                {
+                  href: "/dashboard/reports/orders",
+                  label: t("orders"),
+                  active: pathname === "/dashboard/reports/orders",
+                },
+                {
+                  href: "/dashboard/reports/invoices",
+                  label: t("invoices"),
+                  active: pathname === "/dashboard/reports/invoices",
+                },
+                {
+                  href: "/dashboard/reports/balance",
+                  label: t("balance"),
+                  active: pathname === "/dashboard/reports/balance",
+                },
+                {
+                  href: "/dashboard/reports/summary",
+                  label: t("summary"),
+                  active: pathname === "/dashboard/reports/summary",
+                }
+              ],
             },
             {
-              href: "/dashboard/sales",
-              label: t("sales"),
-              active: pathname === "/dashboard/sales",
+              href: "/dashboard/send-notification",
+              label: t("send-notification"),
+              active: pathname === "/dashboard/send-notification",
               children: [],
               icon: "",
             },
-           
           ],
         },
       ],

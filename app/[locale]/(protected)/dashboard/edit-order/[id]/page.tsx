@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
 import useGettingOrderById from "@/services/Orders/gettingOrderById";
 import { OrderStatus } from "@/enum";
 import { useRouter } from "@/i18n/routing";
@@ -17,6 +17,9 @@ import { UserType } from "@/types/users";
 import useEditOrder from "@/services/Orders/editOrder";
 import useGettingAllProducts from "@/services/products/gettingAllProducts";
 import { Input } from "@/components/ui/input";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const EditOrder: React.FC = () => {
   const t = useTranslations("removeItem");
@@ -33,6 +36,7 @@ const EditOrder: React.FC = () => {
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [selectedInventoryUserId, setSelectedInventoryUserId] = useState<string>("");
+  const [openComboboxIndex, setOpenComboboxIndex] = useState<number | null>(null);
   
   // State for the editable items
   const [items, setItems] = useState<{
@@ -82,15 +86,33 @@ const EditOrder: React.FC = () => {
     setItems(newItems);
   };
 
+  const handleAddProduct = () => {
+    setItems([
+      ...items,
+      { id: "00000000-0000-0000-0000-000000000000", productId: "", productName: "", quantity: 1, amount: 0, inventoryName: "" }
+    ]);
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    const newItems = [...items];
+    newItems.splice(index, 1);
+    setItems(newItems);
+  };
+
   const handleItemProductChange = (index: number, newProductId: string) => {
     const newItems = [...items];
     const selectedProduct = products.find(p => p.id === newProductId || p.productId === newProductId);
     
     if (selectedProduct) {
+      const defaultPrice = selectedProduct.prices && selectedProduct.prices.length > 0 
+        ? selectedProduct.prices[0].salesPrice 
+        : 0;
+
       newItems[index] = {
         ...newItems[index],
         productId: selectedProduct.id || selectedProduct.productId || newProductId,
-        productName: selectedProduct.name || selectedProduct.productName || "Unknown"
+        productName: selectedProduct.name || selectedProduct.productName || "Unknown",
+        amount: defaultPrice
       };
       
       setItems(newItems);
@@ -186,35 +208,77 @@ const EditOrder: React.FC = () => {
             </div>
           </div>
 
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium">Order Items</h3>
+            <Button onClick={handleAddProduct} type="button" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product
+            </Button>
+          </div>
+
           <div className="border border-solid border-default-400 rounded-md overflow-hidden overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gray-100">
+              <thead className="bg-gray-100 dark:text-black">
                 <tr>
                   <th className="p-3">Product Name</th>
                   <th className="p-3 w-32">Quantity</th>
                   <th className="p-3 w-32">Amount</th>
                   <th className="p-3 text-right">Total</th>
+                  <th className="p-3 w-16 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, idx) => (
                   <tr key={idx} className="border-t">
                     <td className="p-3">
-                      <Select 
-                        value={item.productId} 
-                        onValueChange={(val) => handleItemProductChange(idx, val)}
-                      >
-                        <SelectTrigger className="w-full md:w-[250px]">
-                          <SelectValue placeholder="Select Product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {products.map(p => (
-                            <SelectItem key={p.id || p.productId} value={(p.id || p.productId) as string}>
-                              {p.name || p.productName || p.arabicName || "Unnamed Product"}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openComboboxIndex === idx} onOpenChange={(open) => setOpenComboboxIndex(open ? idx : null)}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openComboboxIndex === idx}
+                            className="w-full md:w-[250px] justify-between font-normal"
+                          >
+                            <span className="truncate max-w-[200px]">
+                              {item.productId
+                                ? products.find((p) => (p.id || p.productId) === item.productId)?.name || 
+                                  products.find((p) => (p.id || p.productId) === item.productId)?.productName ||
+                                  products.find((p) => (p.id || p.productId) === item.productId)?.arabicName ||
+                                  "Unnamed Product"
+                                : "Select Product"}
+                            </span>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[250px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search product..." />
+                            <CommandEmpty>No product found.</CommandEmpty>
+                            <CommandList>
+                              <CommandGroup>
+                                {products.map((p) => (
+                                  <CommandItem
+                                    key={p.id || p.productId}
+                                    value={p.name || p.productName || p.arabicName || "Unnamed Product"}
+                                    onSelect={(currentValue) => {
+                                      handleItemProductChange(idx, (p.id || p.productId) as string);
+                                      setOpenComboboxIndex(null);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4 flex-shrink-0",
+                                        item.productId === (p.id || p.productId) ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    <span className="truncate">{p.name || p.productName || p.arabicName || "Unnamed Product"}</span>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </td>
                     <td className="p-3">
                       <Input 
@@ -226,6 +290,7 @@ const EditOrder: React.FC = () => {
                     </td>
                     <td className="p-3">
                       <Input 
+                      readOnly
                         type="number" 
                         min="0"
                         step="0.01"
@@ -236,11 +301,16 @@ const EditOrder: React.FC = () => {
                     <td className="p-3 text-right">
                       {(item.quantity * item.amount).toFixed(2)}
                     </td>
+                    <td className="p-3 text-center">
+                      <Button variant="ghost" size="icon" onClick={() => handleRemoveProduct(idx)} className="text-red-500 hover:text-red-700 hover:bg-red-100 h-8 w-8">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </td>
                   </tr>
                 ))}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="p-4 text-center text-gray-500">No items in this order.</td>
+                    <td colSpan={5} className="p-4 text-center text-gray-500">No items in this order.</td>
                   </tr>
                 )}
               </tbody>

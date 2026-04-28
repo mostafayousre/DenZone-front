@@ -165,6 +165,9 @@
     "signUpOne": "Signup One",
     "signUpTwo": "Signup Two",
     "Reports": "Reports",
+    "invoices": "Invoices",
+    "balance": "Balance",
+    "summary": "Summary",
     "signUpThree": "Signup Three",
     "forgotPasswordOne": "Forgot Password One",
     "forgotPasswordTwo": "Forgot Password Two",
@@ -209,6 +212,7 @@
     "separator": "Separator",
     "sheet": "Sheet",
     "skeleton": "Skeleton",
+    "send-notification": "Send Notification",
     "sonner": "Sonner",
     "tabs": "Tabs",
     "toast": "Toast",
@@ -656,6 +660,10 @@
     "updateActiveIngredient": "Update Active Ingredient"
   },
   "productList": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "dataRefreshed": "Data refreshed successfully",
     "productList": "Product List",
     "productName": "Product Name",
     "isPopular": "Popular Product",
