@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import useGettingUserById from "@/services/users/gettingUserById";
 import { Loader2 } from "lucide-react";
 import useGettingBalanceForUser from "@/services/balance/gettingBalanceForUser";
@@ -45,7 +45,7 @@ const EditUser = () => {
     useEffect(() => {
         if (user) {
             setActivate(user?.isActive ?? false);
-            setFullName(user?.fullName || ""); 
+            setFullName(user?.fullName || "");
             setEmail(user?.email || ""); 
             setPhoneNumber(user?.phoneNumber || "");
         }
@@ -136,7 +136,7 @@ const EditUser = () => {
                         />
                     </div>
 
-                    <div className="flex items-center flex-wrap gap-2">
+                    {/* <div className="flex items-center flex-wrap gap-2">
                         <Label className="w-[150px] flex-none">{t("active")}</Label>
                         <Select 
                             value={activate ? "true" : "false"} 
@@ -150,7 +150,7 @@ const EditUser = () => {
                                 <SelectItem value="false">{t("deactivate")}</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
+                    </div> */}
 
                     <div className="flex justify-end mt-4">
                         <Button onClick={handleUpdate} disabled={updateUserLoading}>

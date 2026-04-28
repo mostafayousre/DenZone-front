@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useCallback} from "react";
 import AxiosInstance from "@/lib/AxiosInstance";
 
 function useGettingAllOrders() {
@@ -6,7 +6,7 @@ function useGettingAllOrders() {
     const [error, setError] = useState<string | null>(null);
     const [orders, setOrders] = useState<any[]>([]);
 
-    const gettingAllOrders = async () => {
+    const gettingAllOrders = useCallback(async () => {
         setLoading(true);
         setError(null);
         const timestamp = new Date().getTime();
@@ -30,7 +30,7 @@ function useGettingAllOrders() {
         }).finally(() => {
             setLoading(false);
         });
-    }
+    }, []);
 
     return {
         loading,

@@ -1,14 +1,15 @@
+import React from 'react';
+import AreasTable from "@/app/[locale]/(protected)/dashboard/area/transactions";
 import { Card } from "@/components/ui/card";
-import TransactionsTable from "./transactions";
 
-const Sellers = () => {
-  return (
-    <div>
-      <Card>
-        <TransactionsTable />
-      </Card>
-    </div>
-  );
-};
+function Areas() {
+    return (
+        <>
+            <Card>
+                <AreasTable />
+            </Card>
+        </>
+    );
+}
 
-export default Sellers;
+export default Areas;

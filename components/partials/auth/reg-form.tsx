@@ -14,6 +14,12 @@ import useRegister from "@/services/auth/register";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { Plus, Trash2 } from "lucide-react"; 
+import { useEffect } from "react";
+import useGetCountries from "@/services/countries/getAllCountries";
+import useGetCities from "@/services/cities/getAllCities";
+import useGetAreas from "@/services/areas/getAllAreas";
+import useGetZones from "@/services/zones/getAllZones";
+import useGetAreaZones from "@/services/areaZones/getAllAreaZones";
 
 type Inputs = {
     FullName: string;
@@ -33,12 +39,19 @@ const RegForm = () => {
     const { registerUser } = useRegister();
     const userRole = Cookies.get("userRole");
 
+    const { countries, getAllCountries } = useGetCountries();
+    const { cities, getAllCities } = useGetCities();
+    const { areas, getAllAreas } = useGetAreas();
+    const { zones, getAllZones } = useGetZones();
+    const { areaZones, getAllAreaZones } = useGetAreaZones();
+
     const {
         register,
         handleSubmit,
         control,
         reset,
         watch,
+        setValue,
         formState: { errors }
     } = useForm<Inputs>({
         defaultValues: {
@@ -54,6 +67,35 @@ const RegForm = () => {
 
     const selectedRoleId = watch("RoleId");
     const isProvider = selectedRoleId === "1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D";
+
+    const selectedCountryId = watch("Country");
+    const selectedCityId = watch("SubArea");
+    const selectedAreaId = watch("Area");
+
+    const filteredCities = selectedCountryId
+        ? cities?.filter((city: any) => city.countryName === countries?.find((c: any) => c.id.toString() === selectedCountryId)?.name) || []
+        : [];
+
+    const filteredAreas = selectedCityId
+        ? areas?.filter((area: any) => area.cityName === cities?.find((c: any) => c.id.toString() === selectedCityId)?.name) || []
+        : [];
+
+    const filteredZones = selectedAreaId && areaZones
+        ? zones?.filter((zone: any) => {
+            const targetAreaName = areas?.find((a: any) => a.id.toString() === selectedAreaId)?.name;
+            return areaZones.some((az: any) => az.areaName === targetAreaName && az.zoneName === zone.name);
+          }) || []
+        : [];
+
+    useEffect(() => {
+        if (isProvider) {
+            getAllCountries();
+            getAllCities();
+            getAllAreas();
+            getAllZones();
+            getAllAreaZones();
+        }
+    }, [isProvider]);
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -180,23 +222,91 @@ const RegForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="country">Country</Label>
-                        <Input id="country" {...register("Country", { required: "Required for Provider" })} />
+                        <Controller
+                            name="Country"
+                            control={control}
+                            rules={{ required: "Required for Provider" }}
+                            render={({ field }) => (
+                                <Select onValueChange={(val) => {
+                                    field.onChange(val);
+                                    setValue("SubArea", "");
+                                    setValue("Area", "");
+                                    setValue("Zone", "");
+                                }} value={field.value}>
+                                    <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
+                                    <SelectContent>
+                                        {countries?.map((item: any) => (
+                                            <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                         {errors.Country && <span className="text-sm text-red-500">{errors.Country.message}</span>}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="zone">Zone</Label>
-                        <Input id="zone" {...register("Zone", { required: "Required for Provider" })} />
-                        {errors.Zone && <span className="text-sm text-red-500">{errors.Zone.message}</span>}
+                        <Label htmlFor="subArea">City</Label>
+                        <Controller
+                            name="SubArea"
+                            control={control}
+                            rules={{ required: "Required for Provider" }}
+                            render={({ field }) => (
+                                <Select onValueChange={(val) => {
+                                    field.onChange(val);
+                                    setValue("Area", "");
+                                    setValue("Zone", "");
+                                }} value={field.value}>
+                                    <SelectTrigger><SelectValue placeholder="Select City" /></SelectTrigger>
+                                    <SelectContent>
+                                        {filteredCities.map((item: any) => (
+                                            <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                        {errors.SubArea && <span className="text-sm text-red-500">{errors.SubArea.message}</span>}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="area">Area</Label>
-                        <Input id="area" {...register("Area", { required: "Required for Provider" })} />
+                        <Controller
+                            name="Area"
+                            control={control}
+                            rules={{ required: "Required for Provider" }}
+                            render={({ field }) => (
+                                <Select onValueChange={(val) => {
+                                    field.onChange(val);
+                                    setValue("Zone", "");
+                                }} value={field.value}>
+                                    <SelectTrigger><SelectValue placeholder="Select Area" /></SelectTrigger>
+                                    <SelectContent>
+                                        {filteredAreas.map((item: any) => (
+                                            <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                         {errors.Area && <span className="text-sm text-red-500">{errors.Area.message}</span>}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="subArea">SubArea</Label>
-                        <Input id="subArea" {...register("SubArea", { required: "Required for Provider" })} />
-                        {errors.SubArea && <span className="text-sm text-red-500">{errors.SubArea.message}</span>}
+                        <Label htmlFor="zone">Zone</Label>
+                        <Controller
+                            name="Zone"
+                            control={control}
+                            rules={{ required: "Required for Provider" }}
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger><SelectValue placeholder="Select Zone" /></SelectTrigger>
+                                    <SelectContent>
+                                        {filteredZones.map((item: any) => (
+                                            <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                        {errors.Zone && <span className="text-sm text-red-500">{errors.Zone.message}</span>}
                     </div>
                 </div>
             )}

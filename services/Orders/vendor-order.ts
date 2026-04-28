@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useCallback} from "react";
 import {Orders} from "@/types/orders";
 import AxiosInstance from "@/lib/AxiosInstance";
 
@@ -7,7 +7,7 @@ function useVendorOrder() {
     const [error, setError] = useState<string | null>(null);
     const [orders, setOrders] = useState<Orders[]>([]);
 
-    const gettingVendorOrders = async (userId: string| string[] |undefined) => {
+    const gettingVendorOrders = useCallback(async (userId: string| string[] |undefined) => {
         setLoading(true);
         setError(null);
         await AxiosInstance.get(`/api/Orders/vendor-orders?userId=${userId}`).then((res) => {
@@ -28,7 +28,7 @@ function useVendorOrder() {
         }).finally(() => {
             setLoading(false);
         });
-    }
+    }, []);
 
     return {loading, error, orders, gettingVendorOrders};
 }

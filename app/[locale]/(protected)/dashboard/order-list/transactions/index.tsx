@@ -28,7 +28,8 @@ import TablePagination from "./table-pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "@/i18n/routing";
 import useGettingAllOrders from "@/services/Orders/gettingAllOrders";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { Orders } from "@/types/orders";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
@@ -40,6 +41,11 @@ import { OrderStatus, OrderStatusLabel } from "@/enum";
 import useVendorOrder from "@/services/Orders/vendor-order";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Save } from "lucide-react";
+import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
+import { useGetLimitOrder } from "@/services/Orders/getLimitOrder";
+import { useUpdateLimitOrder } from "@/services/Orders/updateLimitOrder";
 
 export default function TransactionsTable() {
   const userRole = Cookies.get("userRole");
@@ -48,7 +54,13 @@ export default function TransactionsTable() {
 
   const { loading: myOrdersLoading, orders: myOrders, gettingVendorOrders, error: myOrdersError } = useVendorOrder()
   const { gettingAllOrders, orders, loading, error } = useGettingAllOrders();
+  const { gettingUserOrders, orders: userOrders, loading: userOrdersLoading } = useGettingUserOrders();
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
+  const { limit, getLimitOrder, loading: limitLoading } = useGetLimitOrder();
+  const { updateLimitOrder, loading: updatingLimit } = useUpdateLimitOrder();
+  
+  const searchParams = useSearchParams();
+  const filterUserId = searchParams ? searchParams.get("userId") : null;
 
   const router = useRouter();
 
@@ -58,20 +70,28 @@ export default function TransactionsTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [filteredOrders, setFilteredOrders] = useState<Orders[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "all">("all");
+  const [editableLimit, setEditableLimit] = useState<string>("");
 
   const allOrdersData = React.useMemo(() => {
+    if (filterUserId && isAdmin) {
+        return userOrders?.filter(order => order.totalAmount !== 0) || [];
+    }
     const rawData = isAdmin ? orders : myOrders;
     return rawData?.filter(order => order.totalAmount !== 0) || [];
-  }, [isAdmin, orders, myOrders]);
+  }, [isAdmin, orders, myOrders, userOrders, filterUserId]);
 
-  const isLoadingData = isAdmin ? loading : myOrdersLoading;
+  const isLoadingData = (isAdmin && !filterUserId) ? loading : (filterUserId ? userOrdersLoading : myOrdersLoading);
 
   const t = useTranslations("OrderList")
 
   const columns = baseColumns({
     refresh: () => {
       if (isAdmin) {
-        gettingAllOrders();
+        if (filterUserId) {
+          gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
+        } else {
+          gettingAllOrders();
+        }
       } else {
         gettingVendorOrders(userId);
       }
@@ -112,13 +132,40 @@ export default function TransactionsTable() {
 
   useEffect(() => {
     if (isAdmin) {
-      gettingAllOrders();
+      if (filterUserId) {
+        gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
+      } else {
+        gettingAllOrders();
+        getLimitOrder();
+      }
     } else {
       if (userId) {
         gettingVendorOrders(userId);
       }
     }
-  }, [isAdmin, userId]);
+  }, [isAdmin, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, getLimitOrder, selectedStatus]);
+
+  useEffect(() => {
+    if (limit) {
+      setEditableLimit(limit.minimumOrder.toString());
+    }
+  }, [limit]);
+
+  const handleUpdateLimit = async () => {
+    const newVal = parseFloat(editableLimit);
+    if (isNaN(newVal) || newVal < 0) {
+      toast.error("Please enter a valid number");
+      return;
+    }
+
+    const { success, error } = await updateLimitOrder(newVal);
+    if (success) {
+      toast.success("Order limit updated successfully");
+      getLimitOrder();
+    } else {
+      toast.error(error || "Failed to update order limit");
+    }
+  };
 
   useEffect(() => {
     if (allOrdersData) {
@@ -134,6 +181,26 @@ export default function TransactionsTable() {
           setFilteredData={setFilteredOrders}
           filterKey="orderNumber"
         />
+
+        {isAdmin && (
+          <div className="flex items-center gap-2 border border-default-200 rounded-md p-1 px-3 ml-auto">
+            <span className="text-sm font-medium whitespace-nowrap">Minimum orderPrice:</span>
+            <Input
+              type="number"
+              value={editableLimit}
+              onChange={(e) => setEditableLimit(e.target.value)}
+              className="w-24 h-8"
+              disabled={updatingLimit}
+            />
+            <Button
+              size="sm"
+              onClick={handleUpdateLimit}
+              disabled={updatingLimit || !!(limit && editableLimit === limit.minimumOrder.toString())}
+            >
+              {updatingLimit ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+            </Button>
+          </div>
+        )}
 
         <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
           <Button
@@ -272,9 +339,9 @@ export default function TransactionsTable() {
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-24 text-center font-medium"
                     >
-                      No results.
+                      {filterUserId ? "No orders found for this user." : t("noOrdersFound") || "No orders found."}
                     </TableCell>
                   </TableRow>
                 )}

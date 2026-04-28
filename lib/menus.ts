@@ -203,7 +203,46 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
-           
+            {
+              href: "/dashboard/policy",
+              label:  "Policy",
+              active: pathname === "/dashboard/policy",
+              children: [],
+              icon: "",
+            },
+            {
+              href: "#",
+              label:  "Location",
+              active: ["/dashboard/country", "/dashboard/city", "/dashboard/area", "/dashboard/zone", "/dashboard/area-zone"].some(path => pathname.includes(path)),
+              icon: "",
+              children: [
+                {
+                  href: "/dashboard/country",
+                  label: "Countries",
+                  active: pathname === "/dashboard/country",
+                },
+                {
+                  href: "/dashboard/city",
+                  label: "Cities",
+                  active: pathname === "/dashboard/city",
+                },
+                {
+                  href: "/dashboard/area",
+                  label:  "Areas",
+                  active: pathname === "/dashboard/area",
+                },
+                {
+                  href: "/dashboard/zone",
+                  label:  "Zones",
+                  active: pathname === "/dashboard/zone",
+                },
+                {
+                  href: "/dashboard/area-zone",
+                  label:"Area Zones",
+                  active: pathname === "/dashboard/area-zone",
+                },
+              ],
+            },
           ],
         },
       ],
