@@ -34,6 +34,7 @@ const EditUser = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
+    const [profileImage, setProfileImage] = useState<File | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -57,6 +58,10 @@ const EditUser = () => {
         formData.append("FullName", fullName);
         formData.append("PhoneNumber", phoneNumber);
         formData.append("IsActive", activate.toString());
+        
+        if (profileImage) {
+            formData.append("ProfileImage", profileImage);
+        }
         
         formData.append("PharmacyDetails", 'null');
         formData.append("DesName", 'null');
@@ -133,6 +138,21 @@ const EditUser = () => {
                             className="flex-1"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="flex items-center flex-wrap gap-2">
+                        <Label className="w-[150px] flex-none" htmlFor="profileImage">{t("profileImage")}</Label>
+                        <Input
+                            id="profileImage"
+                            type="file"
+                            accept="image/*"
+                            className="flex-1"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files.length > 0) {
+                                    setProfileImage(e.target.files[0]);
+                                }
+                            }}
                         />
                     </div>
 

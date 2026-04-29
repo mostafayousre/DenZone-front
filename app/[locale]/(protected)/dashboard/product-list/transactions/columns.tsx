@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2, Eye } from "lucide-react";
+import { SquarePen, Trash2, Eye, Image as ImageIcon } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { ProductType } from "@/types/product";
 import { toast } from "sonner";
@@ -96,6 +96,26 @@ export const baseColumns = ({
   const isArabic = locale === "ar";
 
   const columns: ColumnDef<ProductType>[] = [
+    {
+      accessorKey: "images",
+      header: isArabic ? "الصورة" : "Image",
+      cell: ({ row }) => {
+        const hasImage = row.original.images && row.original.images.length > 0;
+        return (
+          <div className="w-12 h-12 rounded-md overflow-hidden border border-default-200 flex items-center justify-center bg-slate-50">
+            {hasImage ? (
+              <img 
+                src={row.original.images[0]} 
+                alt={isArabic ? row.original.productArabicName : row.original.productName} 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-slate-300" />
+            )}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: isArabic ? "productArabicName" : "productName",
       header: isArabic ? "اسم المنتج" : "Product Name",

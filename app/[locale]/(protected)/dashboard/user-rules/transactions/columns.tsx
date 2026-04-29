@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2 } from "lucide-react";
+import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2, Key } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import useDeleteUser from "@/services/users/DeleteUser";
 import useUpdateUser from "@/services/users/updateUser";
+import useChangePasswordFromAdmin from "@/services/users/ChangePasswordFromAdmin";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const AddressCell = ({ addresses, t }: { addresses: any; t?: (key: string) => string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -122,7 +133,25 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
   const id = row.original.id;
-  const { deleteUser, loading } = useDeleteUser();
+  const { deleteUser, loading: deleting } = useDeleteUser();
+  const { changePassword, loading: changingPassword } = useChangePasswordFromAdmin();
+  const [newPassword, setNewPassword] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handlePasswordChange = async () => {
+    if (!newPassword) {
+      toast.error("Please enter a new password");
+      return;
+    }
+    const result = await changePassword(id, newPassword);
+    if (result.success) {
+      toast.success("Password changed successfully");
+      setNewPassword("");
+      setIsDialogOpen(false);
+    } else {
+      toast.error(result.error || "Failed to change password");
+    }
+  };
 
   const handleDelete = () => {
     const toastId = toast(t?.("deleteUser") || "Delete User", {
@@ -139,7 +168,7 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
           <Button
             size="sm"
             color="destructive"
-            disabled={loading}
+            disabled={deleting}
             className="text-white bg-destructive hover:bg-destructive/90"
             onClick={async () => {
               const result = await deleteUser(id);
@@ -153,7 +182,7 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
               }
             }}
           >
-            {loading ? (t?.("deleting") || "Deleting...") : (t?.("confirm") || "Confirm")}
+            {deleting ? (t?.("deleting") || "Deleting...") : (t?.("confirm") || "Confirm")}
           </Button>
         </div>
       ),
@@ -183,6 +212,49 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
       >
         <FileText className="w-4 h-4" />
       </Link>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <button
+            title={t?.("changePassword") || "Change Password"}
+            className="p-2 text-warning bg-warning/20 hover:bg-warning hover:text-white rounded-full transition-all cursor-pointer"
+          >
+            <Key className="w-4 h-4" />
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t?.("changePassword") || "Change Password"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="newPassword">{t?.("newPassword") || "New Password"}</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              {t?.("cancel") || "Cancel"}
+            </Button>
+            <Button
+              onClick={handlePasswordChange}
+              disabled={changingPassword}
+            >
+              {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : (t?.("save") || "Save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Link
         href={`/dashboard/edit-user/${id}`}
         className="p-2 text-info bg-info/20 hover:bg-info hover:text-white rounded-full transition-all"

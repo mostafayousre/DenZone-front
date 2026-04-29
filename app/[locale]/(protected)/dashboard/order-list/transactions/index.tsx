@@ -56,8 +56,7 @@ export default function TransactionsTable() {
   const { gettingAllOrders, orders, loading, error } = useGettingAllOrders();
   const { gettingUserOrders, orders: userOrders, loading: userOrdersLoading } = useGettingUserOrders();
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
-  const { limit, getLimitOrder, loading: limitLoading } = useGetLimitOrder();
-  const { updateLimitOrder, loading: updatingLimit } = useUpdateLimitOrder();
+
   
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
@@ -70,7 +69,7 @@ export default function TransactionsTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [filteredOrders, setFilteredOrders] = useState<Orders[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "all">("all");
-  const [editableLimit, setEditableLimit] = useState<string>("");
+
 
   const allOrdersData = React.useMemo(() => {
     if (filterUserId && isAdmin) {
@@ -136,36 +135,15 @@ export default function TransactionsTable() {
         gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
       } else {
         gettingAllOrders();
-        getLimitOrder();
       }
     } else {
       if (userId) {
         gettingVendorOrders(userId);
       }
     }
-  }, [isAdmin, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, getLimitOrder, selectedStatus]);
+  }, [isAdmin, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, selectedStatus]);
 
-  useEffect(() => {
-    if (limit) {
-      setEditableLimit(limit.minimumOrder.toString());
-    }
-  }, [limit]);
 
-  const handleUpdateLimit = async () => {
-    const newVal = parseFloat(editableLimit);
-    if (isNaN(newVal) || newVal < 0) {
-      toast.error("Please enter a valid number");
-      return;
-    }
-
-    const { success, error } = await updateLimitOrder(newVal);
-    if (success) {
-      toast.success("Order limit updated successfully");
-      getLimitOrder();
-    } else {
-      toast.error(error || "Failed to update order limit");
-    }
-  };
 
   useEffect(() => {
     if (allOrdersData) {
@@ -182,27 +160,7 @@ export default function TransactionsTable() {
           filterKey="orderNumber"
         />
 
-        {isAdmin && (
-          <div className="flex items-center gap-2 border border-default-200 rounded-md p-1 px-3 ml-auto">
-            <span className="text-sm font-medium whitespace-nowrap">Minimum orderPrice:</span>
-            <Input
-              type="number"
-              value={editableLimit}
-              onChange={(e) => setEditableLimit(e.target.value)}
-              className="w-24 h-8"
-              disabled={updatingLimit}
-            />
-            <Button
-              size="sm"
-              onClick={handleUpdateLimit}
-              disabled={updatingLimit || !!(limit && editableLimit === limit.minimumOrder.toString())}
-            >
-              {updatingLimit ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-            </Button>
-          </div>
-        )}
-
-        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
+        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden ml-auto">
           <Button
             size="md"
             variant={selectedStatus === "all" ? "default" : "ghost"}
