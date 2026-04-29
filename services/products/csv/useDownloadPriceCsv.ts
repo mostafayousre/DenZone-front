@@ -4,19 +4,20 @@ import AxiosInstance from "@/lib/AxiosInstance";
 interface DownloadPriceCsvHook {
   loading: boolean;
   error: string | null;
-  downloadCSV: () => Promise<void>;
+  downloadCSV: (providerId?: string) => Promise<void>;
 }
 
 function useDownloadPriceCsv(): DownloadPriceCsvHook {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const downloadCSV = async (): Promise<void> => {
+  const downloadCSV = async (providerId?: string): Promise<void> => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await AxiosInstance.get('/api/ProductPrices/export-excel', {
+      const response = await AxiosInstance.get('/api/ProductPrices/export-excel-toinventory', {
+        params: providerId ? { inventoryId: providerId } : {},
         responseType: 'blob',
       });
 

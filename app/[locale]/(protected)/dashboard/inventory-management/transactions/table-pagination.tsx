@@ -13,7 +13,7 @@ const TablePagination = ({ table }: DataTablePaginationProps) => {
   const renderPageNumbers = () => {
     const pages = [];
     
-    if (totalPages <= 7) {
+    if (totalPages <= 20) {
       for (let i = 0; i < totalPages; i++) {
         pages.push(
           <Button

@@ -17,15 +17,13 @@ function useGettingPricesForInventoryManager() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [prices, setPrices] = useState<Price[]>([]);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalItems, setTotalItems] = useState(0);
     const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
         return Cookies.get("userId") ?? null;
     });
 
-    /**
-     * Fetch prices for a specific inventory manager.
-     * @param userId Optional user id. If omitted, the hook will try to read it from cookie "userId".
-     */
-    const gettingPricesForInventoryManager = async (userId?: string) => {
+    const gettingPricesForInventoryManager = async (userId?: string, page: number = 1, pageSize: number = 10) => {
         setLoading(true);
         setError(null);
 
@@ -40,18 +38,22 @@ function useGettingPricesForInventoryManager() {
         setCurrentUserId(idToUse);
 
         try {
-            const response = await AxiosInstance.get(`/api/ProductPrices/my-prices/${encodeURIComponent(idToUse)}`);
+            const response = await AxiosInstance.get(`/api/ProductPrices/my-prices/${encodeURIComponent(idToUse)}`, {
+                params: {
+                    page: page,
+                    pageSize: pageSize
+                }
+            });
 
             if (response.status !== 200) {
                 throw new Error(`Failed to fetch prices (status ${response.status})`);
             }
 
-            // Some APIs wrap the payload in { data: [...] }, others return [...] directly.
-            // Prefer response.data.data if present, otherwise use response.data.
             const payload = (response.data && (response.data.data ?? response.data)) as Price[];
 
-            // Ensure we set an array (defensive)
             setPrices(Array.isArray(payload) ? payload : []);
+            setTotalPages(response.data?.totalPages || 0);
+            setTotalItems(response.data?.totalCount || 0);
 
         } catch (err: any) {
             setError(err?.message ?? "An unknown error occurred");
@@ -64,6 +66,8 @@ function useGettingPricesForInventoryManager() {
         loading,
         error,
         prices,
+        totalPages,
+        totalItems,
         gettingPricesForInventoryManager,
         userId: currentUserId,
     };

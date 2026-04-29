@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as React from "react";
 import {
   ColumnFiltersState,
@@ -44,6 +44,7 @@ import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import useDownloadPriceCsv from "@/services/products/csv/useDownloadPriceCsv";
 import { CSVUploadModal } from "@/components/partials/ImportCsv/ImportCsv";
 import useUploadCsv from "@/services/products/csv/uploadCSV";
+import useImportPriceCsv from "@/services/products/csv/useImportPriceCsv";
 
 import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
@@ -55,14 +56,19 @@ const TransactionsTable = () => {
   const {
     loading: managerLoading,
     prices: managerPrices,
+    totalPages: managerTotalPages,
     gettingPricesForInventoryManager,
   } = useGettingPricesForInventoryManager();
 
   const {
     loading: inventoryIdLoading,
     prices: adminPrices,
+    totalPages: adminTotalPages,
     gettingPricesByInventoryId,
   } = useGettingPricesByInventoryId();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   const {
     loading: usersLoading,
@@ -72,6 +78,7 @@ const TransactionsTable = () => {
 
   const { loading: downloadLoading, downloadCSV: downloadPriceCSV } = useDownloadPriceCsv();
   const { uploadCSV } = useUploadCsv();
+  const { importPriceCsv, loading: importLoading } = useImportPriceCsv();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -83,7 +90,18 @@ const TransactionsTable = () => {
   const isLoading = isAdmin ? inventoryIdLoading : managerLoading;
 
   const t = useTranslations("inventoryManagement");
-  const columns = baseColumns({ t });
+
+  const handleRefresh = useCallback(() => {
+    if (isAdmin) {
+      if (selectedUserId) {
+        gettingPricesByInventoryId(selectedUserId, currentPage, PAGE_SIZE);
+      }
+    } else {
+      gettingPricesForInventoryManager(undefined, currentPage, PAGE_SIZE);
+    }
+  }, [isAdmin, selectedUserId, currentPage, PAGE_SIZE, gettingPricesByInventoryId, gettingPricesForInventoryManager]);
+
+  const columns = baseColumns({ t, refresh: handleRefresh });
 
   const table = useReactTable({
     data: tableData ?? [],
@@ -91,16 +109,32 @@ const TransactionsTable = () => {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: isAdmin ? adminTotalPages : managerTotalPages,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex: currentPage - 1,
+        pageSize: PAGE_SIZE,
+      },
+    },
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function"
+          ? updater({ pageIndex: currentPage - 1, pageSize: PAGE_SIZE })
+          : updater;
+      
+      const newPage = newPagination.pageIndex + 1;
+      setCurrentPage(newPage);
+      
+      if (isAdmin && selectedUserId) {
+        gettingPricesByInventoryId(selectedUserId, newPage, PAGE_SIZE);
+      } else if (!isAdmin) {
+        gettingPricesForInventoryManager(undefined, newPage, PAGE_SIZE);
+      }
     },
   });
 
@@ -108,13 +142,14 @@ const TransactionsTable = () => {
     if (isAdmin) {
       getUsersByRoleId("1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D");
     } else {
-      gettingPricesForInventoryManager();
+      gettingPricesForInventoryManager(undefined, 1, PAGE_SIZE);
     }
   }, []);
 
   useEffect(() => {
     if (selectedUserId) {
-      gettingPricesByInventoryId(selectedUserId);
+      gettingPricesByInventoryId(selectedUserId, 1, PAGE_SIZE);
+      setCurrentPage(1);
     }
   }, [selectedUserId]);
 
@@ -147,34 +182,51 @@ const TransactionsTable = () => {
               </SelectContent>
             </Select>
 
-            <Button 
-              variant="outline" 
-              onClick={downloadPriceCSV} 
-              disabled={downloadLoading}
-              className="gap-2"
-            >
-              {downloadLoading ? <Loader2 className="h-8 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              Export Prices
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => downloadPriceCSV(selectedUserId ?? undefined)} 
+                disabled={downloadLoading}
+                className="gap-2"
+              >
+                {downloadLoading ? <Loader2 className="h-8 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                Export Prices
+              </Button>
+              <CSVUploadModal
+                label="Import Prices"
+                onUpload={async (file: File) => {
+                  await importPriceCsv(file, selectedUserId ?? undefined);
+                  handleRefresh();
+                }}
+              />
+            </div>
           </div>
         ) : (
           <div className="flex flex-row justify-between w-full items-center">
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                onClick={downloadPriceCSV} 
+                onClick={() => downloadPriceCSV(selectedUserId ?? undefined)} 
                 disabled={downloadLoading}
                 className="gap-2"
               >
                 {downloadLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                 Export Prices
               </Button>
+              <CSVUploadModal
+                label="Import Prices"
+                onUpload={async (file: File) => {
+                  await importPriceCsv(file);
+                  handleRefresh();
+                }}
+              />
             </div>
             
             <CSVUploadModal
+              label="Import Add Products"
               onUpload={async (file: File) => {
                 await uploadCSV(file);
-                gettingPricesForInventoryManager();
+                handleRefresh();
               }}
             />
           </div>

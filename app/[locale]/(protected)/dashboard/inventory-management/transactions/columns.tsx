@@ -1,12 +1,43 @@
-import { usePathname } from "next/navigation";
-import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2, TriangleAlert } from "lucide-react";
-import { Link } from '@/i18n/routing';
+import { useState } from "react";
+import { SquarePen } from "lucide-react";
 import { formatDateToDMY } from "@/utils";
 import { Price } from "@/types/price";
+import { UpdatePriceModal } from "./UpdatePriceModal";
 
-export const baseColumns = ({ t }: {
+const ActionCell = ({
+  row,
+  refresh,
+  t,
+}: {
+  row: { original: Price };
+  refresh: () => void;
   t: (key: string) => string;
+}) => {
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  return (
+    <div className="flex items-center gap-1">
+      <button
+        onClick={() => setIsUpdateModalOpen(true)}
+        className="flex items-center p-2 text-info hover:text-info-foreground bg-info/10 hover:bg-info duration-200 transition-all rounded-full"
+        title={t("edit")}
+      >
+        <SquarePen className="w-4 h-4" />
+      </button>
+
+      <UpdatePriceModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        priceData={row.original}
+        onSuccess={refresh}
+      />
+    </div>
+  );
+};
+
+export const baseColumns = ({ t, refresh }: {
+  t: (key: string) => string;
+  refresh: () => void;
 }): ColumnDef<Price>[] => [
   {
     accessorKey: "productName",
@@ -60,44 +91,9 @@ export const baseColumns = ({ t }: {
     },
   },
 
-  // {
-  //   id: "actions",
-  //   accessorKey: "action",
-  //   header: "Actions",
-  //   enableHiding: false,
-  //   cell: ({ row }) => {
-  //     const pathname = usePathname();
-  //     const getHref = () => {
-  //       if (pathname?.includes('/sellers')) {
-  //         return '/dashboard/edit-product';
-  //       } else if (pathname?.includes('/admin')) {
-  //         return '/admin/invoice/preview/1';
-  //       } else {
-  //         return '/utility/invoice/preview/1';
-  //       }
-  //     };
-  //     return (
-  //       <div className="flex items-center gap-1">
-  //         <Link
-  //           href={getHref()}
-  //           className="flex items-center p-2 border-b text-info hover:text-info-foreground bg-info/40 hover:bg-info duration-200 transition-all rounded-full"
-  //         >
-  //           <SquarePen className="w-4 h-4" />
-  //         </Link>
-  //         <Link
-  //           href="#"
-  //           className="flex items-center p-2 border-b text-warning hover:text-warning-foreground bg-warning/40 hover:bg-warning duration-200 transition-all rounded-full"
-  //         >
-  //           <TriangleAlert className="w-4 h-4" />
-  //         </Link>
-  //         <Link
-  //           href="#"
-  //           className="flex items-center p-2 text-destructive bg-destructive/40 duration-200 transition-all hover:bg-destructive/80 hover:text-destructive-foreground rounded-full"
-  //         >
-  //           <Trash2 className="w-4 h-4" />
-  //         </Link>
-  //       </div>
-  //     );
-  //   },
-  // },
+  {
+    id: "actions",
+    header: t("actions"),
+    cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} />,
+  },
 ];

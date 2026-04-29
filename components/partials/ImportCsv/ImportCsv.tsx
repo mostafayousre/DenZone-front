@@ -16,9 +16,10 @@ import { useTranslations } from "next-intl";
 
 type CSVUploadModalProps = {
     onUpload: (file: File) => Promise<void>; // Accepts a CSV file, uploads it
+    label?: string;
 };
 
-export function CSVUploadModal({ onUpload }: CSVUploadModalProps) {
+export function CSVUploadModal({ onUpload, label }: CSVUploadModalProps) {
     const t = useTranslations("generateInvoice");
     const [open, setOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -61,7 +62,7 @@ export function CSVUploadModal({ onUpload }: CSVUploadModalProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">{t("uploadFile")}</Button>
+                <Button variant="outline">{label || t("uploadFile")}</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
