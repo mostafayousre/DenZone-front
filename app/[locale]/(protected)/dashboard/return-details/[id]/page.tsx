@@ -112,7 +112,7 @@ const ReturnDetails = () => {
 
   return (
     <>
-      {userType === "Inventory" && (
+      {(userType === "Inventory" || userType === "Admin") && (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Update Return Status</CardTitle>

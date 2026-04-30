@@ -2,7 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import {
   Eye,
   Trash2,
-  Pencil
+  Pencil,
+  Truck
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,221 @@ import { formatDateToDMY } from "@/utils";
 import Cookies from "js-cookie";
 
 import GenerateInvoiceButton from "@/components/partials/GenerateInvoiceButton/GenerateInvoiceButton";
+import { OrderStatus } from "@/enum";
+import useUpdateOrderStatus from "@/services/Orders/updateOrderStatus";
+import useAssignDelivery from "@/services/Orders/assignDelivery";
+import useGetDelivers from "@/services/users/getDelivers";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, RefreshCw } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+
+const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
+    const userRole = Cookies.get("userRole");
+    const isAdmin = userRole === "Admin";
+    const { updateOrderStatus, loading } = useUpdateOrderStatus();
+
+    const statusColors: Record<number, string> = {
+        0: "bg-yellow-200 text-yellow-700", // Pending
+        1: "bg-blue-200 text-blue-700",     // Approved
+        2: "bg-red-200 text-red-700",       // Rejected
+        3: "bg-purple-200 text-purple-700", // Prepared
+        4: "bg-indigo-200 text-indigo-700", // Shipped
+        5: "bg-green-200 text-green-700",   // Delivered
+        6: "bg-emerald-200 text-emerald-700", // Completed
+    };
+
+    const status = row.original.status;
+    const statusStyle = statusColors[status] || "bg-gray-200 text-gray-700";
+
+    const statusTranslationKeys: Record<number, string> = {
+        0: "statusCode.pending",
+        1: "statusCode.approved",
+        2: "statusCode.rejected",
+        3: "statusCode.prepared",
+        4: "statusCode.shipped",
+        5: "statusCode.delivered",
+        6: "statusCode.completed",
+    };
+
+    const statusLabel = t(statusTranslationKeys[status] ?? "status.unknown");
+
+    return (
+        <div className="flex items-center gap-2">
+            <Badge className={cn("rounded-full px-5 py-1 text-sm whitespace-nowrap", statusStyle)}>
+                {statusLabel}
+            </Badge>
+        </div>
+    );
+};
+
+const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
+    const { updateOrderStatus, loading } = useUpdateOrderStatus();
+    const [open, setOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<string>(row.original.status.toString());
+
+    const handleUpdate = async () => {
+        const numericValue = Number(selectedStatus) as OrderStatus;
+        const result = await updateOrderStatus(row.original.id, numericValue);
+        if (result.success) {
+            toast.success(t("updateStatusSuccess") || "Status updated successfully");
+            setOpen(false);
+            refresh();
+        } else {
+            toast.error(result.error || t("updateStatusError") || "Failed to update status");
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <button
+                    className="flex items-center p-2 text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
+                    title={t("updateStatus") || "Update Status"}
+                >
+                    <RefreshCw className="w-4 h-4" />
+                </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>{t("updateStatus") || "Update Status"}</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium">{t("orderStatus")}</label>
+                        <Select
+                            value={selectedStatus}
+                            onValueChange={setSelectedStatus}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder={t("selectStatus") || "Select Status"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.values(OrderStatus)
+                                    .filter((value) => typeof value === "number" && value !== 7)
+                                    .map((s) => (
+                                        <SelectItem key={s} value={s.toString()} className="text-xs">
+                                            {t(`statusCode.${OrderStatus[s as number].toLowerCase()}`)}
+                                        </SelectItem>
+                                    ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+                        {t("cancel") || "Cancel"}
+                    </Button>
+                    <Button onClick={handleUpdate} disabled={loading}>
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                        {t("save") || "Save"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+const AssignDeliveryDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
+    const { assignDelivery, loading } = useAssignDelivery();
+    const { getDelivers, delivers, loading: deliversLoading } = useGetDelivers();
+    const [open, setOpen] = useState(false);
+    const [selectedDelivery, setSelectedDelivery] = useState<string>("");
+
+    const handleOpenChange = (isOpen: boolean) => {
+        setOpen(isOpen);
+        if (isOpen && delivers.length === 0) {
+            getDelivers();
+        }
+    };
+
+    const handleAssign = async () => {
+        if (!selectedDelivery) return;
+        const result = await assignDelivery(row.original.id, selectedDelivery);
+        if (result.success) {
+            toast.success(t("assignDeliverySuccess") || "Delivery assigned successfully");
+            setOpen(false);
+            refresh();
+        } else {
+            toast.error(result.error || t("assignDeliveryError") || "Failed to assign delivery");
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+            <DialogTrigger asChild>
+                <button
+                    className="flex items-center p-2 text-indigo-500 hover:text-indigo-600 bg-indigo-500/20 hover:bg-indigo-500/30 duration-200 transition-all rounded-full cursor-pointer"
+                    title={t("assignDelivery") || "Assign Delivery"}
+                >
+                    <Truck className="w-4 h-4" />
+                </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>{t("assignDelivery") || "Assign Delivery"}</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium">{t("selectDelivery") || "Select Delivery Person"}</label>
+                        <Select
+                            value={selectedDelivery}
+                            onValueChange={setSelectedDelivery}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder={t("selectDeliveryPlaceholder") || "Select Delivery Person"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {deliversLoading ? (
+                                    <div className="flex items-center justify-center p-4">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    </div>
+                                ) : delivers.length === 0 ? (
+                                    <div className="flex items-center justify-center p-4 text-sm text-gray-500">
+                                        No delivery personnel found
+                                    </div>
+                                ) : (
+                                    delivers.map((d: any) => (
+                                        <SelectItem key={d.id} value={d.id} className="text-xs">
+                                            {d.fullName || d.userName || "Unknown"}
+                                        </SelectItem>
+                                    ))
+                                )}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+                        {t("cancel") || "Cancel"}
+                    </Button>
+                    <Button onClick={handleAssign} disabled={loading || !selectedDelivery}>
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                        {t("save") || "Save"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 export const baseColumns = ({ refresh, t }: {
   refresh: () => void;
@@ -61,6 +277,7 @@ export const baseColumns = ({ refresh, t }: {
         );
       },
     },
+
     {
       accessorKey: "orderDate",
       header: t("date"),
@@ -74,43 +291,15 @@ export const baseColumns = ({ refresh, t }: {
       cell: ({ row }) => {
         return <span>{row.getValue("totalAmount")}</span>;
       },
+    },    {
+      accessorKey: "deliveryName",
+      header: t("delivery Name") || "Delivery",
+      cell: ({ row }) => <span>{row.getValue("deliveryName") || "there is no delivery yet"}</span>,
     },
     {
-      accessorKey: "status",
-      header: t("orderStatus"),
-      cell: ({ row }) => {
-        const statusColors: Record<number, string> = {
-          0: "bg-yellow-200 text-yellow-700", // Pending
-          1: "bg-blue-200 text-blue-700",     // Approved
-          2: "bg-red-200 text-red-700",       // Rejected
-          3: "bg-purple-200 text-purple-700", // Prepared
-          4: "bg-indigo-200 text-indigo-700", // Shipped
-          5: "bg-green-200 text-green-700",   // Delivered
-          6: "bg-emerald-200 text-emerald-700", // Completed
-        };
-
-        const status = row.original.status;
-
-        const statusStyle = statusColors[status] || "bg-gray-200 text-gray-700";
-
-        const statusTranslationKeys: Record<number, string> = {
-          0: "statusCode.pending",
-          1: "statusCode.approved",
-          2: "statusCode.rejected",
-          3: "statusCode.prepared",
-          4: "statusCode.shipped",
-          5: "statusCode.delivered",
-          6: "statusCode.completed",
-        };
-
-        const statusLabel = t(statusTranslationKeys[status] ?? "status.unknown");
-
-        return (
-          <Badge className={cn("rounded-full px-5 py-1 text-sm", statusStyle)}>
-            {statusLabel}
-          </Badge>
-        );
-      },
+        accessorKey: "status",
+        header: t("orderStatus"),
+        cell: ({ row }) => <StatusCell row={row} refresh={refresh} t={t} />,
     },
 
     {
@@ -149,6 +338,8 @@ export const baseColumns = ({ refresh, t }: {
                   </div>
                 ) : (
                   <>
+                    <StatusDialog row={row} refresh={refresh} t={t} />
+                    <AssignDeliveryDialog row={row} refresh={refresh} t={t} />
                     <Link
                       href={`/dashboard/edit-order/${row.original.id}`}
                       className="flex items-center p-2 text-primary bg-primary/20 duration-200 transition-all hover:bg-primary/80 hover:text-primary-foreground rounded-full cursor-pointer"

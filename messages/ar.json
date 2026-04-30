@@ -344,8 +344,11 @@
       "delivered": "تم التسليم",
       "completed": "مكتمل",
       "reAssignTo": "معاد التعيين",
-      "reassigned": "معاد التعيين"
-    }
+      "reassigned": "معاد التعيين",
+      "reassignto": "معاد التعيين"
+    },
+    "updateStatusSuccess": "تم تحديث الحالة بنجاح",
+    "updateStatusError": "حدث خطأ أثناء تحديث الحالة. يرجى المحاولة مرة أخرى."
   },
   "OrderDetails": {
     "orderDetails": "تفاصيل الطلب",

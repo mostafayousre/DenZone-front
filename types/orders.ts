@@ -13,6 +13,7 @@ export type Orders = {
     deliverDate: string
     items: OrderItem[]
     orderNumber?: string;
+    deliveryName?: string;
 }
 
 export interface OrderItem {

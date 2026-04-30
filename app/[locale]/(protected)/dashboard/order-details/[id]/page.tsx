@@ -98,7 +98,7 @@ const OrderDetails = () => {
 
     return (
         <>
-            {userType === "Inventory" && (
+            {(userType === "Inventory" || userType === "Admin") && (
                 <Card>
                     <CardHeader>
                         <CardTitle>{t("orderStatus")}</CardTitle>
