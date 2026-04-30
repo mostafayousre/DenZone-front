@@ -28,7 +28,8 @@ import TablePagination from "./table-pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "@/i18n/routing";
 import useGettingAllOrders from "@/services/Orders/gettingAllOrders";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { Orders } from "@/types/orders";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
@@ -40,6 +41,11 @@ import { OrderStatus, OrderStatusLabel } from "@/enum";
 import useVendorOrder from "@/services/Orders/vendor-order";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Save } from "lucide-react";
+import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
+import { useGetLimitOrder } from "@/services/Orders/getLimitOrder";
+import { useUpdateLimitOrder } from "@/services/Orders/updateLimitOrder";
 
 export default function TransactionsTable() {
   const userRole = Cookies.get("userRole");
@@ -48,7 +54,12 @@ export default function TransactionsTable() {
 
   const { loading: myOrdersLoading, orders: myOrders, gettingVendorOrders, error: myOrdersError } = useVendorOrder()
   const { gettingAllOrders, orders, loading, error } = useGettingAllOrders();
+  const { gettingUserOrders, orders: userOrders, loading: userOrdersLoading } = useGettingUserOrders();
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
+
+  
+  const searchParams = useSearchParams();
+  const filterUserId = searchParams ? searchParams.get("userId") : null;
 
   const router = useRouter();
 
@@ -59,19 +70,27 @@ export default function TransactionsTable() {
   const [filteredOrders, setFilteredOrders] = useState<Orders[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "all">("all");
 
+
   const allOrdersData = React.useMemo(() => {
+    if (filterUserId && isAdmin) {
+        return userOrders?.filter(order => order.totalAmount !== 0) || [];
+    }
     const rawData = isAdmin ? orders : myOrders;
     return rawData?.filter(order => order.totalAmount !== 0) || [];
-  }, [isAdmin, orders, myOrders]);
+  }, [isAdmin, orders, myOrders, userOrders, filterUserId]);
 
-  const isLoadingData = isAdmin ? loading : myOrdersLoading;
+  const isLoadingData = (isAdmin && !filterUserId) ? loading : (filterUserId ? userOrdersLoading : myOrdersLoading);
 
   const t = useTranslations("OrderList")
 
   const columns = baseColumns({
     refresh: () => {
       if (isAdmin) {
-        gettingAllOrders();
+        if (filterUserId) {
+          gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
+        } else {
+          gettingAllOrders();
+        }
       } else {
         gettingVendorOrders(userId);
       }
@@ -112,13 +131,19 @@ export default function TransactionsTable() {
 
   useEffect(() => {
     if (isAdmin) {
-      gettingAllOrders();
+      if (filterUserId) {
+        gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
+      } else {
+        gettingAllOrders();
+      }
     } else {
       if (userId) {
         gettingVendorOrders(userId);
       }
     }
-  }, [isAdmin, userId]);
+  }, [isAdmin, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, selectedStatus]);
+
+
 
   useEffect(() => {
     if (allOrdersData) {
@@ -135,7 +160,7 @@ export default function TransactionsTable() {
           filterKey="orderNumber"
         />
 
-        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
+        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden ml-auto">
           <Button
             size="md"
             variant={selectedStatus === "all" ? "default" : "ghost"}
@@ -272,9 +297,9 @@ export default function TransactionsTable() {
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-24 text-center font-medium"
                     >
-                      No results.
+                      {filterUserId ? "No orders found for this user." : t("noOrdersFound") || "No orders found."}
                     </TableCell>
                   </TableRow>
                 )}

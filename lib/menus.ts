@@ -231,56 +231,107 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
+            {
+              href: "/dashboard/location",
+              label: t("location"),
+              active: pathname.startsWith("/dashboard/country") || 
+                      pathname.startsWith("/dashboard/city") || 
+                      pathname.startsWith("/dashboard/area") || 
+                      pathname.startsWith("/dashboard/zone") || 
+                      pathname.startsWith("/dashboard/area-zone"),
+              icon: "",
+              children: [
+                {
+                  href: "/dashboard/country",
+                  label: t("country"),
+                  active: pathname === "/dashboard/country",
+                },
+                {
+                  href: "/dashboard/city",
+                  label: t("city"),
+                  active: pathname === "/dashboard/city",
+                },
+                {
+                  href: "/dashboard/area",
+                  label: t("area"),
+                  active: pathname === "/dashboard/area",
+                },
+                {
+                  href: "/dashboard/zone",
+                  label: t("zone"),
+                  active: pathname === "/dashboard/zone",
+                },
+                {
+                  href: "/dashboard/area-zone",
+                  label: t("areaZone"),
+                  active: pathname === "/dashboard/area-zone",
+                },
+              ],
+            },
+            {
+              href: "/dashboard/policy",
+              label: t("policy"),
+              active: pathname === "/dashboard/policy",
+              children: [],
+              icon: "",
+            },
+            {
+              href: "/dashboard/settings",
+              label: t("settings"),
+              active: pathname === "/dashboard/settings",
+              children: [],
+              icon: "",
+            },
           ],
         },
       ],
     },
-     {
-      groupLabel: t("Upcoming Features"),
-      id: "app",
-      menus: [
-        {
-          id: "chat",
-          href: "/app/chat",
-          label: t("chat"),
-          active: pathname.includes("/app/chat"),
-          icon: "heroicons-outline:chat",
-          submenus: [],
-        },
-        {
-          id: "email",
-          href: "/app/email",
-          label: t("email"),
-          active: pathname.includes("/app/email"),
-          icon: "heroicons-outline:mail",
-          submenus: [],
-        },
-        {
-          id: "kanban",
-          href: "/app/kanban",
-          label: t("kanban"),
-          active: pathname.includes("/app/kanban"),
-          icon: "heroicons-outline:view-boards",
-          submenus: [],
-        },
-        {
-          id: "calendar",
-          href: "/app/calendar",
-          label: t("calendar"),
-          active:pathname.includes("/app/calendar"),
-          icon: "heroicons-outline:calendar",
-          submenus: [],
-        },
-        {
-          id: "todo",
-          href: "/app/todo",
-          label: t("todo"),
-          active:pathname.includes("/app/todo"),
-          icon: "heroicons-outline:clipboard-check",
-          submenus: [],
-        },
-      ],
-    },
+    //  {
+    //   groupLabel: t("Upcoming Features"),
+    //   id: "app",
+    //   menus: [
+    //     {
+    //       id: "chat",
+    //       href: "/app/chat",
+    //       label: t("chat"),
+    //       active: pathname.includes("/app/chat"),
+    //       icon: "heroicons-outline:chat",
+    //       submenus: [],
+    //     },
+    //     {
+    //       id: "email",
+    //       href: "/app/email",
+    //       label: t("email"),
+    //       active: pathname.includes("/app/email"),
+    //       icon: "heroicons-outline:mail",
+    //       submenus: [],
+    //     },
+    //     {
+    //       id: "kanban",
+    //       href: "/app/kanban",
+    //       label: t("kanban"),
+    //       active: pathname.includes("/app/kanban"),
+    //       icon: "heroicons-outline:view-boards",
+    //       submenus: [],
+    //     },
+    //     {
+    //       id: "calendar",
+    //       href: "/app/calendar",
+    //       label: t("calendar"),
+    //       active:pathname.includes("/app/calendar"),
+    //       icon: "heroicons-outline:calendar",
+    //       submenus: [],
+    //     },
+    //     {
+    //       id: "todo",
+    //       href: "/app/todo",
+    //       label: t("todo"),
+    //       active:pathname.includes("/app/todo"),
+    //       icon: "heroicons-outline:clipboard-check",
+    //       submenus: [],
+    //     },
+    //   ],
+    // },
   ];
   const filteredGroups: Group[] = [];
 

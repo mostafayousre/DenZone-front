@@ -1,130 +1,103 @@
+"use client";
+
 import { ColumnDef } from "@tanstack/react-table";
-import { MainArea } from "@/types/areas";
-import { Link, usePathname } from "@/i18n/routing";
-import { SquarePen } from "lucide-react";
-import useToggleStatusSubArea from "@/services/subArea/toggleStatusSubArea";
-import useToggleAreaStatus from "@/services/area/toggleAreaStatus";
-import { toast } from "sonner"; 
+import { SquarePen, Trash2 } from "lucide-react";
+import { Link } from '@/i18n/routing';
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { AreaType } from "@/types/area";
+import useDeleteArea from "@/services/areas/deleteArea";
 
-interface GetColumnsProps {
-  areaType: "main" | "secondary";
-  onRefresh?: () => void; 
-}
-
-export const getColumns = ({ areaType, onRefresh }: GetColumnsProps): ColumnDef<MainArea>[] => [
-  {
-    accessorKey: areaType === "secondary" ? "name" : "regionName",
-    header: "Name",
-    cell: ({ row }) => {
-      const isSecondary = areaType === "secondary";
-      return (
-          <div className="capitalize">
-            <Link
-                href={`/dashboard/area/${areaType === "main" ? "main" : "secondary"}/${row.original.id}`}
-                className="hover:underline"
-            >
-              {isSecondary ? row.getValue("name") : row.getValue("regionName")}
-            </Link>
-          </div>
-      );
+export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<AreaType>[] => [
+    {
+        accessorKey: "name",
+        header: t("area_name"),
+        cell: ({ row }) => <span className="font-medium text-default-900">{row.getValue("name") || t("unknown")}</span>,
     },
-  },
-  {
-    accessorKey: "isDeleted",
-    header: "Is Active",
-    cell: ({ row }) => {
-      const isDeleted = row.getValue("isDeleted");
-      const isActive = !isDeleted;
-      const label = isActive ? "Active" : "Inactive";
-      const badgeColor = isActive
-          ? "bg-green-100 text-green-800"
-          : "bg-red-100 text-red-800";
-
-      return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeColor}`}>
-          {label}
-        </span>
-      );
+    {
+        accessorKey: "shippingCosts",
+        header: t("shipping_costs"),
+        cell: ({ row }) => <span className="font-medium text-default-900">{row.getValue("shippingCosts")}</span>,
     },
-  },
-  {
-    accessorKey: "id",
-    header: "Toggle Area Status",
-    cell: ({ row }) => {
-      const id: string = row.getValue("id");
+    {
+        accessorKey: "cityName",
+        header: t("city_name"),
+        cell: ({ row }) => <span className="font-medium text-default-900">{row.getValue("cityName") || t("unknown")}</span>,
+    },
+    {
+        id: "actions",
+        accessorKey: "action",
+        header: t("actions"),
+        enableHiding: false,
+        cell: ({ row }) => {
+            const id = row.original.id;
+            const { deleteArea, loading } = useDeleteArea();
 
-      const { loading: toggleSubAreaLoading, toggleStatusSubArea } = useToggleStatusSubArea();
-      const { loading: toggleMainAreaLoading, toggleAreaStatus } = useToggleAreaStatus();
+            const handleDelete = () => {
+                const toastId = toast(t("delete_area"), {
+                    description: t("delete_area_confirm"),
+                    action: (
+                        <div className="flex justify-end mx-auto items-center my-auto gap-2">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => toast.dismiss(toastId)}
+                                className="px-3 py-1 rounded-md"
+                            >
+                                {t("cancel")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={loading}
+                                className="px-3 py-1 rounded-md text-white bg-red-600 border-red-600 hover:bg-red-700"
+                                onClick={async () => {
+                                    try {
+                                        const isSuccess = await deleteArea(id as string);
+                                        
+                                        toast.dismiss(toastId);
 
-      const isDeleted = row.getValue("isDeleted");
-      const isActive = !isDeleted;
-      const isLoading = areaType === "main" ? toggleMainAreaLoading : toggleSubAreaLoading;
+                                        if (isSuccess) {
+                                            toast.success(t("area_deleted"), {
+                                                description: t("area_deleted_success"),
+                                            });
+                                            refresh(); 
+                                        } else {
+                                            throw new Error("Failed to delete");
+                                        }
+                                    } catch (error: any) {
+                                        toast.dismiss(toastId);
+                                        toast.error(t("error"), {
+                                            description: typeof error === 'string' ? error : error.message,
+                                        });
+                                    }
+                                }}
+                            >
+                                {t("confirm")}
+                            </Button>
+                        </div>
+                    ),
+                });
+            };
 
-      const handleToggleStatus = async () => {
-        try {
-          let result;
-
-          if (areaType === "main") {
-            result = await toggleAreaStatus(id);
-          } else {
-            result = await toggleStatusSubArea(id);
-          }
-
-          if (result.success && onRefresh) {
-            onRefresh();
-            toast.success(
-                `${areaType === "main" ? "Area" : "Sub-area"} status ${isActive ? "deactivated" : "activated"} successfully!`
+            return (
+                <div className="flex items-center gap-1">
+                    <Link
+                        href={`/dashboard/edit-area/${id}`}
+                        className="flex items-center p-2 text-info hover:text-info-foreground bg-info/10 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
+                        title={t("edit_area")}
+                    >
+                        <SquarePen className="w-4 h-4" />
+                    </Link>
+                    <div
+                        onClick={handleDelete}
+                        className="flex items-center p-2 text-destructive bg-destructive/10 duration-200 transition-all hover:bg-destructive hover:text-white rounded-full cursor-pointer"
+                        title={t("delete_area")}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </div>
+                </div>
             );
-          } else {
-            toast.error(
-                result.error || `Failed to ${isActive ? "deactivate" : "activate"} ${areaType === "main" ? "area" : "sub-area"}`
-            );
-          }
-        } catch (error) {
-          toast.error("An unexpected error occurred. Please try again.");
-          console.error("Toggle status error:", error);
-        }
-      };
-
-      return (
-          <button
-              onClick={handleToggleStatus}
-              disabled={isLoading}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors cursor-pointer ${
-                  isActive == true || isActive == null
-                      ? "bg-red-100 text-red-700 hover:bg-red-200 disabled:bg-red-50"
-                      : "bg-green-100 text-green-700 hover:bg-green-200 disabled:bg-green-50"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {isLoading ? "Loading..." : isActive == true || isActive == null ? "Click to deactivate" : "Click to activate"}
-          </button>
-      );
+        },
     },
-  },
-  {
-    id: "actions",
-    accessorKey: "action",
-    header: "Actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const pathname = usePathname();
-      const getHref = () => {
-        if (pathname?.includes('/area')) {
-          return `/dashboard/edit-area/${areaType}/${row.original.id}`;
-        }
-        return `/dashboard/edit-area/${areaType}/${row.original.id}`;
-      };
-
-      return (
-          <div className="flex items-center space-x-2">
-            <Link
-                href={getHref()}
-                className="p-2 text-blue-300 hover:text-blue-100 bg-blue-100 hover:bg-blue-300 rounded-full transition-colors"
-            >
-              <SquarePen className="h-4 w-4" />
-            </Link>
-          </div>
-      );
-    },
-  },
 ];

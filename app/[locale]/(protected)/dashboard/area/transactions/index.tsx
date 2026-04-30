@@ -1,246 +1,142 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import * as React from "react";
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+    ColumnFiltersState,
+    SortingState,
+    VisibilityState,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
 } from "@tanstack/react-table";
-
-import { getColumns } from "./columns";
-
+import { baseColumns } from "./columns";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
-import TablePagination from "./table-pagination";
-import { Card, CardContent } from "@/components/ui/card";
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { Loader2 } from "lucide-react";
+import TablePagination from "../../brand/transactions/table-pagination";
+import { CardContent } from "@/components/ui/card";
+import { Link } from '@/i18n/routing';
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/routing";
-import useGettingAllMainAreas from "@/services/area/gettingAllMainAreas";
-import useGettingAllSubArea from "@/services/subArea/gettingAllSubArea";
-import { AreaType, MainArea } from "@/types/areas";
+import { useEffect, useState } from "react";
+import useGetAreas from "@/services/areas/getAllAreas";
+import { Loader2 } from "lucide-react";
+import { AreaType } from "@/types/area";
+import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
+import { useTranslations } from "next-intl";
 
 const AreasTable = () => {
-  const {
-    loading: mainAreasLoading,
-    mainAreas,
-    getAllMainAreas,
-    error: mainAreasError
-  } = useGettingAllMainAreas();
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [rowSelection, setRowSelection] = React.useState({});
 
-  const {
-    error: subAreasError,
-    allSubArea,
-    loading: subAreasLoading,
-    getAllSubArea
-  } = useGettingAllSubArea();
+    const { areas: data, loading, getAllAreas } = useGetAreas();
+    const t = useTranslations("areas");
+    const columns = baseColumns({ refresh: getAllAreas, t });
 
-  const router = useRouter();
+    const [filteredAreas, setFilteredAreas] = useState<AreaType[]>([]);
 
-  const [selectedAreaType, setSelectedAreaType] = useState<"main" | "secondary">("main");
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-
-  const handleRefresh = React.useCallback(() => {
-    if (selectedAreaType === "main") {
-      getAllMainAreas();
-    } else if (selectedAreaType === "secondary") {
-      getAllSubArea();
-    }
-  }, [selectedAreaType, getAllMainAreas, getAllSubArea]);
-
-  const filteredAreas = React.useMemo<MainArea[]>(() => {
-    if (selectedAreaType === "main") return mainAreas || [];
-    if (selectedAreaType === "secondary") return allSubArea || [];
-    return [];
-  }, [selectedAreaType, mainAreas, allSubArea]);
-
-  const columns = React.useMemo(() => {
-    return getColumns({
-      areaType: selectedAreaType,
-      onRefresh: handleRefresh
+    const table = useReactTable({
+        data: filteredAreas ?? [],
+        columns,
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
+        state: {
+            sorting,
+            columnFilters,
+            columnVisibility,
+            rowSelection,
+        },
     });
-  }, [selectedAreaType, handleRefresh]);
 
-  const table = useReactTable({
-    data: filteredAreas,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
+    useEffect(() => {
+        getAllAreas();
+    }, []);
 
-  useEffect(() => {
-    handleRefresh();
-  }, [selectedAreaType]);
+    useEffect(() => {
+        if (data) {
+            setFilteredAreas(data);
+        }
+    }, [data]);
 
-  const isLoading = selectedAreaType === "main" ? mainAreasLoading : subAreasLoading;
-  const hasError = selectedAreaType === "main" ? mainAreasError : subAreasError;
-
-  if (isLoading) {
-    return (
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-2">
-            <Loader2 className="w-8 h-8 animate-spin" />
-            <p className="text-sm text-gray-600">Loading {selectedAreaType} areas...</p>
-          </div>
-        </div>
-    );
-  }
-
-  if (hasError) {
-    return (
-        <Card className="w-full">
-          <CardContent className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <p className="text-red-600 mb-2">Error loading {selectedAreaType} areas</p>
-              <Button onClick={handleRefresh} variant="outline">
-                Try Again
-              </Button>
+    if (loading === true) {
+        return (
+            <div className="flex mx-auto justify-center items-center h-16 w-16">
+                <Loader2 size={32} className="animate-spin" />
             </div>
-          </CardContent>
-        </Card>
-    );
-  }
+        );
+    }
 
-  return (
-      <Card className="w-full">
-        <div className="flex justify-between flex-wrap gap-4 items-center py-4 px-5">
-          <div className="flex-1 text-xl flex gap-4 font-medium text-default-900">
-            <Select
-                value={selectedAreaType}
-                onValueChange={(value: "main" | "secondary") => setSelectedAreaType(value)}
-            >
-              <SelectTrigger className="w-[180px] cursor-pointer">
-                <SelectValue placeholder="Select Area Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Area Types</SelectLabel>
-                  <SelectItem value="main">Main Areas</SelectItem>
-                  <SelectItem value="secondary">Secondary Areas</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+    return (
+        <div className="w-full">
+            <div className="flex flex-wrap justify-end items-center py-4 px-6 border-b border-solid border-default-200 gap-4">
+                <SearchInput data={data ?? []} setFilteredData={setFilteredAreas} filterKey={"name"} placeholder="Search areas..." />
+                <div className="#flex-none">
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <Link href="/dashboard/add-area">
+                            <Button size={"md"} variant="outline">
+                                {t("add_area")}
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
 
-          <div className="flex gap-2">
-            <Button
-                size="md"
-                variant="outline"
-                onClick={handleRefresh}
-                disabled={isLoading}
-            >
-              {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Refreshing...
-                  </>
-              ) : (
-                  "Refresh"
-              )}
-            </Button>
-            <Button
-                size="md"
-                variant="outline"
-                onClick={() => router.push(`/dashboard/add-area/${selectedAreaType}`)}
-            >
-              Add {selectedAreaType === "main" ? "Area" : "Sub-Area"}
-            </Button>
-          </div>
+            <CardContent className="pt-6">
+                <div className="border border-solid border-default-200 rounded-lg overflow-hidden border-t-0">
+                    <Table>
+                        <TableHeader className="bg-default-200">
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead className="last:text-start" key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(header.column.columnDef.header, header.getContext())}
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id} className="h-[75px]">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </CardContent>
+            <TablePagination table={table} />
         </div>
-
-        <CardContent>
-          <div className="border border-solid border-default-200 rounded-lg overflow-hidden border-t-0">
-            <Table>
-              <TableHeader className="bg-default-200">
-                {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                          <TableHead className="last:text-start" key={header.id}>
-                            {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                )}
-                          </TableHead>
-                      ))}
-                    </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                        <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && "selected"}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                              <TableCell key={cell.id} className="h-[75px]">
-                                {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                )}
-                              </TableCell>
-                          ))}
-                        </TableRow>
-                    ))
-                ) : (
-                    <TableRow>
-                      <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                      >
-                        No {selectedAreaType} areas found.
-                      </TableCell>
-                    </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-
-        <TablePagination table={table} />
-      </Card>
-  );
+    );
 };
 
 export default AreasTable;

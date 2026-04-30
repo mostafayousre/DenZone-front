@@ -19,10 +19,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 const CardSnippet = ({
-                         title,
-                         code,
-                         children,
-                     }: {
+    title,
+    code,
+    children,
+}: {
     title: string;
     code: string;
     children: React.ReactNode;

@@ -35,6 +35,7 @@ import {UserRoles} from "@/lib/data";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import {Button} from "@/components/ui/button";
 import {OrderStatus, OrderStatusLabel, UserRole, UserRoleLabel} from "@/enum";
+import { useSearchParams } from "next/navigation";
 
 const TransactionsTable = () => {
   
@@ -76,6 +77,9 @@ const TransactionsTable = () => {
     }
   };
 
+  const searchParams = useSearchParams();
+  const filterUserId = searchParams ? searchParams.get("userId") : null;
+
   const table = useReactTable({
     data: filteredUsers ?? [],
     columns,
@@ -99,9 +103,7 @@ const TransactionsTable = () => {
     gettingAllUsers()
   }, []);
 
-  useEffect(() => {
-    if (data) setFilteredUsers(data)
-  }, []);
+  // Remove redundant useEffect that sets filteredUsers only once
 
 
   return (
