@@ -5,14 +5,14 @@ function useChangePasswordFromAdmin() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const changePassword = async (userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    const changePassword = async (userId: string, newPassword: string, confirmPassword: string): Promise<{ success: boolean; error?: string }> => {
         setLoading(true);
         setError(null);
 
         try {
             const response = await AxiosInstance.post(
                 "/api/Users/ChangePassword-fromAdmin",
-                { userId, newPassword }
+                { userId, newPassword, confirmPassword }
             );
 
             if (response.status === 200 || response.status === 204) {

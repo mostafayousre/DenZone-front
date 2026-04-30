@@ -136,17 +136,23 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
   const { deleteUser, loading: deleting } = useDeleteUser();
   const { changePassword, loading: changingPassword } = useChangePasswordFromAdmin();
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handlePasswordChange = async () => {
-    if (!newPassword) {
-      toast.error("Please enter a new password");
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in both password fields");
       return;
     }
-    const result = await changePassword(id, newPassword);
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    const result = await changePassword(id as string, newPassword, confirmPassword);
     if (result.success) {
       toast.success("Password changed successfully");
       setNewPassword("");
+      setConfirmPassword("");
       setIsDialogOpen(false);
     } else {
       toast.error(result.error || "Failed to change password");
@@ -235,6 +241,16 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="confirmPassword">{t?.("confirmPassword") || "Confirm Password"}</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
               />
             </div>
           </div>

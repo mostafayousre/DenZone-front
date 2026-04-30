@@ -20,6 +20,7 @@ import useGetAreas from "@/services/areas/getAllAreas";
 import useGetZones from "@/services/zones/getAllZones";
 import { Loader2, Save } from "lucide-react"; 
 import { useTranslations } from "next-intl";
+import ReactSelect, { MultiValue } from "react-select";
 
 const AddAreaZonePage = () => {
   const { addAreaZone, loading: addingLoading } = useAddAreaZone(); 
@@ -28,9 +29,8 @@ const AddAreaZonePage = () => {
   const router = useRouter();
   const t = useTranslations("area_zones");
 
-  const [areaId, setAreaId] = useState("");
+  const [areaIds, setAreaIds] = useState<number[]>([]);
   const [zoneId, setZoneId] = useState("");
-  const [areaSearch, setAreaSearch] = useState("");
   const [zoneSearch, setZoneSearch] = useState("");
 
   useEffect(() => {
@@ -38,16 +38,14 @@ const AddAreaZonePage = () => {
     getAllZones();
   }, []);
 
-  const filteredAreas = areas?.filter((area: any) =>
-    area.name.toLowerCase().includes(areaSearch.toLowerCase())
-  ) || [];
+  const filteredAreas = areas || [];
 
   const filteredZones = zones?.filter((zone: any) =>
     zone.name.toLowerCase().includes(zoneSearch.toLowerCase())
   ) || [];
 
   const handleAddSubmit = async () => {
-    if (!areaId || !zoneId) {
+    if (areaIds.length === 0 || !zoneId) {
       toast.error(t("error"), { 
         description: "Please fill all required fields"
       });
@@ -55,7 +53,7 @@ const AddAreaZonePage = () => {
     }
 
     const payload = {
-      areaId: Number(areaId),
+      areaIds: areaIds,
       zoneId: Number(zoneId),
     };
 
@@ -94,29 +92,23 @@ const AddAreaZonePage = () => {
           <CardContent className="space-y-6">
             
             <div className="flex items-center flex-wrap gap-2">
-              <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="areaId">
+              <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="areaIds">
                 {t("select_area")}
               </Label>
-              <Select onValueChange={(value) => setAreaId(value)}>
-                <SelectTrigger className="flex-1 min-w-[300px]">
-                  <SelectValue placeholder={t("select_area")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="px-2 py-1">
-                    <Input 
-                      placeholder={t("search_area")} 
-                      onChange={(e) => setAreaSearch(e.target.value)} 
-                    />
-                  </div>
-                  <SelectGroup>
-                    {filteredAreas.map((area: any) => (
-                      <SelectItem key={area.id} value={area.id.toString()}>
-                        {area.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <div className="flex-1 min-w-[300px]">
+                <ReactSelect
+                  isMulti
+                  options={areas?.map((area: any) => ({
+                    value: area.id,
+                    label: area.name
+                  })) || []}
+                  onChange={(selected: MultiValue<{value: number, label: string}>) => {
+                    setAreaIds(selected.map(item => item.value));
+                  }}
+                  placeholder={t("select_area")}
+                  classNamePrefix="react-select"
+                />
+              </div>
             </div>
 
             <div className="flex items-center flex-wrap gap-2">

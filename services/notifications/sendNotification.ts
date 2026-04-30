@@ -9,7 +9,7 @@ export enum RecipientType {
 
 export interface NotificationPayload {
   recipientType: number;
-  userId?: string | null;
+  userIds?: string[];
   message: string;
   title: string;
   expired: string;

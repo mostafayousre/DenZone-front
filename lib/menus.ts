@@ -181,6 +181,13 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               children: [],
               icon: "",
             },
+            {
+              href: "/dashboard/roles",
+              label: "Roles", // hardcoded in English, or add to i18n
+              active: pathname === "/dashboard/roles" || pathname.startsWith("/dashboard/edit-role") || pathname === "/dashboard/add-role",
+              children: [],
+              icon: "",
+            },
             // {
             //   href: "/dashboard/pharmacy-list",
             //   label: t("Doctors details"),

@@ -36,6 +36,7 @@ const AddProduct = () => {
   const [categoryId, setCategoryId] = useState<string>("");
   const [brandId, setBrandId] = useState<string>("");
   const [isPopular, setIsPopular] = useState<boolean>(false);
+  const [revenuePercentage, setRevenuePercentage] = useState<string>("");
   
   const [photos, setPhotos] = useState<File[]>([]);
   
@@ -99,6 +100,7 @@ const AddProduct = () => {
     formData.append("CategoryId", categoryId);
     formData.append("BrandId", brandId);
     formData.append("IsPopular", isPopular.toString());
+    formData.append("RevenuePercentage", revenuePercentage);
     
     photos.forEach((file) => {
       formData.append("Photos", file);
@@ -197,6 +199,13 @@ const AddProduct = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Label className="w-[120px]">Revenue Percentage (%)</Label>
+                <Input type="number" value={revenuePercentage} onChange={(e) => setRevenuePercentage(e.target.value)} />
               </div>
             </div>
 

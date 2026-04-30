@@ -17,14 +17,14 @@ import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import useSendNotification, { RecipientType } from "@/services/notifications/sendNotification";
 import { toast } from "sonner";
 import { UserType } from "@/types/users";
+import ReactSelect, { MultiValue } from "react-select";
 
 const SendNotificationPage = () => {
   const [recipientType, setRecipientType] = useState<string>("all_doctors");
-  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [title, setTitle] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(new Date());
-  const [isUserListOpen, setIsUserListOpen] = useState(false);
 
   const { users, loading: usersLoading, getUsersByRoleId } = useGetUsersByRoleId();
   const { sendNotification, loading: sending } = useSendNotification();
@@ -48,8 +48,8 @@ const SendNotificationPage = () => {
       return;
     }
 
-    if ((recipientType === "specific_doctor" || recipientType === "specific_provider") && !selectedUserId) {
-      toast.error("Please select a recipient");
+    if ((recipientType === "specific_doctor" || recipientType === "specific_provider") && selectedUserIds.length === 0) {
+      toast.error("Please select at least one recipient");
       return;
     }
 
@@ -64,7 +64,7 @@ const SendNotificationPage = () => {
 
     const payload = {
       recipientType: recipientTypeValue,
-      userId: recipientType.startsWith("specific") ? selectedUserId : null,
+      userIds: recipientType.startsWith("specific") ? selectedUserIds : [],
       title,
       message,
       expired: expiryDate.toISOString(),
@@ -76,7 +76,7 @@ const SendNotificationPage = () => {
       toast.success("Notification sent successfully!");
       setTitle("");
       setMessage("");
-      setSelectedUserId("");
+      setSelectedUserIds([]);
     } else {
       toast.error(error || "Failed to send notification");
     }
@@ -93,7 +93,7 @@ const SendNotificationPage = () => {
             <Label>Recipient Type</Label>
             <Select value={recipientType} onValueChange={(val) => {
               setRecipientType(val);
-              setSelectedUserId("");
+              setSelectedUserIds([]);
             }}>
               <SelectTrigger>
                 <SelectValue placeholder="Select who to send to" />
@@ -110,48 +110,18 @@ const SendNotificationPage = () => {
           {recipientType.startsWith("specific") && (
             <div className="space-y-2">
               <Label>Select {recipientType.includes("doctor") ? "Doctor" : "Provider"}</Label>
-              <Popover open={isUserListOpen} onOpenChange={setIsUserListOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between"
-                  >
-                    {selectedUserId
-                      ? users.find((user: UserType) => user.id === selectedUserId)?.userName
-                      : `Search ${recipientType.includes("doctor") ? "doctor" : "provider"}...`}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search user..." />
-                    <CommandList>
-                      <CommandEmpty>No user found.</CommandEmpty>
-                      <CommandGroup>
-                        {users.map((user: UserType) => (
-                          <CommandItem
-                            key={user.id}
-                            value={user.userName}
-                            onSelect={() => {
-                              setSelectedUserId(user.id);
-                              setIsUserListOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedUserId === user.id ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {user.userName} ({user.email})
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <ReactSelect
+                isMulti
+                options={users?.map((user: UserType) => ({
+                  value: user.id,
+                  label: `${user.userName} (${user.email})`
+                })) || []}
+                onChange={(selected: MultiValue<{value: string, label: string}>) => {
+                  setSelectedUserIds(selected.map(item => item.value));
+                }}
+                placeholder={`Search ${recipientType.includes("doctor") ? "doctor" : "provider"}...`}
+                classNamePrefix="react-select"
+              />
             </div>
           )}
 

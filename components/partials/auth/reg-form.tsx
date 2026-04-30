@@ -76,6 +76,7 @@ const RegForm = () => {
 
     const selectedRoleId = watch("RoleId");
     const isProvider = selectedRoleId === "1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D";
+    const isDeliver = selectedRoleId === "e3c4b8fc-afc9-4716-b067-c9ec509d1195";
 
     const selectedCountryId = watch("Country");
     const selectedCityId = watch("SubArea");
@@ -220,6 +221,7 @@ const RegForm = () => {
                                     <>
                                         <SelectItem value="1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D">Provider</SelectItem>
                                         <SelectItem value="8C2F4F3A-7F6D-4DB8-8B02-4A04D31F35D6">Admin</SelectItem>
+                                        <SelectItem value="e3c4b8fc-afc9-4716-b067-c9ec509d1195">Deliver</SelectItem>
                                     </>
                                 )}
                             </SelectContent>
@@ -228,7 +230,7 @@ const RegForm = () => {
                 />
             </div>
 
-            {isProvider && (
+            {(isProvider || isDeliver) && (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
