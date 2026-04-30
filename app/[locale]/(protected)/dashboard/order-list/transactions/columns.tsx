@@ -12,6 +12,97 @@ import { formatDateToDMY } from "@/utils";
 import Cookies from "js-cookie";
 
 import GenerateInvoiceButton from "@/components/partials/GenerateInvoiceButton/GenerateInvoiceButton";
+import { OrderStatus } from "@/enum";
+import useUpdateOrderStatus from "@/services/Orders/updateOrderStatus";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
+
+const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
+    const userRole = Cookies.get("userRole");
+    const isAdmin = userRole === "Admin";
+    const { updateOrderStatus, loading } = useUpdateOrderStatus();
+
+    const statusColors: Record<number, string> = {
+        0: "bg-yellow-200 text-yellow-700", // Pending
+        1: "bg-blue-200 text-blue-700",     // Approved
+        2: "bg-red-200 text-red-700",       // Rejected
+        3: "bg-purple-200 text-purple-700", // Prepared
+        4: "bg-indigo-200 text-indigo-700", // Shipped
+        5: "bg-green-200 text-green-700",   // Delivered
+        6: "bg-emerald-200 text-emerald-700", // Completed
+    };
+
+    const status = row.original.status;
+    const statusStyle = statusColors[status] || "bg-gray-200 text-gray-700";
+
+    const statusTranslationKeys: Record<number, string> = {
+        0: "statusCode.pending",
+        1: "statusCode.approved",
+        2: "statusCode.rejected",
+        3: "statusCode.prepared",
+        4: "statusCode.shipped",
+        5: "statusCode.delivered",
+        6: "statusCode.completed",
+    };
+
+    const statusLabel = t(statusTranslationKeys[status] ?? "status.unknown");
+
+    if (!isAdmin) {
+        return (
+            <Badge className={cn("rounded-full px-5 py-1 text-sm", statusStyle)}>
+                {statusLabel}
+            </Badge>
+        );
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <Select
+                value={status.toString()}
+                onValueChange={async (value: string) => {
+                    const numericValue = Number(value) as OrderStatus;
+                    const result = await updateOrderStatus(row.original.id, numericValue);
+                    if (result.success) {
+                        toast.success(t("updateStatusSuccess") || "Status updated successfully");
+                        refresh();
+                    } else {
+                        toast.error(result.error || t("updateStatusError") || "Failed to update status");
+                    }
+                }}
+                disabled={loading}
+            >
+                <SelectTrigger className={cn("h-8 px-3 text-xs font-medium rounded-full border-none w-fit min-w-[120px]", statusStyle)}>
+                    <SelectValue placeholder={statusLabel}>
+                        {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                        {statusLabel}
+                    </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectLabel>{t("orderStatus")}</SelectLabel>
+                        {Object.values(OrderStatus)
+                            .filter((value) => typeof value === "number" && value !== 7)
+                            .map((s) => (
+                                <SelectItem key={s} value={s.toString()} className="text-xs">
+                                    {t(`statusCode.${OrderStatus[s as number].toLowerCase()}`)}
+                                </SelectItem>
+                            ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+        </div>
+    );
+};
 
 export const baseColumns = ({ refresh, t }: {
   refresh: () => void;
@@ -76,41 +167,9 @@ export const baseColumns = ({ refresh, t }: {
       },
     },
     {
-      accessorKey: "status",
-      header: t("orderStatus"),
-      cell: ({ row }) => {
-        const statusColors: Record<number, string> = {
-          0: "bg-yellow-200 text-yellow-700", // Pending
-          1: "bg-blue-200 text-blue-700",     // Approved
-          2: "bg-red-200 text-red-700",       // Rejected
-          3: "bg-purple-200 text-purple-700", // Prepared
-          4: "bg-indigo-200 text-indigo-700", // Shipped
-          5: "bg-green-200 text-green-700",   // Delivered
-          6: "bg-emerald-200 text-emerald-700", // Completed
-        };
-
-        const status = row.original.status;
-
-        const statusStyle = statusColors[status] || "bg-gray-200 text-gray-700";
-
-        const statusTranslationKeys: Record<number, string> = {
-          0: "statusCode.pending",
-          1: "statusCode.approved",
-          2: "statusCode.rejected",
-          3: "statusCode.prepared",
-          4: "statusCode.shipped",
-          5: "statusCode.delivered",
-          6: "statusCode.completed",
-        };
-
-        const statusLabel = t(statusTranslationKeys[status] ?? "status.unknown");
-
-        return (
-          <Badge className={cn("rounded-full px-5 py-1 text-sm", statusStyle)}>
-            {statusLabel}
-          </Badge>
-        );
-      },
+        accessorKey: "status",
+        header: t("orderStatus"),
+        cell: ({ row }) => <StatusCell row={row} refresh={refresh} t={t} />,
     },
 
     {

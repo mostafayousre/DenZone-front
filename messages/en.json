@@ -336,8 +336,11 @@
       "shipped": "Shipped",
       "delivered": "Delivered",
       "completed": "Completed",
-      "reassigned": "Reassigned"
-    }
+      "reassigned": "Reassigned",
+      "reassignto": "Reassigned"
+    },
+    "updateStatusSuccess": "Status updated successfully",
+    "updateStatusError": "Failed to update status"
   },
   "OrderDetails": {
     "orderDetails": "Order Details",
