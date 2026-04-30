@@ -42,7 +42,7 @@ export function MultiCollapseMenuButton({
             <CollapsibleTrigger
                 asChild
             >
-                <div className=' flex items-center group [&[data-state=open]>button>div>div>svg]:rotate-180 first:mt-3 ' >
+                <div className=' flex items-center group [&[data-state=open]>button>div>div>svg]:rotate-180 first:mt-1 ' >
 
                     <Button
                         color='secondary'

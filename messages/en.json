@@ -344,7 +344,12 @@
       "reassignto": "Reassigned"
     },
     "updateStatusSuccess": "Status updated successfully",
-    "updateStatusError": "Failed to update status"
+    "updateStatusError": "Failed to update status",
+    "delivery": "Delivery",
+    "assignDelivery": "Assign Delivery",
+    "selectDelivery": "Select Delivery",
+    "assignDeliverySuccess": "Delivery assigned successfully",
+    "assignDeliveryError": "Failed to assign delivery"
   },
   "OrderDetails": {
     "orderDetails": "Order Details",
