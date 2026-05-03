@@ -278,9 +278,25 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
             {
               href: "/dashboard/policy",
               label: t("policy"),
-              active: pathname === "/dashboard/policy",
-              children: [],
+              active: pathname.startsWith("/dashboard/policy"),
               icon: "",
+              children: [
+                {
+                  href: "/dashboard/policy",
+                  label: t("policy"),
+                  active: pathname === "/dashboard/policy",
+                },
+                {
+                  href: "/dashboard/policy/refund-policy",
+                  label: t("refund_policy"),
+                  active: pathname === "/dashboard/policy/refund-policy",
+                },
+                {
+                  href: "/dashboard/policy/terms-and-conditions",
+                  label: t("terms_and_conditions"),
+                  active: pathname === "/dashboard/policy/terms-and-conditions",
+                },
+              ],
             },
             {
               href: "/dashboard/settings",

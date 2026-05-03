@@ -14,11 +14,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-const PolicyPage = () => {
+const TermsAndConditionsPage = () => {
     const t = useTranslations("policy_page");
     const { getPolicy, addPolicy, fetchLoading, loading: updateLoading } = usePolicy({
-        getEndpoint: "/api/Policy/get-policy",
-        addEndpoint: "/api/Policy/add-policy"
+        getEndpoint: "/api/TermsAndConditions/get-terms",
+        addEndpoint: "/api/TermsAndConditions/add-terms"
     });
 
     const [content, setContent] = useState("");
@@ -54,7 +54,7 @@ const PolicyPage = () => {
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center bg-card border border-border/50 rounded-xl p-5 shadow-sm">
                 <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-                    {t("title") || "Terms & Privacy Policy"}
+                    {t("terms_and_conditions_title") || "Terms & Conditions"}
                 </h1>
                 <Button
                     onClick={handleSave}
@@ -96,4 +96,4 @@ const PolicyPage = () => {
     );
 };
 
-export default PolicyPage;
+export default TermsAndConditionsPage;

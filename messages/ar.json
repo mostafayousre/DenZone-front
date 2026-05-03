@@ -124,14 +124,14 @@
   },
   "Menu": {
     "price-management": "الإدارة السعرية",
-    "policy": "السياسات",
+    "policy": "سياسة الخصوصية",
+    "refund_policy": "سياسة الاسترجاع",
+    "terms_and_conditions": "الشروط والأحكام",
     "location": "الموقع",
     "country": "الدول",
     "city": "المدن",
-    "area": "المناطق",
     "zone": "الأحياء",
     "areaZone": "أحياء المناطق",
-    "settings": "الإعدادات",
     "User Management": "إدارة المستخدمين",
     "Providers details": "تفاصيل الموردون",
     "Doctors details": "تفاصيل الأطباء  ",
@@ -977,12 +977,15 @@
     "search_zone": "ابحث عن الزون..."
   },
   "policy_page": {
-    "title": "الشروط وسياسة الخصوصية",
+    "title": "سياسة الخصوصية",
+    "refund_policy_title": "سياسة الاسترجاع",
+    "terms_and_conditions_title": "الشروط والأحكام",
     "save": "حفظ السياسة",
     "saving": "جاري الحفظ...",
     "save_success": "تم حفظ السياسة بنجاح.",
     "save_error": "حدث خطأ أثناء الحفظ.",
     "fetch_error": "حدث خطأ أثناء تحميل البيانات.",
-    "loading": "جاري تحميل المحتوى..."
+    "loading": "جاري تحميل المحتوى...",
+    "select_language": "اللغة"
   }
 }
