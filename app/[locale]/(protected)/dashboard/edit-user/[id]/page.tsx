@@ -60,7 +60,7 @@ const EditUser = () => {
         formData.append("IsActive", activate.toString());
         
         if (profileImage) {
-            formData.append("ProfileImage", profileImage);
+            formData.append("UploudProfileImage", profileImage);
         }
         
         formData.append("PharmacyDetails", 'null');

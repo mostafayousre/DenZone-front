@@ -124,7 +124,9 @@
   },
   "Menu": {
     "price-management": "Price Management",
-    "policy": "Policy",
+    "policy": "Privacy Policy",
+    "refund_policy": "Refund Policy",
+    "terms_and_conditions": "Terms & Conditions",
     "location": "Location",
     "country": "Country",
     "city": "City",
@@ -185,7 +187,7 @@
     "invoice": "Invoice",
     "pricing": "Pricing",
     "profile": "Profile",
-    "settings": "Settings",
+
     "elements": "Elements",
     "components": "Components",
     "avatar": "Avatar",
@@ -301,7 +303,6 @@
     "returnList": "Return List",
     "sellers": "Sellers",
     "typography": "Typography",
-    "area": "Area",
     "colors": "Colors",
     "coupons": "Coupons",
     "modules": "Modules",
@@ -863,12 +864,15 @@
     "search_zone": "Search Zone..."
   },
   "policy_page": {
-    "title": "Terms & Privacy Policy",
+    "title": "Privacy Policy",
+    "refund_policy_title": "Refund Policy",
+    "terms_and_conditions_title": "Terms & Conditions",
     "save": "Save Policy",
     "saving": "Saving...",
     "save_success": "Policy saved successfully.",
     "save_error": "Failed to save policy.",
     "fetch_error": "Failed to load policy.",
-    "loading": "Loading content..."
+    "loading": "Loading content...",
+    "select_language": "Language"
   }
 }
