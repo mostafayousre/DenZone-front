@@ -1,3 +1,4 @@
+import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { SquarePen } from "lucide-react";
 import { formatDateToDMY } from "@/utils";
