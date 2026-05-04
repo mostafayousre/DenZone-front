@@ -6,5 +6,5 @@ export type BrandType = {
     success?: any;
     error?: any;
     brands?: BrandType[];
-  
+    isPopular?: boolean;
 };

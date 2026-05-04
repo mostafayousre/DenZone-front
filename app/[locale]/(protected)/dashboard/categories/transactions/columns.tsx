@@ -26,20 +26,20 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void , t: (key: str
         header: t("pref"),
         cell: ({ row }) => <span>{row.getValue("pref")}</span>,
     },
-    {
-        accessorKey: "companyPercentage",
-        header: t("company_percentage"),
-        cell: ({ row }) => {
-            const value = row.getValue("companyPercentage");
-            return (
-                <span>
-                    {value !== null && value !== undefined && value !== "" 
-                        ? `${value}%` 
-                        : "-"}
-                </span>
-            );
-        },
-    },
+    // {
+    //     accessorKey: "companyPercentage",
+    //     header: t("company_percentage"),
+    //     cell: ({ row }) => {
+    //         const value = row.getValue("companyPercentage");
+    //         return (
+    //             <span>
+    //                 {value !== null && value !== undefined && value !== "" 
+    //                     ? `${value}%` 
+    //                     : "-"}
+    //             </span>
+    //         );
+    //     },
+    // },
     {
         id: "actions",
         accessorKey: "action",

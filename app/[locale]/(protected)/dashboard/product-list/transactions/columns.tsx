@@ -157,6 +157,17 @@ export const baseColumns = ({
       },
     },
     {
+      accessorKey: "revenuePercentage",
+      header: isArabic ? "نسبة الربح" : "Revenue Percentage",
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {row.original.revenuePercentage !== undefined && row.original.revenuePercentage !== null
+            ? `${row.original.revenuePercentage}%`
+            : "-"}
+        </span>
+      ),
+    },
+    {
       accessorKey: "isPopular",
       header: isArabic ? "شائع" : "Popular",
       cell: ({ row }) => (

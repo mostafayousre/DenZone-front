@@ -81,13 +81,35 @@ const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (ke
 
 const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
     const { updateOrderStatus, loading } = useUpdateOrderStatus();
+    const { assignDelivery, loading: assignLoading } = useAssignDelivery();
+    const { getDelivers, delivers, loading: deliversLoading } = useGetDelivers();
     const [open, setOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<string>(row.original.status.toString());
+    const [selectedDelivery, setSelectedDelivery] = useState<string>("");
+
+    const handleOpenChange = (isOpen: boolean) => {
+        setOpen(isOpen);
+        if (isOpen && delivers.length === 0) {
+            getDelivers();
+        }
+    };
 
     const handleUpdate = async () => {
         const numericValue = Number(selectedStatus) as OrderStatus;
+        if (numericValue === 3 && !selectedDelivery) {
+            toast.error(t("pleaseSelectDelivery") || "Please select a delivery person");
+            return;
+        }
+
         const result = await updateOrderStatus(row.original.id, numericValue);
         if (result.success) {
+            if (numericValue === 3 && selectedDelivery) {
+                const assignResult = await assignDelivery(row.original.id, selectedDelivery);
+                if (!assignResult.success) {
+                    toast.error(assignResult.error || t("assignDeliveryError") || "Failed to assign delivery");
+                    return;
+                }
+            }
             toast.success(t("updateStatusSuccess") || "Status updated successfully");
             setOpen(false);
             refresh();
@@ -97,7 +119,7 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <button
                     className="flex items-center p-2 text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
@@ -131,96 +153,43 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
                             </SelectContent>
                         </Select>
                     </div>
+                    {Number(selectedStatus) === 3 && (
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium">{t("selectDelivery") || "Select Delivery Person"}</label>
+                            <Select
+                                value={selectedDelivery}
+                                onValueChange={setSelectedDelivery}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder={t("selectDeliveryPlaceholder") || "Select Delivery Person"} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {deliversLoading ? (
+                                        <div className="flex items-center justify-center p-4">
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        </div>
+                                    ) : delivers.length === 0 ? (
+                                        <div className="flex items-center justify-center p-4 text-sm text-gray-500">
+                                            No delivery personnel found
+                                        </div>
+                                    ) : (
+                                        delivers.map((d: any) => (
+                                            <SelectItem key={d.id} value={d.id} className="text-xs">
+                                                {d.fullName || d.userName || "Unknown"}
+                                            </SelectItem>
+                                        ))
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+                    <Button variant="outline" onClick={() => setOpen(false)} disabled={loading || assignLoading}>
                         {t("cancel") || "Cancel"}
                     </Button>
-                    <Button onClick={handleUpdate} disabled={loading}>
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                        {t("save") || "Save"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-};
-
-const AssignDeliveryDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
-    const { assignDelivery, loading } = useAssignDelivery();
-    const { getDelivers, delivers, loading: deliversLoading } = useGetDelivers();
-    const [open, setOpen] = useState(false);
-    const [selectedDelivery, setSelectedDelivery] = useState<string>("");
-
-    const handleOpenChange = (isOpen: boolean) => {
-        setOpen(isOpen);
-        if (isOpen && delivers.length === 0) {
-            getDelivers();
-        }
-    };
-
-    const handleAssign = async () => {
-        if (!selectedDelivery) return;
-        const result = await assignDelivery(row.original.id, selectedDelivery);
-        if (result.success) {
-            toast.success(t("assignDeliverySuccess") || "Delivery assigned successfully");
-            setOpen(false);
-            refresh();
-        } else {
-            toast.error(result.error || t("assignDeliveryError") || "Failed to assign delivery");
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <button
-                    className="flex items-center p-2 text-indigo-500 hover:text-indigo-600 bg-indigo-500/20 hover:bg-indigo-500/30 duration-200 transition-all rounded-full cursor-pointer"
-                    title={t("assignDelivery") || "Assign Delivery"}
-                >
-                    <Truck className="w-4 h-4" />
-                </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{t("assignDelivery") || "Assign Delivery"}</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium">{t("selectDelivery") || "Select Delivery Person"}</label>
-                        <Select
-                            value={selectedDelivery}
-                            onValueChange={setSelectedDelivery}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder={t("selectDeliveryPlaceholder") || "Select Delivery Person"} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {deliversLoading ? (
-                                    <div className="flex items-center justify-center p-4">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    </div>
-                                ) : delivers.length === 0 ? (
-                                    <div className="flex items-center justify-center p-4 text-sm text-gray-500">
-                                        No delivery personnel found
-                                    </div>
-                                ) : (
-                                    delivers.map((d: any) => (
-                                        <SelectItem key={d.id} value={d.id} className="text-xs">
-                                            {d.fullName || d.userName || "Unknown"}
-                                        </SelectItem>
-                                    ))
-                                )}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-                        {t("cancel") || "Cancel"}
-                    </Button>
-                    <Button onClick={handleAssign} disabled={loading || !selectedDelivery}>
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    <Button onClick={handleUpdate} disabled={loading || assignLoading}>
+                        {(loading || assignLoading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         {t("save") || "Save"}
                     </Button>
                 </DialogFooter>
@@ -339,7 +308,6 @@ export const baseColumns = ({ refresh, t }: {
                 ) : (
                   <>
                     <StatusDialog row={row} refresh={refresh} t={t} />
-                    <AssignDeliveryDialog row={row} refresh={refresh} t={t} />
                     <Link
                       href={`/dashboard/edit-order/${row.original.id}`}
                       className="flex items-center p-2 text-primary bg-primary/20 duration-200 transition-all hover:bg-primary/80 hover:text-primary-foreground rounded-full cursor-pointer"

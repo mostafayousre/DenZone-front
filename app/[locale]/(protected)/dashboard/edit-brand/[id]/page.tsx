@@ -10,6 +10,7 @@ import { useRouter } from "@/i18n/routing";
 import { useParams } from "next/navigation";
 import useUpdateBrand from "@/services/brands/updateBrand"; 
 import AxiosInstance from "@/lib/AxiosInstance";
+import { Switch } from "@/components/ui/switch";
 import { Loader2, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -24,6 +25,7 @@ const EditBrand = () => {
 
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
+  const [isPopular, setIsPopular] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
   const [fetching, setFetching] = useState(true);
 
@@ -41,6 +43,7 @@ const EditBrand = () => {
         if (response.data) {
           setName(response.data.name || "");
           setArabicName(response.data.arName || "");
+          setIsPopular(response.data.isPopular || false);
         }
       } catch (error: any) {
         toast.error(t("error_fetching_brand"));
@@ -61,6 +64,7 @@ const EditBrand = () => {
     const formData = new FormData();
     formData.append("brandName", name);
     formData.append("brandArName", arabicName);
+    formData.append("IsPopular", isPopular.toString());
     if (photo) {
       formData.append("imageFile", photo);
     }
@@ -131,6 +135,17 @@ const EditBrand = () => {
                 className="flex-1 min-w-[300px]"
                 onChange={handleFileChange}
               />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Switch 
+                id="isPopular" 
+                checked={isPopular} 
+                onCheckedChange={(val) => setIsPopular(val)} 
+              />
+              <Label htmlFor="isPopular" className="cursor-pointer font-semibold">
+                {t("isPopular") || "Is Popular"}
+              </Label>
             </div>
           </CardContent>
         </Card>

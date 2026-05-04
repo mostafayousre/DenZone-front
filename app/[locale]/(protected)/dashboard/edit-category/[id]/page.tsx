@@ -28,7 +28,7 @@ const EditCategory = () => {
   const [arabicName, setArabicName] = useState("");
   const [pref, setPref] = useState("");
   const [description, setDescription] = useState("");
-  const [companyPercentage, setCompanyPercentage] = useState("");
+  // const [companyPercentage, setCompanyPercentage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const EditCategory = () => {
       setArabicName(category.arabicName || "");
       setPref(category.pref || "");
       setDescription(category.description || "");
-      setCompanyPercentage(category.companyPercentage || "");
+      // setCompanyPercentage(category.companyPercentage || "");
     }
   }, [category]);
 
@@ -62,7 +62,7 @@ const EditCategory = () => {
     formData.append("ArabicName", arabicName);
     formData.append("Pref", pref);
     formData.append("Description", description);
-    formData.append("CompanyPercentage", companyPercentage);
+    // formData.append("CompanyPercentage", companyPercentage);
     
     if (imageFile) {
       formData.append("ImageFile", imageFile);
@@ -151,7 +151,7 @@ const EditCategory = () => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-        <div className="flex items-center flex-wrap gap-2">
+        {/* <div className="flex items-center flex-wrap gap-2">
   <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="companyPercentage">
     {t("company_percentage")}
   </Label>
@@ -169,7 +169,7 @@ const EditCategory = () => {
       %
     </div>
   </div>
-</div>
+</div> */}
             <div className="flex items-center flex-wrap gap-2">
               <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="imageFile">
                 {t("category_image")}

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/routing";
 import useAddBrand from "@/services/brands/addBrand"; 
+import { Switch } from "@/components/ui/switch";
 import { Loader2, Upload } from "lucide-react"; 
 import { useTranslations } from "next-intl";
 
@@ -18,6 +19,7 @@ const AddBrandPage = () => {
 
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
+  const [isPopular, setIsPopular] = useState(false);
   const [imagePath, setImagePath] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +39,7 @@ const AddBrandPage = () => {
     const formData = new FormData();
     formData.append("brandName", name);
     formData.append("brandArName", arabicName);
+    formData.append("IsPopular", isPopular.toString());
     formData.append("imageFile", imagePath);
 
     try {
@@ -102,6 +105,17 @@ const AddBrandPage = () => {
                 className="flex-1 min-w-[300px]"
                 onChange={handleFileChange}
               />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <Switch 
+                id="isPopular" 
+                checked={isPopular} 
+                onCheckedChange={(val) => setIsPopular(val)} 
+              />
+              <Label htmlFor="isPopular" className="cursor-pointer font-semibold">
+                {t("isPopular") || "Is Popular"}
+              </Label>
             </div>
            
           </CardContent>
