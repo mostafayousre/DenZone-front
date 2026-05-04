@@ -1,13 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2, ShieldCheck } from "lucide-react";
 import { Link } from '@/i18n/routing';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import useDeleteRole from "@/services/roles/deleteRole";
 
-export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<any>[] => [
+export const baseColumns = ({ refresh, t, onAssignPermissions }: { 
+    refresh: () => void; 
+    t: (key: string) => string;
+    onAssignPermissions: (role: any) => void;
+}): ColumnDef<any>[] => [
     {
         accessorKey: "name",
         header: "Role Name",
@@ -69,6 +73,13 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
 
             return (
                 <div className="flex items-center gap-1">
+                    <div
+                        onClick={() => onAssignPermissions(row.original)}
+                        className="flex items-center p-2 text-warning bg-warning/40 duration-200 transition-all hover:bg-warning/80 hover:text-warning-foreground rounded-full cursor-pointer"
+                        title="Assign Permissions"
+                    >
+                        <ShieldCheck className="w-4 h-4" />
+                    </div>
                     <Link
                         href={`/dashboard/edit-role/${id}`}
                         className="flex items-center p-2 border-b text-info hover:text-info-foreground bg-info/40 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
