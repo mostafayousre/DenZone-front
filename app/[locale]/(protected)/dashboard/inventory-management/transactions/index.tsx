@@ -76,7 +76,7 @@ const TransactionsTable = () => {
     getUsersByRoleId,
   } = useGetUsersByRoleId();
 
-  const { loading: downloadLoading, downloadCSV: downloadPriceCSV } = useDownloadPriceCsv();
+  const { loading: downloadLoading, latestLoading: downloadLatestLoading, downloadCSV: downloadPriceCSV, downloadLatestCSV } = useDownloadPriceCsv();
   const { uploadCSV } = useUploadCsv();
   const { importPriceCsv, loading: importLoading } = useImportPriceCsv();
 
@@ -212,6 +212,15 @@ const TransactionsTable = () => {
               >
                 {downloadLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                 Export Prices
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => downloadLatestCSV(selectedUserId ?? undefined)} 
+                disabled={downloadLatestLoading}
+                className="gap-2"
+              >
+                {downloadLatestLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                Export Latest Prices
               </Button>
               <CSVUploadModal
                 label="Import Prices"
