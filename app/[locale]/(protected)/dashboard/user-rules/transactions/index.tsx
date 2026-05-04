@@ -61,7 +61,17 @@ const TransactionsTable = () => {
 
 
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({
+      isPopular: false,
+    });
+
+  useEffect(() => {
+    setColumnVisibility((prev) => ({
+      ...prev,
+      isPopular: selectedRole === UserRole.Inventory,
+    }));
+  }, [selectedRole]);
+
   const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = baseColumns({ refresh: () => gettingAllUsers() });

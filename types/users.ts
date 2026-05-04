@@ -8,6 +8,7 @@ export type UserType = {
     minOrder: number;
     isActive: boolean;
     roleId: string;
+    isPopular: boolean | null;
     isPharmacy: boolean;
     region: string;
     regionId?: string;
