@@ -225,7 +225,7 @@ const RegForm = () => {
                                     <>
                                         <SelectItem value="1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D">Provider</SelectItem>
                                         <SelectItem value="8C2F4F3A-7F6D-4DB8-8B02-4A04D31F35D6">Admin</SelectItem>
-                                        <SelectItem value="e3c4b8fc-afc9-4716-b067-c9ec509d1195">Deliver</SelectItem>
+                                        <SelectItem value="e3c4b8fc-afc9-4716-b067-c9ec509d1195">representative</SelectItem>
                                     </>
                                 )}
                             </SelectContent>
