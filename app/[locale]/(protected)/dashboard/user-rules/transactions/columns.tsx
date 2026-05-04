@@ -73,6 +73,7 @@ export type DataProps = {
   isPharmacy: boolean;
   regionName: string;
   isActive: boolean;
+  isPopular: boolean | null;
   action: React.ReactNode;
   addresses?: any;
 };
@@ -128,6 +129,19 @@ const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
     </div>
   );
 };
+
+const PopularCell = ({ row, t }: { row: any; t?: (key: string) => string }) => {
+  const isPopular = row.original.isPopular || false;
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`text-[12px] font-medium ${isPopular ? "text-success" : "text-destructive"}`}>
+        {isPopular ? (t?.("yes") || "Yes") : (t?.("no") || "No")}
+      </span>
+    </div>
+  );
+};
+
 
 const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (key: string) => string }) => {
   const searchParams = useSearchParams();
@@ -307,6 +321,11 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t?: (key: str
     accessorKey: "isActive",
     header: t?.("status") || "Active",
     cell: ({ row }) => <StatusCell row={row} refresh={refresh} t={t} />,
+  },
+  {
+    accessorKey: "isPopular",
+    header: t?.("popular") || "Popular",
+    cell: ({ row }) => <PopularCell row={row} t={t} />,
   },
   {
     accessorKey: "addresses",

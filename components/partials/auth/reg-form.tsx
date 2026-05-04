@@ -20,6 +20,7 @@ import useGetCities from "@/services/cities/getAllCities";
 import useGetAreas from "@/services/areas/getAllAreas";
 import useGetZones from "@/services/zones/getAllZones";
 import useGetAreaZones from "@/services/areaZones/getAllAreaZones";
+import { Switch } from "@/components/ui/switch";
 
 type Inputs = {
     FullName: string;
@@ -29,6 +30,7 @@ type Inputs = {
     RoleId: string;
     AddressLines: { value: string }[]; 
     IsActive: boolean;
+    IsPopular?: boolean;
     Area?: string;
     SubArea?: string;
     Country?: string;
@@ -65,6 +67,7 @@ const RegForm = () => {
     } = useForm<Inputs>({
         defaultValues: {
             IsActive: true,
+            IsPopular: false,
             RoleId: "",
             AddressLines: [{ value: "" }], 
             Area: "",
@@ -98,14 +101,14 @@ const RegForm = () => {
         : [];
 
     useEffect(() => {
-        if (isProvider) {
+        if (isProvider || isDeliver) {
             getAllCountries();
             getAllCities();
             getAllAreas();
             getAllZones();
             getAllAreaZones();
         }
-    }, [isProvider]);
+    }, [isProvider, isDeliver]);
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -127,12 +130,13 @@ const RegForm = () => {
                 formData.append(`AddressLines[${index}]`, addr.value);
             });
 
-            if (isProvider) {
+            if (isProvider || isDeliver) {
                 if (data.Area) formData.append("Area", data.Area);
                 if (data.SubArea) formData.append("SubArea", data.SubArea);
                 if (data.Country) formData.append("Country", data.Country);
                 if (data.Zone) formData.append("Zone", data.Zone);
-                if (profileImage) formData.append("ProfileImage", profileImage);
+                if (isProvider && data.IsPopular !== undefined) formData.append("IsPopular", String(data.IsPopular));
+                if (isProvider && profileImage) formData.append("ProfileImage", profileImage);
             }
 
             const result = await registerUser(formData);
@@ -238,7 +242,7 @@ const RegForm = () => {
                             <Controller
                                 name="Country"
                                 control={control}
-                                rules={{ required: "Required for Provider" }}
+                                rules={{ required: "Required" }}
                                 render={({ field }) => (
                                     <Select onValueChange={(val) => {
                                         field.onChange(val);
@@ -262,7 +266,7 @@ const RegForm = () => {
                             <Controller
                                 name="SubArea"
                                 control={control}
-                                rules={{ required: "Required for Provider" }}
+                                rules={{ required: "Required" }}
                                 render={({ field }) => (
                                     <Select onValueChange={(val) => {
                                         field.onChange(val);
@@ -285,7 +289,7 @@ const RegForm = () => {
                             <Controller
                                 name="Area"
                                 control={control}
-                                rules={{ required: "Required for Provider" }}
+                                rules={{ required: "Required" }}
                                 render={({ field }) => (
                                     <Select onValueChange={(val) => {
                                         field.onChange(val);
@@ -307,7 +311,7 @@ const RegForm = () => {
                             <Controller
                                 name="Zone"
                                 control={control}
-                                rules={{ required: "Required for Provider" }}
+                                rules={{ required: "Required" }}
                                 render={({ field }) => (
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <SelectTrigger><SelectValue placeholder="Select Zone" /></SelectTrigger>
@@ -350,6 +354,23 @@ const RegForm = () => {
                             />
                         </div>
                     </div>
+
+                    {isProvider && (
+                        <div className="flex items-center space-x-2 mt-4">
+                            <Controller
+                                name="IsPopular"
+                                control={control}
+                                render={({ field }) => (
+                                    <Switch
+                                        id="is-popular"
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                )}
+                            />
+                            <Label htmlFor="is-popular">Is Popular</Label>
+                        </div>
+                    )}
                 </>
             )}
 

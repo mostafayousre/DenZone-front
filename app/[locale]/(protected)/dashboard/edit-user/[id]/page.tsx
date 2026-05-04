@@ -16,6 +16,8 @@ import useDepositCash from "@/services/balance/deposit-cash";
 import useUpdateUser from "@/services/users/updateUser";
 import { useTranslations } from "next-intl";
 import Cookies from "js-cookie";
+import { Switch } from "@/components/ui/switch";
+import { UserRole } from "@/enum";
 
 const EditUser = () => {
     const t = useTranslations("EditUser");
@@ -35,6 +37,7 @@ const EditUser = () => {
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
     const [profileImage, setProfileImage] = useState<File | null>(null);
+    const [isPopular, setIsPopular] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -49,6 +52,7 @@ const EditUser = () => {
             setFullName(user?.fullName || "");
             setEmail(user?.email || ""); 
             setPhoneNumber(user?.phoneNumber || "");
+            setIsPopular(user?.isPopular ?? false);
         }
     }, [user]);
 
@@ -58,6 +62,10 @@ const EditUser = () => {
         formData.append("FullName", fullName);
         formData.append("PhoneNumber", phoneNumber);
         formData.append("IsActive", activate.toString());
+        
+        if (user?.roleId === UserRole.Inventory) {
+            formData.append("IsPopular", isPopular.toString());
+        }
         
         if (profileImage) {
             formData.append("UploudProfileImage", profileImage);
@@ -171,6 +179,17 @@ const EditUser = () => {
                             </SelectContent>
                         </Select>
                     </div> */}
+                    
+                    {user?.roleId === UserRole.Inventory && (
+                        <div className="flex items-center flex-wrap gap-2">
+                            <Label className="w-[150px] flex-none" htmlFor="isPopular">{t("isPopular") || "Popular"}</Label>
+                            <Switch
+                                id="isPopular"
+                                checked={isPopular}
+                                onCheckedChange={setIsPopular}
+                            />
+                        </div>
+                    )}
 
                     <div className="flex justify-end mt-4">
                         <Button onClick={handleUpdate} disabled={updateUserLoading}>
