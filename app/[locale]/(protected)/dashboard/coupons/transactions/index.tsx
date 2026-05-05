@@ -34,7 +34,7 @@ import useGettingAllCoupons from "@/services/coupons/gettingAllCoupons";
 import {Loader2} from "lucide-react";
 import {Coupon} from "@/types/coupons";
 
-const TransactionsTable = () => {
+const TransactionsTable = ({ onAdd }: { onAdd: () => void }) => {
   const router = useRouter()
   const {loading: gettingAllCouponsLoading, error: gettingAllCouponsError, coupons, getAllCoupons} = useGettingAllCoupons()
 
@@ -87,9 +87,7 @@ const TransactionsTable = () => {
             <Button
               variant="outline"
               className="ml-2"
-              onClick={() => {
-                router.push("/dashboard/add-coupon");
-              }}
+              onClick={onAdd}
             >
               Add Coupon
             </Button>

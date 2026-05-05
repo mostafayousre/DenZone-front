@@ -7,15 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -26,29 +17,24 @@ const EditCoupon = () => {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
-  const isEdit = Boolean(id);
 
-  const {coupon, getCouponById, loading: gettingCouponLoading, error: gettingCouponError} = useGettingCouponById()
+  const { coupon, getCouponById, loading: gettingCouponLoading } = useGettingCouponById();
+  const { updateCoupon, loading: updatingCouponLoading } = useUpdateCoupon();
 
-  const {updateCoupon, loading: updatingCouponLoading} = useUpdateCoupon()
-
-
-
-  const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
-  const [discountType, setDiscountType] = useState("");
-  const [discountValue, setDiscountValue] = useState("");
-  const [minimumOrderAmount, setMinimumOrderAmount] = useState("");
-  const [maximumDiscountAmount, setMaximumDiscountAmount] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [usageLimit, setUsageLimit] = useState("");
-  const [perUserLimit, setPerUserLimit] = useState("");
   const [isActive, setIsActive] = useState(false);
 
+  // Read-only fields for context
+  const [code, setCode] = useState("");
+  const [discountType, setDiscountType] = useState("");
+  const [discountValue, setDiscountValue] = useState("");
+
   useEffect(() => {
-    getCouponById(id)
-  }, []);
+    getCouponById(id);
+  }, [id]);
 
   useEffect(() => {
     if (coupon) {
@@ -56,204 +42,148 @@ const EditCoupon = () => {
       setDescription(coupon.description || "");
       setDiscountType(coupon.discountType || "");
       setDiscountValue(coupon.discountValue?.toString() || "");
-      setMinimumOrderAmount(coupon.minimumOrderAmount?.toString() || "");
-      setMaximumDiscountAmount(coupon.maximumDiscountAmount?.toString() || "");
       setStartDate(coupon.startDate?.slice(0, 10) || "");
       setEndDate(coupon.endDate?.slice(0, 10) || "");
       setUsageLimit(coupon.usageLimit?.toString() || "");
-      setPerUserLimit(coupon.perUserLimit?.toString() || "");
       setIsActive(coupon.isActive || false);
     }
   }, [coupon]);
 
   const onSubmit = async () => {
-    if (!code.trim() || !discountType || !discountValue || !startDate || !endDate) {
+    if (!startDate || !endDate) {
       toast.error("Validation Error", {
-        description: "Please fill all required fields.",
-      });
-      return;
-    }
-
-    if (Number(discountValue) <= 0) {
-      toast.error("Validation Error", {
-        description: "Discount Value must be greater than 0.",
+        description: "Please fill in Start Date and End Date.",
       });
       return;
     }
 
     if (new Date(startDate) >= new Date(endDate)) {
       toast.error("Validation Error", {
-        description: "Start date must be less than end date.",
+        description: "Start date must be before end date.",
       });
       return;
     }
 
     const payload = {
-      code,
       description,
-      discountType,
-      discountValue: Number(discountValue),
-      minimumOrderAmount: Number(minimumOrderAmount),
-      maximumDiscountAmount: Number(maximumDiscountAmount),
-      startDate,
-      endDate,
+      startDate: new Date(startDate).toISOString(),
+      endDate: new Date(endDate).toISOString(),
       usageLimit: Number(usageLimit),
-      perUserLimit: Number(perUserLimit),
       isActive,
     };
 
     try {
-      const { success , error} = await updateCoupon( id, payload );
+      const { success, error } = await updateCoupon(id, payload as any);
       if (success) {
-        toast.success(isEdit ? "Coupon Updated" : "Coupon Created", {
-          description: isEdit
-              ? "Coupon has been updated successfully."
-              : "Coupon has been added successfully.",
-        });
+        toast.success("Coupon Updated Successfully");
         setTimeout(() => {
           router.push("/dashboard/coupons");
         }, 1000);
-      }
-
-      if (error) {
-        toast.error("Failed", {
-          description: error,
-        });
+      } else {
+        toast.error("Failed to update", { description: error });
       }
     } catch (err) {
-      toast.error("Failed", {
-        description: "Something went wrong.",
-      });
+      toast.error("Something went wrong");
     }
   };
 
   return (
-      <div className="grid grid-cols-12 gap-4 rounded-lg">
-        <div className="col-span-12 space-y-4">
-          <Card>
-            <CardHeader className="border-b border-default-200 mb-6">
-              <CardTitle>{isEdit ? "Edit Coupon" : "Add New Coupon"}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {isEdit && gettingCouponLoading ? (
-                  <div className="text-muted-foreground">Loading coupon data...</div>
-              ) : (
-                  <>
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Coupon Code</Label>
-                      <Input
-                          type="text"
-                          disabled
-                          placeholder="e.g. SAVE10"
-                          value={code}
-                          onChange={(e) => setCode(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap gap-4 md:gap-0">
-                      <Label className="w-[150px] flex-none">Coupon Type</Label>
-                      <Select disabled={true} value={discountType} onValueChange={(e) => setDiscountType(e)}>
-                        <SelectTrigger className="flex-1 cursor-pointer">
-                          <SelectValue placeholder="Select Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Type</SelectLabel>
-                            <SelectItem value="fixed_amount">Fixed Amount</SelectItem>
-                            <SelectItem value="percentage">Percentage</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Value</Label>
-                      <Input
-                          type="number"
-                          placeholder="e.g. 10 or 20%"
-                          value={discountValue}
-                          onChange={(e) => setDiscountValue(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Number of Users</Label>
-                      <Input
-                          type="number"
-                          placeholder="e.g. 100"
-                          value={usageLimit}
-                          onChange={(e) => setUsageLimit(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Start Date</Label>
-                      <Input
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">End Date</Label>
-                      <Input
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Min Cost to Activate</Label>
-                      <Input
-                          type="number"
-                          placeholder="e.g. 50"
-                          value={minimumOrderAmount}
-                          onChange={(e) => setMinimumOrderAmount(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap gap-2">
-                      <Label className="w-[150px] flex-none">Is Active</Label>
-                      <Input
-                          type="checkbox"
-                          checked={isActive}
-                          className="cursor-pointer w-4 h-4 rounded-full"
-                          onChange={(e) => setIsActive(e.target.checked)}
-                      />
-                    </div>
-
-                    <div className="flex items-center flex-wrap">
-                      <Label className="w-[150px] flex-none">Description</Label>
-                      <Textarea
-                          placeholder="Enter description"
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                      />
-                    </div>
-                  </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="col-span-12 flex justify-end">
-          <Button
-              disabled={updatingCouponLoading || (isEdit && gettingCouponLoading)}
-              onClick={onSubmit}
-              className={`cursor-pointer ${updatingCouponLoading ? "cursor-not-allowed" : ""}`}
-          >
-            {updatingCouponLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : isEdit ? (
-                "Update Coupon"
+    <div className="grid grid-cols-12 gap-4 rounded-lg">
+      <div className="col-span-12 space-y-4">
+        <Card>
+          <CardHeader className="border-b border-default-200 mb-6">
+            <CardTitle>Edit Coupon</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {gettingCouponLoading ? (
+              <div className="flex justify-center p-8">
+                <Loader2 className="animate-spin text-primary" />
+              </div>
             ) : (
-                "Save Coupon"
+              <>
+                {/* Read-only Context */}
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-dashed border-default-200">
+                    <div className="space-y-1">
+                        <Label className="text-xs text-default-500">Coupon Code</Label>
+                        <div className="font-bold">{code}</div>
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs text-default-500">Discount</Label>
+                        <div className="font-bold">{discountValue} ({discountType})</div>
+                    </div>
+                </div>
+
+                {/* Editable Fields */}
+                <div className="space-y-4 pt-4">
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                            id="description"
+                            placeholder="Enter description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="startDate">Start Date</Label>
+                            <Input
+                                id="startDate"
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="endDate">End Date</Label>
+                            <Input
+                                id="endDate"
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="usageLimit">Total Usage Limit</Label>
+                        <Input
+                            id="usageLimit"
+                            type="number"
+                            placeholder="e.g. 500"
+                            value={usageLimit}
+                            onChange={(e) => setUsageLimit(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                        <Label htmlFor="isActive" className="cursor-pointer">Is Active</Label>
+                        <Input
+                            id="isActive"
+                            type="checkbox"
+                            checked={isActive}
+                            className="w-5 h-5 cursor-pointer"
+                            onChange={(e) => setIsActive(e.target.checked)}
+                        />
+                    </div>
+                </div>
+              </>
             )}
-          </Button>
-        </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <div className="col-span-12 flex justify-end">
+        <Button
+            disabled={updatingCouponLoading || gettingCouponLoading}
+            onClick={onSubmit}
+            className="w-32 h-12"
+        >
+          {updatingCouponLoading ? <Loader2 className="animate-spin" size={20} /> : "Update"}
+        </Button>
+      </div>
+    </div>
   );
 };
 

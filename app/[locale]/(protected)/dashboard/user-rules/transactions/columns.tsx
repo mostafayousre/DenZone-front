@@ -22,8 +22,8 @@ import { Label } from "@/components/ui/label";
 
 const AddressCell = ({ addresses, t }: { addresses: any; t?: (key: string) => string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  const addressList = Array.isArray(addresses) 
+
+  const addressList = Array.isArray(addresses)
     ? addresses.map((addr: any) => addr?.addressLine).filter(Boolean)
     : addresses?.addressLine ? [addresses.addressLine] : [];
 
@@ -37,15 +37,15 @@ const AddressCell = ({ addresses, t }: { addresses: any; t?: (key: string) => st
   return (
     <div className="flex flex-col py-1 min-w-[200px] max-w-[350px] gap-1">
       {visibleAddresses.map((addr, index) => (
-        <div 
-          key={index} 
+        <div
+          key={index}
           dir="auto"
           className="text-[13px] text-default-600 leading-relaxed border-b border-dashed border-default-200 last:border-0 pb-1.5 mb-0.5 last:mb-0 last:pb-0 text-start"
         >
           {addr}
         </div>
       ))}
-      
+
       {hasMultiple && (
         <button
           onClick={(e) => {
@@ -55,8 +55,8 @@ const AddressCell = ({ addresses, t }: { addresses: any; t?: (key: string) => st
           }}
           className="text-[11px] font-bold text-blue-500 hover:text-blue-700 w-fit mt-1 underline-offset-4 hover:underline transition-all text-start"
         >
-          {isExpanded 
-            ? (t?.("showLess") || "Show Less") 
+          {isExpanded
+            ? (t?.("showLess") || "Show Less")
             : `+ ${addressList.length - 1} ${t?.("moreAddresses") || "More Addresses"}`}
         </button>
       )}
@@ -95,7 +95,7 @@ const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
 
     const formData = new FormData();
     formData.append("IsActive", newState.toString());
-    
+
     // Some APIs require more fields even for simple updates
     // We include existing fields to be safer
     if (row.original.fullName) formData.append("FullName", row.original.fullName);
@@ -143,7 +143,7 @@ const PopularCell = ({ row, t }: { row: any; t?: (key: string) => string }) => {
 };
 
 
-const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (key: string) => string }) => {
+const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean }) => {
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
   const id = row.original.id;
@@ -196,7 +196,7 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
 
               if (result.success) {
                 toast.success(t?.("deleteSuccess") || "User deleted successfully");
-                if (refresh) refresh(); 
+                if (refresh) refresh();
               } else {
                 toast.error(result.error || "Error");
               }
@@ -211,27 +211,31 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
 
   return (
     <div className="flex items-center gap-2">
-      <Link
-        href={`/dashboard/order-list?userId=${id}`}
-        title={t?.("orders") || "Orders"}
-        className="p-2 text-primary bg-primary/20 hover:bg-primary hover:text-white rounded-full transition-all"
-      >
-        <ListOrdered className="w-4 h-4" />
-      </Link>
-      <Link
-        href={`/dashboard/favorites?userId=${id}`}
-        title={t?.("favorites") || "Favorites"}
-        className="p-2 text-destructive bg-destructive/20 hover:bg-destructive hover:text-white rounded-full transition-all"
-      >
-        <Heart className="w-4 h-4" />
-      </Link>
-      <Link
-        href={`/dashboard/invoice?userId=${id}`}
-        title={t?.("invoices") || "Invoices"}
-        className="p-2 text-warning bg-warning/20 hover:bg-warning hover:text-white rounded-full transition-all"
-      >
-        <FileText className="w-4 h-4" />
-      </Link>
+      {!isRepresentative && (
+        <>
+          <Link
+            href={`/dashboard/order-list?userId=${id}`}
+            title={t?.("orders") || "Orders"}
+            className="p-2 text-primary bg-primary/20 hover:bg-primary hover:text-white rounded-full transition-all"
+          >
+            <ListOrdered className="w-4 h-4" />
+          </Link>
+          <Link
+            href={`/dashboard/favorites?userId=${id}`}
+            title={t?.("favorites") || "Favorites"}
+            className="p-2 text-destructive bg-destructive/20 hover:bg-destructive hover:text-white rounded-full transition-all"
+          >
+            <Heart className="w-4 h-4" />
+          </Link>
+          <Link
+            href={`/dashboard/invoice?userId=${id}`}
+            title={t?.("invoices") || "Invoices"}
+            className="p-2 text-warning bg-warning/20 hover:bg-warning hover:text-white rounded-full transition-all"
+          >
+            <FileText className="w-4 h-4" />
+          </Link>
+        </>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
@@ -301,7 +305,7 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (k
   );
 };
 
-export const baseColumns = ({ refresh, t }: { refresh: () => void; t?: (key: string) => string }): ColumnDef<DataProps>[] => [
+export const baseColumns = ({ refresh, t, isRepresentative }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean }): ColumnDef<DataProps>[] => [
   {
     accessorKey: "fullName",
     header: t?.("fullName") || "Full Name",
@@ -337,6 +341,6 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t?: (key: str
   {
     id: "actions",
     header: t?.("actions") || "Actions",
-    cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} />,
+    cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} />,
   },
 ];
