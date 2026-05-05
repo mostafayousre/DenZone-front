@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AxiosInstance from "@/lib/AxiosInstance";
+import Cookies from "js-cookie";
 
 interface ImportPriceCsvResponse {
   success: boolean;
@@ -24,9 +25,17 @@ function useImportPriceCsv() {
       const formData = new FormData();
       formData.append("file", file);
       
-      const url = providerId 
-        ? `/api/ProductPrices/ImportAddProductsFromExcel-ToInventory?inventoryId=${providerId}`
-        : `/api/ProductPrices/ImportAddProductsFromExcel-ToInventory`;
+      const userRole = Cookies.get("userRole");
+      const userId = Cookies.get("userId");
+      const isInventory = userRole === "Inventory" || userRole === "inventory";
+
+      let url = `/api/ProductPrices/ImportAddProductsFromExcel-ToInventory`;
+      
+      if (providerId) {
+        url += `?inventoryId=${providerId}`;
+      } else if (isInventory && userId) {
+        url += `?inventoryId=${userId}`;
+      }
 
       const response = await AxiosInstance.post(
         url,
@@ -35,11 +44,44 @@ function useImportPriceCsv() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          responseType: "blob",
         }
       );
 
       if (response.status === 200 || response.status === 201) {
         setSuccess(true);
+
+        const contentType = response.headers["content-type"];
+        const contentDisposition = response.headers["content-disposition"];
+
+        if (
+          contentType?.includes("spreadsheet") ||
+          contentType?.includes("excel") ||
+          contentDisposition?.includes("attachment")
+        ) {
+          let filename = "Import_Result.xlsx";
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(
+              /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+            );
+            if (filenameMatch?.[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, "");
+            }
+          }
+
+          const blob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = downloadUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+        }
+
         return {
           success: true,
           data: response.data,
