@@ -306,7 +306,8 @@
     "modules": "الموديولات",
     "banners": "البانرات",
     "cities": "المدن",
-    "send-notification": "إرسال إشعار"
+    "send-notification": "إرسال إشعار",
+    "add_coupon": "إضافة كوبون"
   },
   "overall": {
     "Available": "متاح",
@@ -853,6 +854,32 @@
     "brand_description_required": "وصف العلامة التجارية مطلوب.",
     "brand_information": "معلومات العلامة التجارية"
 
+  },
+  "coupons": {
+    "coupons": "الكوبونات",
+    "coupon_code": "كود الكوبون",
+    "discount": "الخصم",
+    "expiry_date": "تاريخ الانتهاء",
+    "actions": "الإجراءات",
+    "unknown": "غير معروف",
+    "delete_coupon": "حذف الكوبون",
+    "delete_coupon_confirm": "هل أنت متأكد أنك تريد حذف هذا الكوبون؟",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "coupon_deleted": "تم حذف الكوبون",
+    "coupon_deleted_success": "تم حذف الكوبون بنجاح.",
+    "error": "خطأ",
+    "add_coupon": "إضافة كوبون",
+    "coupon_added": "تم إضافة الكوبون",
+    "coupon_added_success": "تم إضافة الكوبون بنجاح.",
+    "coupon_updated": "تم تحديث الكوبون",
+    "update_coupon": "تحديث الكوبون",
+    "coupon_updated_success": "تم تحديث الكوبون بنجاح.",
+    "failed_to_add_coupon": "فشل في إضافة الكوبون",
+    "failed_to_update_coupon": "فشل في تحديث الكوبون",
+    "failed_to_delete_coupon": "فشل في حذف الكوبون",
+    "validationError": "خطأ في التحقق.",
+    "coupon_code_required": "كود الكوبون مطلوب."
   },
   "banners": {
     "image": "الصورة",

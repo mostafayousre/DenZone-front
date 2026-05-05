@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {baseColumns} from "./columns";
+import { baseColumns } from "./columns";
 
 import {
   Table,
@@ -26,31 +26,31 @@ import {
 import TablePagination from "./table-pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import GetUsers from "@/services/users/GetAllUsers";
-import {useEffect, useState} from "react";
-import {Loader2} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {SelectItemText, SelectViewport} from "@radix-ui/react-select";
-import {UserRoles} from "@/lib/data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectItemText, SelectViewport } from "@radix-ui/react-select";
+import { UserRoles } from "@/lib/data";
+import useGetAllRoles from "@/services/roles/getAllRoles";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
-import {Button} from "@/components/ui/button";
-import {OrderStatus, OrderStatusLabel, UserRole, UserRoleLabel} from "@/enum";
+import { Button } from "@/components/ui/button";
+import { OrderStatus, OrderStatusLabel, UserRole, UserRoleLabel } from "@/enum";
 import { useSearchParams } from "next/navigation";
 
 const TransactionsTable = () => {
-  
-  const {data, loading, gettingAllUsers} = GetUsers()
 
-  
-  const {users: usersByRole, loading: loadingByRole, getUsersByRoleId} = useGetUsersByRoleId()
+  const { data, loading, gettingAllUsers } = GetUsers()
+  const { users: usersByRole, loading: loadingByRole, getUsersByRoleId } = useGetUsersByRoleId()
+  const { data: roles, getAllRoles } = useGetAllRoles();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [selectedRole, setSelectedRole] = useState<"all" | UserRole>("all");
+  const [selectedRole, setSelectedRole] = useState<"all" | string>("all");
 
-  
+
   useEffect(() => {
     if (selectedRole === "all" && data) {
       setFilteredUsers(data);
@@ -66,19 +66,21 @@ const TransactionsTable = () => {
     });
 
   useEffect(() => {
+    const inventoryRole = roles?.find(r => r.name === "Inventory");
     setColumnVisibility((prev) => ({
       ...prev,
-      isPopular: selectedRole === UserRole.Inventory,
+      isPopular: selectedRole === inventoryRole?.id,
     }));
-  }, [selectedRole]);
+  }, [selectedRole, roles]);
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const columns = baseColumns({ refresh: () => gettingAllUsers() });
+  const isRepresentative = roles?.find(r => r.id === selectedRole)?.name === "representative";
+  const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative });
 
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
-  const handleRoleFilter = (role: "all" | UserRole) => {
+  const handleRoleFilter = (role: "all" | string) => {
     setSelectedRole(role);
     if (role === "all") {
       gettingAllUsers();
@@ -111,107 +113,108 @@ const TransactionsTable = () => {
 
   useEffect(() => {
     gettingAllUsers()
+    getAllRoles()
   }, []);
 
   // Remove redundant useEffect that sets filteredUsers only once
 
 
   return (
-      <div className={"flex flex-col"}>
-        <div className="px-5 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <SearchInput
-            data={data ?? []}
-            filterKey={"userName"}
-            setFilteredData={setFilteredUsers}
-          />
+    <div className={"flex flex-col"}>
+      <div className="px-5 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <SearchInput
+          data={data ?? []}
+          filterKey={"userName"}
+          setFilteredData={setFilteredUsers}
+        />
 
-          <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
+        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
+          <Button
+            size="md"
+            variant={selectedRole === "all" ? "default" : "ghost"}
+            color="default"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            onClick={() => handleRoleFilter("all")}
+          >
+            All
+          </Button>
+
+          {roles?.map((role) => (
             <Button
-                size="md"
-                variant={selectedRole === "all" ? "default" : "ghost"}
-                color="default"
-                className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
-                onClick={() => handleRoleFilter("all")}
+              key={role.id}
+              size="md"
+              variant={selectedRole === role.id ? "default" : "ghost"}
+              color="default"
+              className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+              onClick={() => handleRoleFilter(role.id)}
             >
-              All
+              {role.name}
             </Button>
-
-            {Object.values(UserRole).map((roleId) => (
-                <Button
-                    key={roleId}
-                    size="md"
-                    variant={selectedRole === roleId ? "default" : "ghost"}
-                    color="default"
-                    className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
-                    onClick={() => handleRoleFilter(roleId)}
-                >
-                  {UserRoleLabel[roleId]}
-                </Button>
-            ))}
-          </div>
+          ))}
         </div>
-        {loading == true || loadingByRole == true ? (
-            <div className="flex justify-center items-center">
-              <Loader2 size={24} className="animate-spin" />
-            </div>
-        ) : (
-          <Card className="w-full">
-            <CardContent>
-              <div className="border border-solid border-default-200 rounded-lg overflow-hidden border-t-0">
-                <Table>
-                  <TableHeader className="bg-default-200">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                          return (
-                            <TableHead className="last:text-start" key={header.id}>
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && "selected"}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="h-[75px]">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
-                          No results.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-            <TablePagination table={table} />
-          </Card>
-        )}
       </div>
+      {loading == true || loadingByRole == true ? (
+        <div className="flex justify-center items-center">
+          <Loader2 size={24} className="animate-spin" />
+        </div>
+      ) : (
+        <Card className="w-full">
+          <CardContent>
+            <div className="border border-solid border-default-200 rounded-lg overflow-hidden border-t-0">
+              <Table>
+                <TableHeader className="bg-default-200">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead className="last:text-start" key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id} className="h-[75px]">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+          <TablePagination table={table} />
+        </Card>
+      )}
+    </div>
   );
 };
 export default TransactionsTable;
