@@ -17,6 +17,7 @@ import { OrderStatus } from "@/enum";
 import useUpdateOrderStatus from "@/services/Orders/updateOrderStatus";
 import useAssignDelivery from "@/services/Orders/assignDelivery";
 import useGetDelivers from "@/services/users/getDelivers";
+import useGetPreparationDelivers from "@/services/users/getPreparationDelivers";
 import {
     Select,
     SelectContent,
@@ -64,8 +65,12 @@ const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (ke
         2: "statusCode.rejected",
         3: "statusCode.prepared",
         4: "statusCode.shipped",
-        5: "statusCode.delivered",
+        5: "statusCode.delivered",   
         6: "statusCode.completed",
+        7: "statusCode.ReAssignTo",
+        8: "statusCode.Refund",
+        9: "statusCode.Cancel",
+
     };
 
     const statusLabel = t(statusTranslationKeys[status] ?? "status.unknown");
@@ -83,28 +88,45 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
     const { updateOrderStatus, loading } = useUpdateOrderStatus();
     const { assignDelivery, loading: assignLoading } = useAssignDelivery();
     const { getDelivers, delivers, loading: deliversLoading } = useGetDelivers();
+    const { getPreparationDelivers, preparationDelivers, loading: preparationLoading } = useGetPreparationDelivers();
     const [open, setOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<string>(row.original.status.toString());
     const [selectedDelivery, setSelectedDelivery] = useState<string>("");
+    const [selectedPreparation, setSelectedPreparation] = useState<string>("");
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        if (isOpen && delivers.length === 0) {
-            getDelivers();
+        if (isOpen) {
+            if (delivers.length === 0) getDelivers();
+            if (preparationDelivers.length === 0) getPreparationDelivers();
         }
     };
 
     const handleUpdate = async () => {
         const numericValue = Number(selectedStatus) as OrderStatus;
-        if (numericValue === 3 && !selectedDelivery) {
-            toast.error(t("pleaseSelectDelivery") || "Please select a delivery person");
+        const currentStatus = row.original.status;
+
+        if (numericValue === 3 && (!selectedDelivery || !selectedPreparation)) {
+            toast.error(t("pleaseSelectPersonnel") || "Please select both delivery and preparation personnel");
             return;
         }
 
-        const result = await updateOrderStatus(row.original.id, numericValue);
-        if (result.success) {
-            if (numericValue === 3 && selectedDelivery) {
-                const assignResult = await assignDelivery(row.original.id, selectedDelivery);
+        let success = false;
+        let errorMsg = "";
+
+        // If the status is changing (or it's a new status that isn't already 'Prepared')
+        if (numericValue !== 3 || currentStatus !== 3) {
+            const result = await updateOrderStatus(row.original.id, numericValue);
+            success = result.success;
+            errorMsg = result.error || "";
+        } else {
+            // Already Prepared, just updating assignment
+            success = true;
+        }
+
+        if (success) {
+            if (numericValue === 3 && selectedDelivery && selectedPreparation) {
+                const assignResult = await assignDelivery(row.original.id, selectedDelivery, selectedPreparation);
                 if (!assignResult.success) {
                     toast.error(assignResult.error || t("assignDeliveryError") || "Failed to assign delivery");
                     return;
@@ -114,7 +136,7 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
             setOpen(false);
             refresh();
         } else {
-            toast.error(result.error || t("updateStatusError") || "Failed to update status");
+            toast.error(errorMsg || t("updateStatusError") || "Failed to update status");
         }
     };
 
@@ -144,7 +166,7 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
                             </SelectTrigger>
                             <SelectContent>
                                 {Object.values(OrderStatus)
-                                    .filter((value) => typeof value === "number" && value !== 7)
+                                    .filter((value) => typeof value === "number")
                                     .map((s) => (
                                         <SelectItem key={s} value={s.toString()} className="text-xs">
                                             {t(`statusCode.${OrderStatus[s as number].toLowerCase()}`)}
@@ -154,34 +176,65 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
                         </Select>
                     </div>
                     {Number(selectedStatus) === 3 && (
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium">{t("selectDelivery") || "Select Delivery Person"}</label>
-                            <Select
-                                value={selectedDelivery}
-                                onValueChange={setSelectedDelivery}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder={t("selectDeliveryPlaceholder") || "Select Delivery Person"} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {deliversLoading ? (
-                                        <div className="flex items-center justify-center p-4">
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        </div>
-                                    ) : delivers.length === 0 ? (
-                                        <div className="flex items-center justify-center p-4 text-sm text-gray-500">
-                                            No delivery personnel found
-                                        </div>
-                                    ) : (
-                                        delivers.map((d: any) => (
-                                            <SelectItem key={d.id} value={d.id} className="text-xs">
-                                                {d.fullName || d.userName || "Unknown"}
-                                            </SelectItem>
-                                        ))
-                                    )}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium">{t("selectDelivery") || "Select Delivery Person"}</label>
+                                <Select
+                                    value={selectedDelivery}
+                                    onValueChange={setSelectedDelivery}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={t("selectDeliveryPlaceholder") || "Select Delivery Person"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {deliversLoading ? (
+                                            <div className="flex items-center justify-center p-4">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            </div>
+                                        ) : delivers.length === 0 ? (
+                                            <div className="flex items-center justify-center p-4 text-sm text-gray-500">
+                                                No delivery personnel found
+                                            </div>
+                                        ) : (
+                                            delivers.map((d: any) => (
+                                                <SelectItem key={d.id} value={d.id} className="text-xs">
+                                                    {d.fullName || d.userName || "Unknown"}
+                                                </SelectItem>
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium">{t("selectPreparation") || "Select Preparation Person"}</label>
+                                <Select
+                                    value={selectedPreparation}
+                                    onValueChange={setSelectedPreparation}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={t("selectPreparationPlaceholder") || "Select Preparation Person"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {preparationLoading ? (
+                                            <div className="flex items-center justify-center p-4">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            </div>
+                                        ) : preparationDelivers.length === 0 ? (
+                                            <div className="flex items-center justify-center p-4 text-sm text-gray-500">
+                                                No preparation personnel found
+                                            </div>
+                                        ) : (
+                                            preparationDelivers.map((d: any) => (
+                                                <SelectItem key={d.id} value={d.id} className="text-xs">
+                                                    {d.fullName || d.userName || "Unknown"}
+                                                </SelectItem>
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </>
                     )}
                 </div>
                 <DialogFooter>
@@ -260,7 +313,13 @@ export const baseColumns = ({ refresh, t }: {
       cell: ({ row }) => {
         return <span>{row.getValue("totalAmount")}</span>;
       },
-    },    {
+    },
+        {
+      accessorKey: "deliveryOptionName",
+      header: t("delivery Date") || "delivery Date",
+      cell: ({ row }) => <span>{row.getValue("deliveryOptionName") || "there is no delivery date"}</span>,
+    },
+    {
       accessorKey: "deliveryName",
       header: t("delivery Name") || "Delivery",
       cell: ({ row }) => <span>{row.getValue("deliveryName") || "there is no delivery yet"}</span>,
@@ -330,7 +389,7 @@ export const baseColumns = ({ refresh, t }: {
                 {/*  onSuccess={() => refresh()}*/}
                 {/*/>*/}
 
-                <GenerateInvoiceButton isDisabled={row.original.status == 7} orderId={row.original.id} />
+                <GenerateInvoiceButton isDisabled={row.original.status == 10} orderId={row.original.id} />
 
               </>
             )}

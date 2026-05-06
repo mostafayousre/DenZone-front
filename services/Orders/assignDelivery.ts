@@ -6,16 +6,17 @@ function useAssignDelivery() {
 
   const assignDelivery = async (
     orderId: string,
-    deliveryUserId: string
+    deliveryUserId: string,
+    preparationUserId: string
   ): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
 
     try {
       const url = `/api/Orders/assign-delivery`;
-      
       const payload = {
         orderId,
-        deliveryUserId
+        deliveryUserId,
+        preparationUserId
       };
 
       const response = await AxiosInstance.post(url, payload);

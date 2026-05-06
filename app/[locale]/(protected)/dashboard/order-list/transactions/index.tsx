@@ -230,7 +230,15 @@ export default function TransactionsTable() {
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Delivered].toLowerCase()}`)}
           </Button>
-
+<Button
+            size="md"
+            variant={selectedStatus === OrderStatus?.Cancel ? "default" : "ghost"}
+            color="default"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            onClick={() => filterOrdersByStatus(OrderStatus.Cancel)}
+          >
+            {t(`statusCode.${OrderStatusLabel[OrderStatus.Cancel].toLowerCase()}`)}
+          </Button>
           <Button
             size="md"
             variant={selectedStatus === OrderStatus.Completed ? "default" : "ghost"}

@@ -75,7 +75,7 @@ const TransactionsTable = ({ onAdd }: { onAdd: () => void }) => {
 
 
   return (
-    <div className="w-full bg-white rounded-lg">
+    <div className="w-full rounded-lg">
       <div className="flex flex-wrap justify-end items-center py-4 px-6 border-b border-solid border-default-200 ">
         <div className="#flex-none">
           <div className="flex items-center gap-4 flex-wrap">
