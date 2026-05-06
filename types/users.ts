@@ -14,4 +14,5 @@ export type UserType = {
     regionId?: string;
     accountid?: string;
     action: React.ReactNode;
+    roles?: { id: string; roleId?: string; name?: string }[];
 };

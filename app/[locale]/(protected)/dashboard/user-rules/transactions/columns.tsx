@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2, Key } from "lucide-react";
+import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2, Key, Clock, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import useDeleteUser from "@/services/users/DeleteUser";
 import useUpdateUser from "@/services/users/updateUser";
 import useChangePasswordFromAdmin from "@/services/users/ChangePasswordFromAdmin";
+import useUpdateWorkingHours, { WorkingHour } from "@/services/users/updateWorkingHours";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
@@ -152,6 +153,47 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isWorkingHoursOpen, setIsWorkingHoursOpen] = useState(false);
+  const { updateWorkingHours, loading: updatingHours } = useUpdateWorkingHours();
+  const [workingHours, setWorkingHours] = useState<WorkingHour[]>([]);
+
+  const daysOfWeek = [
+    { value: 0, label: "Saturday" },
+    { value: 1, label: "Sunday" },
+    { value: 2, label: "Monday" },
+    { value: 3, label: "Tuesday" },
+    { value: 4, label: "Wednesday" },
+    { value: 5, label: "Thursday" },
+    { value: 6, label: "Friday" },
+  ];
+
+  const handleAddWorkingHour = () => {
+    setWorkingHours([...workingHours, { day: 0, startTime: "09:00:00", endTime: "17:00:00" }]);
+  };
+
+  const handleUpdateWorkingHour = (index: number, field: keyof WorkingHour, value: any) => {
+    const updated = [...workingHours];
+    if (field === 'startTime' || field === 'endTime') {
+      // Ensure format is HH:mm:ss
+      if (value.length === 5) value += ":00";
+    }
+    updated[index] = { ...updated[index], [field]: value };
+    setWorkingHours(updated);
+  };
+
+  const handleRemoveWorkingHour = (index: number) => {
+    setWorkingHours(workingHours.filter((_, i) => i !== index));
+  };
+
+  const onSaveWorkingHours = async () => {
+    const result = await updateWorkingHours(id as string, workingHours);
+    if (result.success) {
+      toast.success("Working hours updated successfully");
+      setIsWorkingHoursOpen(false);
+    } else {
+      toast.error(result.error || "Failed to update working hours");
+    }
+  };
 
   const handlePasswordChange = async () => {
     if (!newPassword || !confirmPassword) {
@@ -235,6 +277,93 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
             <FileText className="w-4 h-4" />
           </Link>
         </>
+      )}
+
+      {isRepresentative && (
+        <Dialog open={isWorkingHoursOpen} onOpenChange={setIsWorkingHoursOpen}>
+          <DialogTrigger asChild>
+            <button
+              title="Manage Working Hours"
+              className="p-2 text-success bg-success/20 hover:bg-success hover:text-white rounded-full transition-all cursor-pointer"
+            >
+              <Clock className="w-4 h-4" />
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Working Hours - {row.original.fullName}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {workingHours.map((wh, index) => (
+                <div key={index} className="grid grid-cols-12 gap-2 items-end border-b pb-3 border-dashed border-default-200">
+                  <div className="col-span-4 space-y-1">
+                    <Label className="text-[12px]">Day</Label>
+                    <select
+                      className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      value={wh.day}
+                      onChange={(e) => handleUpdateWorkingHour(index, 'day', parseInt(e.target.value))}
+                    >
+                      {daysOfWeek.map((day) => (
+                        <option key={day.value} value={day.value}>{day.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-3 space-y-1">
+                    <Label className="text-[12px]">Start</Label>
+                    <Input
+                      type="time"
+                      value={wh.startTime.substring(0, 5)}
+                      onChange={(e) => handleUpdateWorkingHour(index, 'startTime', e.target.value)}
+                    />
+                  </div>
+                  <div className="col-span-3 space-y-1">
+                    <Label className="text-[12px]">End</Label>
+                    <Input
+                      type="time"
+                      value={wh.endTime.substring(0, 5)}
+                      onChange={(e) => handleUpdateWorkingHour(index, 'endTime', e.target.value)}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      color="destructive"
+                      className="h-9 w-9"
+                      onClick={() => handleRemoveWorkingHour(index)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                fullWidth
+                onClick={handleAddWorkingHour}
+                className="flex items-center gap-1"
+              >
+                <Plus className="w-4 h-4" /> Add Slot
+              </Button>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsWorkingHoursOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={onSaveWorkingHours}
+                disabled={updatingHours}
+              >
+                {updatingHours ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -50,27 +50,32 @@ const EditUser = () => {
         if (user) {
             setActivate(user?.isActive ?? false);
             setFullName(user?.fullName || "");
-            setEmail(user?.email || ""); 
+            setEmail(user?.email || "");
             setPhoneNumber(user?.phoneNumber || "");
             setIsPopular(user?.isPopular ?? false);
         }
     }, [user]);
 
+    const isInventory = user?.roles?.some((r: any) =>
+        (r.id?.toLowerCase() === UserRole.Inventory.toLowerCase()) ||
+        (r.roleId?.toLowerCase() === UserRole.Inventory.toLowerCase())
+    );
+
     const handleUpdate = async () => {
         const formData = new FormData();
-        
+
         formData.append("FullName", fullName);
         formData.append("PhoneNumber", phoneNumber);
         formData.append("IsActive", activate.toString());
-        
-        if (user?.roleId === UserRole.Inventory) {
+
+        if (isInventory) {
             formData.append("IsPopular", isPopular.toString());
         }
-        
+
         if (profileImage) {
             formData.append("UploudProfileImage", profileImage);
         }
-        
+
         formData.append("PharmacyDetails", 'null');
         formData.append("DesName", 'null');
 
@@ -78,7 +83,7 @@ const EditUser = () => {
             const { success, error } = await updateUser(formData, id);
             if (success) {
                 toast.success(t("updateUser"), { description: t("userUpdated") });
-                await getUserById(id); 
+                await getUserById(id);
             } else {
                 toast.error(error || t("updateFailed"));
             }
@@ -133,7 +138,7 @@ const EditUser = () => {
                         <Label className="w-[150px] flex-none" htmlFor="email">{t("email")}</Label>
                         <Input
                             id="email"
-                            className="flex-1 bg-transparent cursor-default focus-visible:ring-0 border-dashed" 
+                            className="flex-1 bg-transparent cursor-default focus-visible:ring-0 border-dashed"
                             value={email}
                             readOnly
                         />
@@ -163,24 +168,7 @@ const EditUser = () => {
                             }}
                         />
                     </div>
-
-                    {/* <div className="flex items-center flex-wrap gap-2">
-                        <Label className="w-[150px] flex-none">{t("active")}</Label>
-                        <Select 
-                            value={activate ? "true" : "false"} 
-                            onValueChange={(v) => setActivate(v === "true")}
-                        >
-                            <SelectTrigger className="flex-1">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="true">{t("activate")}</SelectItem>
-                                <SelectItem value="false">{t("deactivate")}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div> */}
-                    
-                    {user?.roleId === UserRole.Inventory && (
+                    {isInventory && (
                         <div className="flex items-center flex-wrap gap-2">
                             <Label className="w-[150px] flex-none" htmlFor="isPopular">{t("isPopular") || "Popular"}</Label>
                             <Switch

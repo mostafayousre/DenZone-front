@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import ReactSelect, { MultiValue } from "react-select";
 import useGetCountries from "@/services/countries/getAllCountries";
 import useGetCities from "@/services/cities/getAllCities";
 import useGetAreas from "@/services/areas/getAllAreas";
@@ -35,7 +36,8 @@ type Inputs = {
     Area?: string;
     SubArea?: string;
     Country?: string;
-    Zone?: string;
+    Zone?: any;
+    Salary?: string;
 };
 
 const RegForm = () => {
@@ -76,6 +78,7 @@ const RegForm = () => {
             SubArea: "",
             Country: "",
             Zone: "",
+            Salary: "",
         },
     });
 
@@ -143,7 +146,20 @@ const RegForm = () => {
                 if (data.Area) formData.append("Area", data.Area);
                 if (data.SubArea) formData.append("SubArea", data.SubArea);
                 if (data.Country) formData.append("Country", data.Country);
-                if (data.Zone) formData.append("Zone", data.Zone);
+
+                if (isDeliver) {
+                    if (data.Salary) formData.append("Salary", data.Salary);
+                    if (Array.isArray(data.Zone)) {
+                        data.Zone.forEach((z: any, index: number) => {
+                            formData.append(`ZoneId[${index}]`, z.value);
+                        });
+                    } else if (data.Zone) {
+                        formData.append("ZoneId[0]", data.Zone);
+                    }
+                } else {
+                    if (data.Zone) formData.append("Zone", data.Zone);
+                }
+
                 if (isProvider && data.IsPopular !== undefined) formData.append("IsPopular", String(data.IsPopular));
                 if (isProvider && profileImage) formData.append("ProfileImage", profileImage);
             }
@@ -163,20 +179,19 @@ const RegForm = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-            <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" {...register("PhoneNumber", { required: "Required" })} />
-            </div>
-
             <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input id="fullName" {...register("FullName", { required: "Required" })} />
             </div>
 
+
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" {...register("Email", { required: "Required" })} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" {...register("PhoneNumber", { required: "Required" })} />
             </div>
             <div className="space-y-2">
                 <Label>Addresses</Label>
@@ -320,18 +335,76 @@ const RegForm = () => {
                                 control={control}
                                 rules={{ required: "Required" }}
                                 render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger><SelectValue placeholder="Select Zone" /></SelectTrigger>
-                                        <SelectContent>
-                                            {filteredZones.map((item: any) => (
-                                                <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    isDeliver ? (
+                                        <ReactSelect
+                                            isMulti
+                                            options={filteredZones.map((z: any) => ({ value: z.id.toString(), label: z.name }))}
+                                            className="react-select"
+                                            classNamePrefix="select"
+                                            onChange={field.onChange}
+                                            value={field.value}
+                                            placeholder="Select Zones"
+                                            styles={{
+                                                control: (base) => ({
+                                                    ...base,
+                                                    minHeight: '40px',
+                                                    fontSize: '0.875rem',
+                                                    backgroundColor: 'transparent',
+                                                    borderColor: 'hsl(var(--input))',
+                                                }),
+                                                placeholder: (base) => ({
+                                                    ...base,
+                                                    fontSize: '0.875rem',
+                                                    color: 'hsl(var(--muted-foreground))',
+                                                }),
+                                                multiValue: (base) => ({
+                                                    ...base,
+                                                    backgroundColor: 'hsl(var(--secondary))',
+                                                    borderRadius: '4px',
+                                                }),
+                                                multiValueLabel: (base) => ({
+                                                    ...base,
+                                                    color: 'hsl(var(--secondary-foreground))',
+                                                }),
+                                                menu: (base) => ({
+                                                    ...base,
+                                                    backgroundColor: 'hsl(var(--popover))',
+                                                    border: '1px solid hsl(var(--border))',
+                                                }),
+                                                option: (base, state) => ({
+                                                    ...base,
+                                                    backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+                                                    color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'inherit',
+                                                    fontSize: '0.875rem',
+                                                }),
+                                            }}
+                                        />
+                                    ) : (
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <SelectTrigger><SelectValue placeholder="Select Zone" /></SelectTrigger>
+                                            <SelectContent>
+                                                {filteredZones.map((item: any) => (
+                                                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )
                                 )}
                             />
-                            {errors.Zone && <span className="text-sm text-red-500">{errors.Zone.message}</span>}
+                            {errors.Zone?.message && <span className="text-sm text-red-500">{String(errors.Zone.message)}</span>}
                         </div>
+                        {isDeliver && (
+                            <div className="space-y-2">
+                                <Label htmlFor="salary">Salary</Label>
+                                <Input
+                                    id="salary"
+                                    type="number"
+                                    placeholder="Enter Salary"
+                                    {...register("Salary", { required: isDeliver ? "Required" : false })}
+                                />
+                                {errors.Salary?.message && <span className="text-sm text-red-500">{String(errors.Salary.message)}</span>}
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2 mt-4">
