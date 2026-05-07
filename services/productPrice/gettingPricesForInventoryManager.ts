@@ -23,7 +23,7 @@ function useGettingPricesForInventoryManager() {
         return Cookies.get("userId") ?? null;
     });
 
-    const gettingPricesForInventoryManager = async (userId?: string, page: number = 1, pageSize: number = 10) => {
+    const gettingPricesForInventoryManager = async (userId?: string, page: number = 1, pageSize: number = 10, search?: string, catId?: string) => {
         setLoading(true);
         setError(null);
 
@@ -41,7 +41,9 @@ function useGettingPricesForInventoryManager() {
             const response = await AxiosInstance.get(`/api/ProductPrices/my-prices/${encodeURIComponent(idToUse)}`, {
                 params: {
                     page: page,
-                    pageSize: pageSize
+                    pageSize: pageSize,
+                    search: search,
+                    catId: catId
                 }
             });
 

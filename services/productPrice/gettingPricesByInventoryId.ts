@@ -13,7 +13,9 @@ function useGettingPricesByInventoryId() {
   const gettingPricesByInventoryId = async (
     inventoryId: string | string[] | undefined,
     page: number = 1 ,
-    pageSize: number = 10
+    pageSize: number = 10,
+    catId?: string,
+    search?: string
   ) => {
     setLoading(true);
     setError(null);
@@ -24,6 +26,8 @@ function useGettingPricesByInventoryId() {
           params: {
             page: page,
             pageSize: pageSize,
+            catId: catId,
+            search: search
           },
         }
       );

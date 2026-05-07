@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import TablePagination from "./table-pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,18 @@ import { useTranslations } from "next-intl";
 const TransactionsTable = () => {
   const userRole = Cookies.get("userRole");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const {
     loading: managerLoading,
@@ -94,12 +107,12 @@ const TransactionsTable = () => {
   const handleRefresh = useCallback(() => {
     if (isAdmin) {
       if (selectedUserId) {
-        gettingPricesByInventoryId(selectedUserId, currentPage, PAGE_SIZE);
+        gettingPricesByInventoryId(selectedUserId, currentPage, PAGE_SIZE, undefined, debouncedSearchQuery);
       }
     } else {
-      gettingPricesForInventoryManager(undefined, currentPage, PAGE_SIZE);
+      gettingPricesForInventoryManager(undefined, currentPage, PAGE_SIZE, debouncedSearchQuery);
     }
-  }, [isAdmin, selectedUserId, currentPage, PAGE_SIZE, gettingPricesByInventoryId, gettingPricesForInventoryManager]);
+  }, [isAdmin, selectedUserId, currentPage, PAGE_SIZE, debouncedSearchQuery, gettingPricesByInventoryId, gettingPricesForInventoryManager]);
 
   const columns = baseColumns({ t, refresh: handleRefresh });
 
@@ -131,9 +144,9 @@ const TransactionsTable = () => {
       setCurrentPage(newPage);
       
       if (isAdmin && selectedUserId) {
-        gettingPricesByInventoryId(selectedUserId, newPage, PAGE_SIZE);
+        gettingPricesByInventoryId(selectedUserId, newPage, PAGE_SIZE, undefined, debouncedSearchQuery);
       } else if (!isAdmin) {
-        gettingPricesForInventoryManager(undefined, newPage, PAGE_SIZE);
+        gettingPricesForInventoryManager(undefined, newPage, PAGE_SIZE, debouncedSearchQuery);
       }
     },
   });
@@ -148,10 +161,17 @@ const TransactionsTable = () => {
 
   useEffect(() => {
     if (selectedUserId) {
-      gettingPricesByInventoryId(selectedUserId, 1, PAGE_SIZE);
+      gettingPricesByInventoryId(selectedUserId, 1, PAGE_SIZE, undefined, debouncedSearchQuery);
       setCurrentPage(1);
     }
-  }, [selectedUserId]);
+  }, [selectedUserId, debouncedSearchQuery]);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      gettingPricesForInventoryManager(undefined, 1, PAGE_SIZE, debouncedSearchQuery);
+      setCurrentPage(1);
+    }
+  }, [debouncedSearchQuery]);
 
   if (usersLoading) {
     return (
@@ -182,6 +202,13 @@ const TransactionsTable = () => {
               </SelectContent>
             </Select>
 
+            <Input
+              placeholder="Search product..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-sm"
+            />
+
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -202,7 +229,13 @@ const TransactionsTable = () => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-row justify-between w-full items-center">
+          <div className="flex flex-row justify-between w-full items-center gap-4">
+            <Input
+              placeholder="Search product..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-sm"
+            />
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
@@ -231,13 +264,13 @@ const TransactionsTable = () => {
               />
             </div>
             
-            <CSVUploadModal
+            {/* <CSVUploadModal
               label="Import Add Products"
               onUpload={async (file: File) => {
                 await uploadCSV(file);
                 handleRefresh();
               }}
-            />
+            /> */}
           </div>
         )}
       </div>
