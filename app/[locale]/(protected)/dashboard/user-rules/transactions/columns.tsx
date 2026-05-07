@@ -29,7 +29,7 @@ const AddressCell = ({ addresses, t }: { addresses: any; t?: (key: string) => st
     : addresses?.addressLine ? [addresses.addressLine] : [];
 
   if (addressList.length === 0 || addressList[0] === "No address") {
-    return <span className="text-default-400 text-sm">No address</span>;
+    return <span className="text-default-400 text-sm">{t?.("noAddress") || "No address"}</span>;
   }
 
   const hasMultiple = addressList.length > 1;
@@ -198,21 +198,21 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
 
   const handlePasswordChange = async () => {
     if (!newPassword || !confirmPassword) {
-      toast.error("Please fill in both password fields");
+      toast.error(t?.("fillPasswordFields") || "Please fill in both password fields");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t?.("passwordMismatch") || "Passwords do not match");
       return;
     }
     const result = await changePassword(id as string, newPassword, confirmPassword);
     if (result.success) {
-      toast.success("Password changed successfully");
+      toast.success(t?.("passwordChangedSuccess") || "Password changed successfully");
       setNewPassword("");
       setConfirmPassword("");
       setIsDialogOpen(false);
     } else {
-      toast.error(result.error || "Failed to change password");
+      toast.error(result.error || (t?.("error") || "Failed to change password"));
     }
   };
 
@@ -298,7 +298,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
               {workingHours.map((wh, index) => (
                 <div key={index} className="grid grid-cols-12 gap-2 items-end border-b pb-3 border-dashed border-default-200">
                   <div className="col-span-4 space-y-1">
-                    <Label className="text-[12px]">Day</Label>
+                    <Label className="text-[12px]">{t?.("day") || "Day"}</Label>
                     <select
                       className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       value={wh.day}
@@ -310,7 +310,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
                     </select>
                   </div>
                   <div className="col-span-3 space-y-1">
-                    <Label className="text-[12px]">Start</Label>
+                    <Label className="text-[12px]">{t?.("start") || "Start"}</Label>
                     <Input
                       type="time"
                       value={wh.startTime.substring(0, 5)}
@@ -318,7 +318,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
                     />
                   </div>
                   <div className="col-span-3 space-y-1">
-                    <Label className="text-[12px]">End</Label>
+                    <Label className="text-[12px]">{t?.("end") || "End"}</Label>
                     <Input
                       type="time"
                       value={wh.endTime.substring(0, 5)}
@@ -346,7 +346,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
                 onClick={handleAddWorkingHour}
                 className="flex items-center gap-1"
               >
-                <Plus className="w-4 h-4" /> Add Slot
+                <Plus className="w-4 h-4" /> {t?.("addSlot") || "Add Slot"}
               </Button>
             </div>
             <DialogFooter>
@@ -354,13 +354,13 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
                 variant="outline"
                 onClick={() => setIsWorkingHoursOpen(false)}
               >
-                Cancel
+                {t?.("cancel") || "Cancel"}
               </Button>
               <Button
                 onClick={onSaveWorkingHours}
                 disabled={updatingHours}
               >
-                {updatingHours ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                {updatingHours ? <Loader2 className="w-4 h-4 animate-spin" /> : (t?.("saveChanges") || "Save Changes")}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -44,7 +44,7 @@ const ActionCell = ({
               }
             }}
           >
-            {t("Confirm")}
+            {t("confirm")}
           </Button>
         </div>
       ),
@@ -183,7 +183,7 @@ export const baseColumns = ({
       header: isArabic ? "شائع" : "Popular",
       cell: ({ row }) => (
         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.original.isPopular ? "bg-success/20 text-success" : "bg-red-500 text-white"}`}>
-          {row.original.isPopular ? "yes" : "No"}
+          {row.original.isPopular ? t("yes") : t("no")}
         </span>
       ),
     },

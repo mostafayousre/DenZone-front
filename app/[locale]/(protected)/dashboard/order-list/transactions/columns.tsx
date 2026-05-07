@@ -316,12 +316,12 @@ export const baseColumns = ({ refresh, t }: {
     },
         {
       accessorKey: "deliveryOptionName",
-      header: t("delivery Date") || "delivery Date",
+      header: t("deliveryDate") || "delivery Date",
       cell: ({ row }) => <span>{row.getValue("deliveryOptionName") || "there is no delivery date"}</span>,
     },
     {
       accessorKey: "deliveryName",
-      header: t("delivery Name") || "Delivery",
+      header: t("deliveryName") || "Delivery",
       cell: ({ row }) => <span>{row.getValue("deliveryName") || "there is no delivery yet"}</span>,
     },
     {
@@ -333,7 +333,7 @@ export const baseColumns = ({ refresh, t }: {
     {
       id: "actions",
       accessorKey: "action",
-      header: t("Actions"),
+      header: t("actions"),
       enableHiding: false,
       cell: ({ row }) => {
         const userRole = Cookies.get("userRole");
