@@ -21,6 +21,7 @@ export type ProductType = {
     inventoryUserId?: string;
     isPopular?: boolean;
     revenuePercentage?: number;
+    orderNum?: number;
     createdAt: string;
     updatedAt: string;
 }

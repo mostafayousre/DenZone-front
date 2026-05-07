@@ -37,8 +37,10 @@ import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/Searc
 import { Button } from "@/components/ui/button";
 import { OrderStatus, OrderStatusLabel, UserRole, UserRoleLabel } from "@/enum";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const TransactionsTable = () => {
+  const t = useTranslations("productList"); // Using productList for orderNum or common keys
 
   const { data, loading, gettingAllUsers } = GetUsers()
   const { users: usersByRole, loading: loadingByRole, getUsersByRoleId } = useGetUsersByRoleId()
@@ -76,7 +78,8 @@ const TransactionsTable = () => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const isRepresentative = roles?.find(r => r.id === selectedRole)?.name === "representative";
-  const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative });
+  const isProvider = roles?.find(r => r.id === selectedRole)?.name === "Inventory";
+  const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative, isProvider, t });
 
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 

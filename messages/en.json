@@ -388,6 +388,7 @@
     "actions": "Actions",
     "active": "Active",
     "inactive": "Inactive",
+    "orderNum": "Order Number",
     "loading": "Loading inventory managers...",
     "noManagersFound": "No inventory managers found."
   },
@@ -468,7 +469,8 @@
     "depositCash": "Deposit Cash",
     "amount": "Amount",
     "depositCashDesc": "Deposit cash into user's account.",
-    "userUpdated": "User updated successfully."
+    "userUpdated": "User updated successfully.",
+    "orderNum": "Order Number"
   },
   "ReturnList": {
     "returnList": "Return List",
@@ -594,7 +596,8 @@
     "searchBrand": "Search Brand...",
     "selectBrandPlaceholder": "Select a brand",
     "fillRequiredFields": "Please fill all required fields",
-    "favorites": "Favorites"
+    "favorites": "Favorites",
+    "orderNum": "Order Number"
   },
   "inventoryManagement": {
     "productInformation": "Product Information",

@@ -249,7 +249,7 @@ const DashboardPage = () => {
               <MostSales onRegionSummaryFetched={(data) => setRegionSummary(data)} />
             </Card>
           </div>
-          <div className="lg:col-span-4 col-span-12">
+          <div className="lg:col-span-4 col-span-12 ">
             <Card>
               <CardHeader className="flex flex-row items-center">
                 <CardTitle className="flex-1">{t("recent_activity_table_title")}</CardTitle>
@@ -266,7 +266,7 @@ const DashboardPage = () => {
                     </div>
                 ) : (
                     <RecentActivity
-                        data={(orderReports?.items?.slice(0, 10) || []).map(item => ({
+                        data={(orderReports?.items || []).map(item => ({
                           id: item.id,
                           fullName: item.fullName || 'Unknown User',
                           orderDate: item.orderDate

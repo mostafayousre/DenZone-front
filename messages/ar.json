@@ -573,7 +573,8 @@
     "CreatedAt": "تاريخ الإنشاء",
     "Cash": "نقدي",
     "Credit": "ائتمان",
-    "noBalanceFound": "لا توجد معلومات رصيد متاحة."
+    "noBalanceFound": "لا توجد معلومات رصيد متاحة.",
+    "orderNum": "رقم الترتيب"
   },
   "ReturnList": {
     "returnList": "قائمة الإرجاع",
@@ -722,7 +723,8 @@
     "noActiveIngredientFound": "لا يوجد مكون نشط.",
     "selectCategoryPlaceholder": "اختر الفئة",
     "selectActiveIngredientPlaceholder": "اختر المكون النشط",
-    "save": "حفظ"
+    "save": "حفظ",
+    "orderNum": "رقم الترتيب"
   },
   "inventoryManagement": {
     "productName": "اسم المنتج",
