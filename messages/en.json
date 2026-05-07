@@ -658,6 +658,7 @@
     "company_percentage": "Company Percentage",
     "pref": "Preference",
     "description": "Description",
+    "order": "Order",
     "actions": "Actions",
     "unknown": "Unknown",
     "delete_category": "Delete Category",

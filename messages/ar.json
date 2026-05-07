@@ -796,6 +796,7 @@
     "company_percentage": "نسبة الشركة",
     "pref": "الأفضلية",
     "description": "الوصف",
+    "order": "الترتيب",
     "actions": "الإجراءات",
     "unknown": "غير معروف",
     "delete_category": "حذف الفئة",

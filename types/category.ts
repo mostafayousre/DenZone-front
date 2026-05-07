@@ -6,5 +6,6 @@ export type CategoryType = {
     mainCategoryId?: string;
     description: string;
    companyPercentage?: string;
-   imageName?: string;
+    imageName?: string;
+    orderNum?: number;
 };
