@@ -307,11 +307,32 @@
     "coupons": "Coupons",
     "modules": "Modules",
     "banners": "Banners",
+    "specialOffers": "Special Offers",
+    "ads": "Ads",
     "add_coupon": "Add Coupon"
   },
   "overall": {
     "Available": "Available",
     "Not Available": "Not Available"
+  },
+  "SpecialOffers": {
+    "specialOffers": "Special Offers",
+    "addOffer": "Add Special Offer",
+    "editOffer": "Edit Special Offer",
+    "deleteOffer": "Delete Special Offer",
+    "confirmDelete": "Are you sure you want to delete this offer?",
+    "image": "Image",
+    "actions": "Actions",
+    "uploadImage": "Upload Image",
+    "successAdd": "Special offer added successfully",
+    "successUpdate": "Special offer updated successfully",
+    "successDelete": "Special offer deleted successfully",
+    "errorAdd": "Failed to add special offer",
+    "errorUpdate": "Failed to update special offer",
+    "errorDelete": "Failed to delete special offer",
+    "errorFetch": "Failed to fetch special offers",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "Changelog": {
     "version": "Version",

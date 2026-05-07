@@ -107,7 +107,7 @@ const TransactionsTable = ({ onAdd }: { onAdd: () => void }) => {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead className="last:text-start" key={header.id}>
+                        <TableHead className="last:text-start " key={header.id}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -128,7 +128,7 @@ const TransactionsTable = ({ onAdd }: { onAdd: () => void }) => {
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="h-[75px]">
+                        <TableCell key={cell.id} className="h-[75px] bg-white dark:bg-transparent">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
