@@ -38,6 +38,7 @@ const EditUser = () => {
     const [description, setDescription] = useState("");
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [isPopular, setIsPopular] = useState(false);
+    const [orderNum, setOrderNum] = useState("");
 
     useEffect(() => {
         if (id) {
@@ -53,6 +54,7 @@ const EditUser = () => {
             setEmail(user?.email || "");
             setPhoneNumber(user?.phoneNumber || "");
             setIsPopular(user?.isPopular ?? false);
+            setOrderNum(user?.orderNum ? String(user?.orderNum) : "");
         }
     }, [user]);
 
@@ -70,6 +72,7 @@ const EditUser = () => {
 
         if (isInventory) {
             formData.append("IsPopular", isPopular.toString());
+            formData.append("OrderNum", orderNum);
         }
 
         if (profileImage) {
@@ -169,14 +172,26 @@ const EditUser = () => {
                         />
                     </div>
                     {isInventory && (
-                        <div className="flex items-center flex-wrap gap-2">
-                            <Label className="w-[150px] flex-none" htmlFor="isPopular">{t("isPopular") || "Popular"}</Label>
-                            <Switch
-                                id="isPopular"
-                                checked={isPopular}
-                                onCheckedChange={setIsPopular}
-                            />
-                        </div>
+                        <>
+                            <div className="flex items-center flex-wrap gap-2">
+                                <Label className="w-[150px] flex-none" htmlFor="isPopular">{t("isPopular") || "Popular"}</Label>
+                                <Switch
+                                    id="isPopular"
+                                    checked={isPopular}
+                                    onCheckedChange={setIsPopular}
+                                />
+                            </div>
+                            <div className="flex items-center flex-wrap gap-2">
+                                <Label className="w-[150px] flex-none" htmlFor="orderNum">{t("orderNum") || "Order Number"}</Label>
+                                <Input
+                                    id="orderNum"
+                                    type="number"
+                                    className="flex-1"
+                                    value={orderNum}
+                                    onChange={(e) => setOrderNum(e.target.value)}
+                                />
+                            </div>
+                        </>
                     )}
 
                     <div className="flex justify-end mt-4">

@@ -77,6 +77,7 @@ export type DataProps = {
   isPopular: boolean | null;
   action: React.ReactNode;
   addresses?: any;
+  orderNum?: number;
 };
 
 const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t?: (key: string) => string }) => {
@@ -434,7 +435,8 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
   );
 };
 
-export const baseColumns = ({ refresh, t, isRepresentative }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean }): ColumnDef<DataProps>[] => [
+export const baseColumns = ({ refresh, t, isRepresentative, isProvider }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean, isProvider?: boolean }): ColumnDef<DataProps>[] => {
+  const columns: ColumnDef<DataProps>[] = [
   {
     accessorKey: "fullName",
     header: t?.("fullName") || "Full Name",
@@ -460,6 +462,21 @@ export const baseColumns = ({ refresh, t, isRepresentative }: { refresh: () => v
     header: t?.("popular") || "Popular",
     cell: ({ row }) => <PopularCell row={row} t={t} />,
   },
+];
+
+  if (isProvider) {
+    columns.push({
+      accessorKey: "orderNum",
+      header: t?.("orderNum") || "Order Num",
+      cell: ({ row }) => (
+        <div className="text-sm text-default-600">
+          {row.original.orderNum !== undefined && row.original.orderNum !== null ? row.original.orderNum : "-"}
+        </div>
+      ),
+    });
+  }
+
+  columns.push(
   {
     accessorKey: "addresses",
     header: t?.("addresses") || "Address",
@@ -471,5 +488,8 @@ export const baseColumns = ({ refresh, t, isRepresentative }: { refresh: () => v
     id: "actions",
     header: t?.("actions") || "Actions",
     cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} />,
-  },
-];
+  }
+  );
+
+  return columns;
+};

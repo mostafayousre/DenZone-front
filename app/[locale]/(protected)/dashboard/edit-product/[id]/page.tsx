@@ -40,6 +40,7 @@ const EditProduct = () => {
     revenuePercentage: "",
     images: [] as File[],
     isPopular: false,
+    orderNum: "",
     existingImages: [] as string[],
     imageToDelete: [] as string[],
   });
@@ -61,6 +62,7 @@ useEffect(() => {
       revenuePercentage: product.revenuePercentage ? String(product.revenuePercentage) : "",
       images: [],
       isPopular: product.isPopular || false,
+      orderNum: product.orderNum ? String(product.orderNum) : "",
       existingImages: Array.isArray(product.images) ? product.images : [],
       imageToDelete: [],
     });
@@ -100,6 +102,7 @@ useEffect(() => {
     data.append("CategoryId", formData.categoryId);
     data.append("RevenuePercentage", formData.revenuePercentage);
     data.append("IsPopular", formData.isPopular.toString());
+    data.append("OrderNum", formData.orderNum);
 
     if (formData.images.length > 0) {
       formData.images.forEach((file) => {
@@ -201,6 +204,16 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.revenuePercentage} 
                 onChange={(e) => setFormData({...formData, revenuePercentage: e.target.value})} 
+              />
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <Label className="w-[180px] flex-none text-sm font-medium">{t("orderNum")}</Label>
+              <Input 
+                type="number"
+                className="flex-1 min-w-[300px]"
+                value={formData.orderNum} 
+                onChange={(e) => setFormData({...formData, orderNum: e.target.value})} 
               />
             </div>
 

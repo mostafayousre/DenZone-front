@@ -8,7 +8,7 @@ interface RecentActivityProps {
 
 const RecentActivity = ({ data }: RecentActivityProps) => {
     return (
-        <ul className="space-y-3 h-full">
+        <ul className="space-y-3 h-[435px] overflow-y-auto">
             {data.map((item) => (
                 <li
                     className="flex items-center gap-3 border-b border-default-100 dark:border-default-300 last:border-b-0 pb-3 last:pb-0"

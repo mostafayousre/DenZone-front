@@ -157,6 +157,17 @@ export const baseColumns = ({
       },
     },
     {
+      accessorKey: "orderNum",
+      header: t("orderNum"),
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {row.original.orderNum !== undefined && row.original.orderNum !== null
+            ? row.original.orderNum
+            : "-"}
+        </span>
+      ),
+    },
+    {
       accessorKey: "revenuePercentage",
       header: isArabic ? "نسبة الربح" : "Revenue Percentage",
       cell: ({ row }) => (

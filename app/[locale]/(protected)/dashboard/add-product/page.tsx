@@ -37,6 +37,7 @@ const AddProduct = () => {
   const [brandId, setBrandId] = useState<string>("");
   const [isPopular, setIsPopular] = useState<boolean>(false);
   const [revenuePercentage, setRevenuePercentage] = useState<string>("");
+  const [orderNum, setOrderNum] = useState<string>("");
   
   const [photos, setPhotos] = useState<File[]>([]);
   
@@ -101,6 +102,7 @@ const AddProduct = () => {
     formData.append("BrandId", brandId);
     formData.append("IsPopular", isPopular.toString());
     formData.append("RevenuePercentage", revenuePercentage);
+    formData.append("OrderNum", orderNum);
     
     photos.forEach((file) => {
       formData.append("Photos", file);
@@ -206,6 +208,10 @@ const AddProduct = () => {
               <div className="flex items-center gap-2">
                 <Label className="w-[120px]">Revenue Percentage (%)</Label>
                 <Input type="number" value={revenuePercentage} onChange={(e) => setRevenuePercentage(e.target.value)} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-[120px]">{t("orderNum")}</Label>
+                <Input type="number" value={orderNum} onChange={(e) => setOrderNum(e.target.value)} />
               </div>
             </div>
 
