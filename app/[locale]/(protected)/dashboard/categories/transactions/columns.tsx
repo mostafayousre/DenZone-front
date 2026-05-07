@@ -41,6 +41,11 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void , t: (key: str
     //     },
     // },
     {
+        accessorKey: "orderNum",
+        header: t("order"),
+        cell: ({ row }) => <span>{row.getValue("orderNum")}</span>,
+    },
+    {
         id: "actions",
         accessorKey: "action",
         header: t("actions"),

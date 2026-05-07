@@ -27,6 +27,7 @@ const EditCategory = () => {
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
   const [pref, setPref] = useState("");
+  const [orderNum, setOrderNum] = useState<number>(0);
   const [description, setDescription] = useState("");
   // const [companyPercentage, setCompanyPercentage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -40,6 +41,7 @@ const EditCategory = () => {
       setName(category.name || "");
       setArabicName(category.arabicName || "");
       setPref(category.pref || "");
+      setOrderNum(category.orderNum || 0);
       setDescription(category.description || "");
       // setCompanyPercentage(category.companyPercentage || "");
     }
@@ -61,6 +63,7 @@ const EditCategory = () => {
     formData.append("Name", name);
     formData.append("ArabicName", arabicName);
     formData.append("Pref", pref);
+    formData.append("OrderNum", orderNum.toString());
     formData.append("Description", description);
     // formData.append("CompanyPercentage", companyPercentage);
     
@@ -137,7 +140,19 @@ const EditCategory = () => {
                 onChange={(e) => setPref(e.target.value)}
               />
             </div>
-            
+            <div className="flex items-center flex-wrap gap-2">
+              <Label className="w-[180px] flex-none text-sm font-medium" htmlFor="category-order">
+                {t("order")}
+              </Label>
+              <Input
+                id="category-order"
+                type="number"
+                className="flex-1 min-w-[300px]"
+                placeholder={t("order")}
+                value={orderNum}
+                onChange={(e) => setOrderNum(parseInt(e.target.value) || 0)}
+              />
+            </div>
 
             <div className="flex items-start flex-wrap gap-2">
               <Label className="w-[180px] flex-none text-sm font-medium mt-3" htmlFor="category-description">

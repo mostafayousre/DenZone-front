@@ -271,13 +271,13 @@ export function AddCouponDialog({ open, onOpenChange, onSuccess }: AddCouponDial
             >
                 {loading ? <Loader2 className="animate-spin" size={20} /> : "Send"}
             </Button>
-            <Button 
+            {/* <Button 
                 variant="outline"
                 className="bg-cyan-400 hover:bg-cyan-500 text-white border-none rounded-lg px-6 h-12 text-base font-medium flex-1 md:flex-none"
                 onClick={() => {}}
             >
                 Add New Record
-            </Button>
+            </Button> */}
           </div>
         </div>
       </DialogContent>
