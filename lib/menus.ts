@@ -126,10 +126,21 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
             },
             {
                 href: "/dashboard/banners",
-                label: t("banners"),
-                active: pathname === "/dashboard/banners",
-                children: [],
-                icon: "",
+                label: t("ads"),
+                active: pathname.includes("/dashboard/banners") || pathname.includes("/dashboard/special-offers"),
+                icon: "heroicons-outline:megaphone",
+                children: [
+                    {
+                        href: "/dashboard/banners",
+                        label: t("banners"),
+                        active: pathname === "/dashboard/banners",
+                    },
+                    {
+                        href: "/dashboard/special-offers",
+                        label: t("specialOffers"),
+                        active: pathname === "/dashboard/special-offers",
+                    }
+                ],
             },
             {
                 href: "/dashboard/coupons",

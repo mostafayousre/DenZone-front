@@ -305,6 +305,8 @@
     "coupons": "الكوبونات",
     "modules": "الموديولات",
     "banners": "البانرات",
+    "specialOffers": "العروض الخاصة",
+    "ads": "الإعلانات",
     "cities": "المدن",
     "send-notification": "إرسال إشعار",
     "add_coupon": "إضافة كوبون"
@@ -312,6 +314,25 @@
   "overall": {
     "Available": "متاح",
     "Not Available": "غير متاح"
+  },
+  "SpecialOffers": {
+    "specialOffers": "العروض الخاصة",
+    "addOffer": "إضافة عرض خاص",
+    "editOffer": "تعديل عرض خاص",
+    "deleteOffer": "حذف عرض خاص",
+    "confirmDelete": "هل أنت متأكد من حذف هذا العرض؟",
+    "image": "الصورة",
+    "actions": "الإجراءات",
+    "uploadImage": "تحميل صورة",
+    "successAdd": "تم إضافة العرض الخاص بنجاح",
+    "successUpdate": "تم تحديث العرض الخاص بنجاح",
+    "successDelete": "تم حذف العرض الخاص بنجاح",
+    "errorAdd": "فشل في إضافة العرض الخاص",
+    "errorUpdate": "فشل في تحديث العرض الخاص",
+    "errorDelete": "فشل في حذف العرض الخاص",
+    "errorFetch": "فشل في جلب العروض الخاصة",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
   },
   "Changelog": {
     "version": "النسخة",
