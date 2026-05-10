@@ -44,8 +44,6 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
-import { useGetLimitOrder } from "@/services/Orders/getLimitOrder";
-import { useUpdateLimitOrder } from "@/services/Orders/updateLimitOrder";
 
 export default function TransactionsTable() {
   const userRole = Cookies.get("userRole");
