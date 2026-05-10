@@ -8,6 +8,7 @@ import { SheetMenu } from '@/components/partials/sidebar/menu/sheet-menu'
 import HorizontalMenu from "./horizontal-menu"
 import LocalSwitcher from './locale-switcher'
 import HeaderLogo from "./header-logo"
+import InventoryNotifications from './inventory-notifications'
 
 const DashCodeHeader = () => {
     return (
@@ -19,6 +20,7 @@ const DashCodeHeader = () => {
                     </div>
 
                     <div className="nav-tools flex items-center md:gap-4 gap-3 flex-none overflow-visible">
+                        <InventoryNotifications />
                         <LocalSwitcher />
                         <ThemeSwitcher />
                         <ProfileInfo />
