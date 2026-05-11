@@ -437,32 +437,32 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
 
 export const baseColumns = ({ refresh, t, isRepresentative, isProvider }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean, isProvider?: boolean }): ColumnDef<DataProps>[] => {
   const columns: ColumnDef<DataProps>[] = [
-  {
-    accessorKey: "fullName",
-    header: t?.("fullName") || "Full Name",
-    cell: ({ row }) => <div className="text-sm text-default-600">{row.original.fullName}</div>,
-  },
-  {
-    accessorKey: "email",
-    header: t?.("email") || "Email",
-    cell: ({ row }) => <div className="text-sm text-default-600">{row.original.email}</div>,
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: t?.("phoneNumber") || "Phone Number",
-    cell: ({ row }) => <div className="text-sm text-default-600">{row.original.phoneNumber}</div>,
-  },
-  {
-    accessorKey: "isActive",
-    header: t?.("status") || "Active",
-    cell: ({ row }) => <StatusCell row={row} refresh={refresh} t={t} />,
-  },
-  {
-    accessorKey: "isPopular",
-    header: t?.("popular") || "Popular",
-    cell: ({ row }) => <PopularCell row={row} t={t} />,
-  },
-];
+    {
+      accessorKey: "fullName",
+      header: t?.("fullName") || "Full Name",
+      cell: ({ row }) => <div className="text-sm text-default-600">{row.original.fullName}</div>,
+    },
+    {
+      accessorKey: "email",
+      header: t?.("email") || "Email",
+      cell: ({ row }) => <div className="text-sm text-default-600">{row.original.email}</div>,
+    },
+    {
+      accessorKey: "phoneNumber",
+      header: t?.("phoneNumber") || "Phone Number",
+      cell: ({ row }) => <div className="text-sm text-default-600">{row.original.phoneNumber}</div>,
+    },
+    {
+      accessorKey: "isActive",
+      header: t?.("status") || "Active",
+      cell: ({ row }) => <StatusCell row={row} refresh={refresh} t={t} />,
+    },
+    {
+      accessorKey: "isPopular",
+      header: t?.("popular") || "Popular",
+      cell: ({ row }) => <PopularCell row={row} t={t} />,
+    },
+  ];
 
   if (isProvider) {
     columns.push({
@@ -477,18 +477,18 @@ export const baseColumns = ({ refresh, t, isRepresentative, isProvider }: { refr
   }
 
   columns.push(
-  {
-    accessorKey: "addresses",
-    header: t?.("addresses") || "Address",
-    cell: ({ row }) => {
-      return <AddressCell addresses={row.original.addresses} t={t} />;
+    {
+      accessorKey: "addresses",
+      header: t?.("addresses") || "Address",
+      cell: ({ row }) => {
+        return <AddressCell addresses={row.original.addresses} t={t} />;
+      },
     },
-  },
-  {
-    id: "actions",
-    header: t?.("actions") || "Actions",
-    cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} />,
-  }
+    {
+      id: "actions",
+      header: t?.("actions") || "Actions",
+      cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} />,
+    }
   );
 
   return columns;

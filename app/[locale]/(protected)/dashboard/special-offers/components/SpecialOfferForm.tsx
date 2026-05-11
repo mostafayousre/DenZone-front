@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -14,8 +15,9 @@ interface SpecialOfferFormProps {
     initialData?: {
         id?: number;
         imagePath?: string;
+        sectionNum?: number;
     };
-    onSubmit: (data: { imageFile: File | null }) => Promise<void>;
+    onSubmit: (data: { imageFile: File | null; sectionNum: number }) => Promise<void>;
     loading: boolean;
     title: string;
 }
@@ -24,6 +26,7 @@ const SpecialOfferForm = ({ initialData, onSubmit, loading, title }: SpecialOffe
     const t = useTranslations("SpecialOffers");
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.imagePath || null);
+    const [sectionNum, setSectionNum] = useState<string>(initialData?.sectionNum?.toString() || "1");
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -43,7 +46,7 @@ const SpecialOfferForm = ({ initialData, onSubmit, loading, title }: SpecialOffe
             toast.error(t("imageRequired") || "Image is required");
             return;
         }
-        await onSubmit({ imageFile });
+        await onSubmit({ imageFile, sectionNum: parseInt(sectionNum) });
     };
 
     return (
@@ -104,6 +107,26 @@ const SpecialOfferForm = ({ initialData, onSubmit, loading, title }: SpecialOffe
                                     )}
                                 </div>
                             )}
+
+                            <div className="flex items-center flex-wrap gap-4 mt-6">
+                                <Label className="w-[150px] flex-none">
+                                    sectionNum
+                                </Label>
+                                <div className="flex-1">
+                                    <Select 
+                                        value={sectionNum} 
+                                        onValueChange={setSectionNum}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="selectSection" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">specialOffer1</SelectItem>
+                                            <SelectItem value="2">specialOffer2</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
