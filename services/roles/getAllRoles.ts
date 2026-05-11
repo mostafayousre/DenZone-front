@@ -26,7 +26,7 @@ function useGetAllRoles() {
     }
   };
 
-  return { data, loading, error, getAllRoles };
+  return { data , loading, error, getAllRoles };
 }
 
 export default useGetAllRoles;
