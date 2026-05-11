@@ -26,7 +26,7 @@ export default function LocalSwitcher() {
     };
     return (
         <Select onValueChange={onSelectChange} defaultValue={localActive}>
-            <SelectTrigger className='w-[94px] border-none read-only:bg-transparent cursor-pointer'>
+            <SelectTrigger className='w-[60px] md:w-[94px] border-none read-only:bg-transparent cursor-pointer px-1 md:px-3'>
                 <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent >

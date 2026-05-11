@@ -151,19 +151,21 @@ export default function TransactionsTable() {
 
   return (
     <Card className="w-full">
-      <div className="px-5 py-4 flex flex-col 2xl:flex-row items-center gap-4">
-        <SearchInput
-          data={allOrdersData ?? []}
-          setFilteredData={setFilteredOrders}
-          filterKey="orderNumber"
-        />
+      <div className="px-5 py-4 flex flex-col md:flex-row items-center gap-4">
+        <div className="w-full md:w-auto flex-1">
+          <SearchInput
+            data={allOrdersData ?? []}
+            setFilteredData={setFilteredOrders}
+            filterKey="orderNumber"
+          />
+        </div>
 
-        <div className="inline-flex flex-wrap gap-2 items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden ml-auto">
+        <div className="flex flex-wrap gap-2 items-center justify-center md:justify-end">
           <Button
             size="md"
-            variant={selectedStatus === "all" ? "default" : "ghost"}
+            variant={selectedStatus === "all" ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus("all")}
           >
             {t("All")}
@@ -171,9 +173,9 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Pending ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Pending ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Pending)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Pending].toLowerCase()}`)}
@@ -181,9 +183,9 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Approved ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Approved ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Approved)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Approved].toLowerCase()}`)}
@@ -191,9 +193,9 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Rejected ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Rejected ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Rejected)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Rejected].toLowerCase()}`)}
@@ -201,9 +203,9 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Prepared ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Prepared ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Prepared)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Prepared].toLowerCase()}`)}
@@ -211,9 +213,9 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Shipped ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Shipped ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Shipped)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Shipped].toLowerCase()}`)}
@@ -221,27 +223,27 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus?.Delivered ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus?.Delivered ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Delivered)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Delivered].toLowerCase()}`)}
           </Button>
 <Button
             size="md"
-            variant={selectedStatus === OrderStatus?.Cancel ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus?.Cancel ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Cancel)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Cancel].toLowerCase()}`)}
           </Button>
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Completed ? "default" : "ghost"}
+            variant={selectedStatus === OrderStatus.Completed ? "default" : "outline"}
             color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
             onClick={() => filterOrdersByStatus(OrderStatus.Completed)}
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Completed].toLowerCase()}`)}

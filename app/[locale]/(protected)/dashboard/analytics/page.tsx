@@ -139,7 +139,7 @@ const DashboardPage = () => {
                     )}
                   </CardHeader>
                   <CardContent className="p-4">
-                    <div className="grid md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                       <StatisticsBlock
                           title={"Total Orders"}
                           total={(regionSummary?.totalOrders ?? summaryReports?.totalOrders) ?? "--"}

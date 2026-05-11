@@ -332,7 +332,9 @@
     "errorDelete": "فشل في حذف العرض الخاص",
     "errorFetch": "فشل في جلب العروض الخاصة",
     "confirm": "تأكيد",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "noResults": "لا توجد عروض خاصة.",
+    "searchPlaceholder": "البحث عن عروض خاصة..."
   },
   "Changelog": {
     "version": "النسخة",
@@ -454,7 +456,8 @@
       "Shipped": "تم الشحن",
       "Delivered": "تم التسليم",
       "Completed": "مكتمل",
-      "ReAssignTo": "معاد التعيين"
+      "ReAssignTo": "معاد التعيين",
+      "Cancel": "ملغي"
     },
     "billSummary": {
       "item": "العنصر",
@@ -587,6 +590,7 @@
     "status": "الحالة",
     "active": "نشط",
     "inactive": "غير نشط",
+    "isPopular": "شائع",
     "updateUser": "تحديث المستخدم",
     "updateFailed": "فشل في تحديث المستخدم. يرجى المحاولة مرة أخرى.",
     "depositAmount": "مبلغ الإيداع",
@@ -911,6 +915,7 @@
   "brands": {
     "brand name": "اسم العلامة التجارية",
     "brand arabic name": "اسم العلامة التجارية بالعربية",
+    "isPopular": "علامة تجارية شائعة",
     "description": "الوصف",
     "actions": "الإجراءات",
     "unknown": "غير معروف",

@@ -332,7 +332,9 @@
     "errorDelete": "Failed to delete special offer",
     "errorFetch": "Failed to fetch special offers",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "noResults": "No special offers found.",
+    "searchPlaceholder": "Search special offers..."
   },
   "Changelog": {
     "version": "Version",
@@ -471,7 +473,8 @@
       "Shipped": "Shipped",
       "Delivered": "Delivered",
       "Completed": "Completed",
-      "ReAssignTo": "Reassigned"
+      "ReAssignTo": "Reassigned",
+      "Cancel": "Canceled"
     },
     "billSummary": {
       "item": "Item",
@@ -601,6 +604,7 @@
     "status": "Status",
     "active": "Active",
     "inactive": "Inactive",
+    "isPopular": "Is Popular",
     "updateUser": "Update User",
     "cancel": "Cancel",
     "successMessage": "User updated successfully.",
@@ -909,6 +913,7 @@
     "brand_arabic_name": "Arabic Brand Name",
     "brand arabic name": "Brand Arabic Name",
     "popular": "Popular",
+    "isPopular": "Is Popular",
     "actions": "Actions",
     "unknown": "Unknown",
     "delete_brand": "Delete Brand",
@@ -965,6 +970,8 @@
   },
   "banners": {
     "banners": "Banners",
+    "image": "Image",
+    "order": "Order",
     "banner_image": "Banner Image",
     "actions": "Actions",
     "unknown": "Unknown",

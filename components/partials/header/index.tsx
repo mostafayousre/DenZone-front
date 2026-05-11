@@ -19,7 +19,7 @@ const DashCodeHeader = () => {
                         <HeaderLogo />
                     </div>
 
-                    <div className="nav-tools flex items-center md:gap-4 gap-3 flex-none overflow-visible">
+                    <div className="nav-tools flex items-center md:gap-4 gap-1.5 sm:gap-3 flex-none overflow-visible">
                         <InventoryNotifications />
                         <LocalSwitcher />
                         <ThemeSwitcher />
