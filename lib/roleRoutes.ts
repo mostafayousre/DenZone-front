@@ -26,17 +26,22 @@ export const roleRoutes: Record<string, string[]> = {
         "/en/dashboard/return-list",
         "/ar/dashboard/return-details",
         "/en/dashboard/return-details",
-
-        // "/en/dashboard/sales",
-        // "/ar/dashboard/sales",
         "/ar/dashboard/add-product-price",
         "/en/dashboard/add-product-price",
         "/en/dashboard/inventory-management",
         "/ar/dashboard/inventory-management",
+        "/en/dashboard/edit-product/:id",
+        "/ar/dashboard/edit-product/:id",
         "/en/dashboard/edit-user/:id",
         "/ar/dashboard/edit-user/:id",
     ],
-    sales: ["/en/dashboard/sales", "/en/dashboard/register", "/ar/dashboard/sales", "/ar/dashboard/register"]
+    // sales: ["/en/dashboard/sales", "/en/dashboard/register", "/ar/dashboard/sales", "/ar/dashboard/register"]
+    representative:[
+        "/en/dashboard/order-list",
+        "/ar/dashboard/order-list",
+        "/ar/dashboard/order-details",
+        "/en/dashboard/order-details"
+    ]
 };
 
 export const defaultRouteByRole: Record<string, string> = {

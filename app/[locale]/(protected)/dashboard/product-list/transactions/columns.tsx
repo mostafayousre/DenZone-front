@@ -12,11 +12,15 @@ const ActionCell = ({
   row,
   refresh,
   t,
+  userRole,
 }: {
   row: { original: ProductType };
   refresh: () => void;
   t: (key: string) => string;
+  userRole: string | undefined;
 }) => {
+  const isAdmin = userRole === "Admin";
+  const isInventory = userRole?.toLowerCase() === "inventory";
   const { loading, deleteProductById } = useDeleteProductById();
 
   const handleDelete = (id: string) => {
@@ -54,31 +58,37 @@ const ActionCell = ({
   return (
     <div className="flex items-center gap-2">
       {/* زر العرض - View Details */}
-      <Link
-  href={`/dashboard/product-list/${row.original.id}`} 
-  className="p-2 text-primary bg-primary/10 rounded-full hover:bg-primary hover:text-white transition-all"
-  title={t("view")}
->
-  <Eye className="w-4 h-4" />
-</Link>
+      {isAdmin && (
+        <Link
+          href={`/dashboard/product-list/${row.original.id}`}
+          className="p-2 text-primary bg-primary/10 rounded-full hover:bg-primary hover:text-white transition-all"
+          title={t("view")}
+        >
+          <Eye className="w-4 h-4" />
+        </Link>
+      )}
 
       {/* زر التعديل - Edit */}
-      <Link
-        href={`/dashboard/edit-product/${row.original.id}`}
-        className="p-2 text-info bg-info/10 rounded-full hover:bg-info hover:text-white transition-all"
-        title={t("edit")}
-      >
-        <SquarePen className="w-4 h-4" />
-      </Link>
+      {(isAdmin || isInventory) && (
+        <Link
+          href={`/dashboard/edit-product/${row.original.id}`}
+          className="p-2 text-info bg-info/10 rounded-full hover:bg-info hover:text-white transition-all"
+          title={t("edit")}
+        >
+          <SquarePen className="w-4 h-4" />
+        </Link>
+      )}
 
       {/* زر الحذف - Delete */}
-      <button
-        onClick={() => row.original.id && handleDelete(row.original.id)}
-        className="p-2 text-destructive bg-destructive/10 rounded-full hover:bg-destructive hover:text-white transition-all"
-        title={t("delete")}
-      >
-        <Trash2 className="w-4 h-4" />
-      </button>
+      {isAdmin && (
+        <button
+          onClick={() => row.original.id && handleDelete(row.original.id)}
+          className="p-2 text-destructive bg-destructive/10 rounded-full hover:bg-destructive hover:text-white transition-all"
+          title={t("delete")}
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 };
@@ -169,7 +179,7 @@ export const baseColumns = ({
     },
     {
       accessorKey: "revenuePercentage",
-      header: isArabic ? "نسبة الربح" : "Revenue Percentage",
+      header: t("revenuePercentage"),
       cell: ({ row }) => (
         <span className="text-sm">
           {row.original.revenuePercentage !== undefined && row.original.revenuePercentage !== null
@@ -189,11 +199,13 @@ export const baseColumns = ({
     },
   ];
 
-  if (userRole === "Admin") {
+  if (userRole === "Admin" || userRole?.toLowerCase() === "inventory") {
     columns.push({
       id: "actions",
       header: isArabic ? "الإجراءات" : "Actions",
-      cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} />,
+      cell: ({ row }) => (
+        <ActionCell row={row} refresh={refresh} t={t} userRole={userRole} />
+      ),
     });
   }
 
