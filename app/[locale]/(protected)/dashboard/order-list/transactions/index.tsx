@@ -44,6 +44,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
+import useGettingDeliveryOrders from "@/services/Orders/gettingDeliveryOrders";
 
 export default function TransactionsTable() {
   const userRole = Cookies.get("userRole");
@@ -54,6 +55,10 @@ export default function TransactionsTable() {
   const { gettingAllOrders, orders, loading, error } = useGettingAllOrders();
   const { gettingUserOrders, orders: userOrders, loading: userOrdersLoading } = useGettingUserOrders();
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
+  const { loading: deliveryOrdersLoading, orders: deliveryOrders, gettingDeliveryOrders } = useGettingDeliveryOrders();
+
+  const isRepresentative = userRole?.toLowerCase() === "representative";
+  const isDelivery = userRole?.toLowerCase() === "delivery";
 
   
   const searchParams = useSearchParams();
@@ -73,11 +78,18 @@ export default function TransactionsTable() {
     if (filterUserId && isAdmin) {
         return userOrders?.filter(order => order.totalAmount !== 0) || [];
     }
-    const rawData = isAdmin ? orders : myOrders;
+    let rawData;
+    if (isAdmin) {
+        rawData = orders;
+    } else if (isRepresentative || isDelivery) {
+        rawData = deliveryOrders;
+    } else {
+        rawData = myOrders;
+    }
     return rawData?.filter(order => order.totalAmount !== 0) || [];
-  }, [isAdmin, orders, myOrders, userOrders, filterUserId]);
+  }, [isAdmin, isRepresentative, isDelivery, orders, myOrders, deliveryOrders, userOrders, filterUserId]);
 
-  const isLoadingData = (isAdmin && !filterUserId) ? loading : (filterUserId ? userOrdersLoading : myOrdersLoading);
+  const isLoadingData = (isAdmin && !filterUserId) ? loading : (filterUserId ? userOrdersLoading : (isRepresentative || isDelivery ? deliveryOrdersLoading : myOrdersLoading));
 
   const t = useTranslations("OrderList")
 
@@ -89,6 +101,8 @@ export default function TransactionsTable() {
         } else {
           gettingAllOrders();
         }
+      } else if (isRepresentative || isDelivery) {
+        gettingDeliveryOrders();
       } else {
         gettingVendorOrders(userId);
       }
@@ -134,12 +148,14 @@ export default function TransactionsTable() {
       } else {
         gettingAllOrders();
       }
+    } else if (isRepresentative || isDelivery) {
+        gettingDeliveryOrders();
     } else {
       if (userId) {
         gettingVendorOrders(userId);
       }
     }
-  }, [isAdmin, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, selectedStatus]);
+  }, [isAdmin, isRepresentative, isDelivery, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, gettingDeliveryOrders, selectedStatus]);
 
 
 

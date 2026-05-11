@@ -14,6 +14,9 @@ export type Orders = {
     items: OrderItem[]
     orderNumber?: string;
     deliveryName?: string;
+    couponCode?: string;
+    couponPercentage?: number;
+    couponPrecentage?: number;
 }
 
 export interface OrderItem {

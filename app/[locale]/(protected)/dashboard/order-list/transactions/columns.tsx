@@ -320,6 +320,16 @@ export const baseColumns = ({ refresh, t }: {
       cell: ({ row }) => <span>{row.getValue("deliveryOptionName") || "there is no delivery date"}</span>,
     },
     {
+      accessorKey: "couponCode",
+      header: t("couponCode") || "Coupon Code",
+      cell: ({ row }) => <span>{row.original.couponCode || "-"}</span>,
+    },
+    {
+      accessorKey: "couponPercentage",
+      header: t("couponPercentage") || "Coupon %",
+      cell: ({ row }) => <span>{row.original.couponPercentage ?? row.original.couponPrecentage ?? "-"}</span>,
+    },
+    {
       accessorKey: "deliveryName",
       header: t("deliveryName") || "Delivery",
       cell: ({ row }) => <span>{row.getValue("deliveryName") || "there is no delivery yet"}</span>,
