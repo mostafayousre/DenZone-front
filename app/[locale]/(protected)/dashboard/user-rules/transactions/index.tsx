@@ -77,9 +77,11 @@ const TransactionsTable = () => {
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const isRepresentative = roles?.find(r => r.id === selectedRole)?.name === "representative";
+  const selectedRoleName = roles?.find(r => r.id === selectedRole)?.name;
+  const isRepresentative = selectedRoleName === "representative" || selectedRoleName === "Preparation representative";
+  const showWorkingHours = selectedRoleName === "representative";
   const isProvider = roles?.find(r => r.id === selectedRole)?.name === "Inventory";
-  const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative, isProvider, t });
+  const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative, isProvider, showWorkingHours, t });
 
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
