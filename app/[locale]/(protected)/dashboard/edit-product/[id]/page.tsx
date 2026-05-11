@@ -13,6 +13,7 @@ import { useRouter } from "@/i18n/routing";
 import { toast } from "sonner";
 import { Loader2, Upload, FileImage, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Cookies from "js-cookie";
 
 import useGettingProductById from "@/services/products/gettingProductById";
 import GetCategories from "@/services/categories/getCategories";
@@ -24,6 +25,9 @@ const EditProduct = () => {
   const params = useParams();
   const productId = params?.id as string;
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const userRole = Cookies.get("userRole");
+  const isInventory = userRole?.toLowerCase() === "inventory";
 
   const { getProductById, product, loading } = useGettingProductById();
   const { data: categories, gettingAllCategories, loading: catsLoading } = GetCategories();
@@ -150,6 +154,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.name} 
                 onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -159,6 +164,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.arabicName} 
                 onChange={(e) => setFormData({...formData, arabicName: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -168,6 +174,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.pref} 
                 onChange={(e) => setFormData({...formData, pref: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -177,6 +184,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.arabicPreef} 
                 onChange={(e) => setFormData({...formData, arabicPreef: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -185,6 +193,7 @@ useEffect(() => {
               <Select 
                 value={formData.categoryId} 
                 onValueChange={(val) => setFormData({...formData, categoryId: val})}
+                disabled={isInventory}
               >
                 <SelectTrigger className="flex-1 min-w-[300px]">
                   <SelectValue placeholder={t("selectCategory")} />
@@ -198,7 +207,7 @@ useEffect(() => {
             </div>
 
             <div className="flex items-center flex-wrap gap-2">
-              <Label className="w-[180px] flex-none text-sm font-medium">Revenue Percentage (%)</Label>
+              <Label className="w-[180px] flex-none text-sm font-medium">{t("revenuePercentage")}</Label>
               <Input 
                 type="number"
                 className="flex-1 min-w-[300px]"
@@ -214,6 +223,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.orderNum} 
                 onChange={(e) => setFormData({...formData, orderNum: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -223,6 +233,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.description} 
                 onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -232,6 +243,7 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.arabicDescription} 
                 onChange={(e) => setFormData({...formData, arabicDescription: e.target.value})} 
+                disabled={isInventory}
               />
             </div>
 
@@ -240,6 +252,7 @@ useEffect(() => {
                 id="isPopular" 
                 checked={formData.isPopular} 
                 onCheckedChange={(val) => setFormData({...formData, isPopular: val})} 
+                disabled={isInventory}
               />
               <Label htmlFor="isPopular" className="cursor-pointer font-semibold">
                 {t("isPopular")}
@@ -264,8 +277,9 @@ useEffect(() => {
                               imageToDelete: [...prev.imageToDelete, fileName]
                             }));
                           }}
-                          className="bg-destructive text-white p-1 rounded-full hover:bg-destructive/90"
+                          className="bg-destructive text-white p-1 rounded-full hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Delete"
+                          disabled={isInventory}
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -284,7 +298,8 @@ useEffect(() => {
                     type="button" 
                     variant="outline" 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    disabled={isInventory}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <FileImage className="w-4 h-4 mr-2" />
                     {t("chooseFile") || "Upload Photos"}
@@ -311,7 +326,8 @@ useEffect(() => {
                         <button
                           type="button"
                           onClick={() => removeNewImage(index)}
-                          className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          disabled={isInventory}
+                          className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:hidden"
                         >
                           <X className="w-4 h-4" />
                         </button>
