@@ -47,5 +47,6 @@ export const roleRoutes: Record<string, string[]> = {
 export const defaultRouteByRole: Record<string, string> = {
     Admin: "/dashboard/analytics",
     Inventory: "/dashboard/order-list",
-    sales: "/dashboard/sales",
+    // sales: "/dashboard/sales",
+    representative: "/dashboard/order-list",
 };

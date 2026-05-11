@@ -25,11 +25,12 @@ function EditSpecialOfferPage() {
         }
     }, [id]);
 
-    const handleSubmit = async (data: { imageFile: File | null }) => {
+    const handleSubmit = async (data: { imageFile: File | null; sectionNum: number }) => {
         const formData = new FormData();
         if (data.imageFile) {
             formData.append("file", data.imageFile);
         }
+        formData.append("SectionNum", data.sectionNum.toString());
 
         const result = await updateSpecialOffer(id, formData);
         if (result.success) {

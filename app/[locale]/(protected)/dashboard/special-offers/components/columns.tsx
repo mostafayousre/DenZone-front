@@ -106,6 +106,18 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
         },
     },
     {
+        accessorKey: "sectionNum",
+        header: "Section Num",
+        cell: ({ row }) => {
+            const sectionNum = row.getValue("sectionNum") as number;
+            return (
+                <div className="text-sm font-medium text-default-600">
+                    {sectionNum === 1 ? "specialOffer1": sectionNum === 2 ? "specialOffer2" : sectionNum}
+                </div>
+            );
+        },
+    },
+    {
         id: "actions",
         accessorKey: "action",
         header: t("actions"),
