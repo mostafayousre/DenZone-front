@@ -145,7 +145,7 @@ const PopularCell = ({ row, t }: { row: any; t?: (key: string) => string }) => {
 };
 
 
-const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean }) => {
+const ActionCell = ({ row, refresh, t, isRepresentative, showWorkingHours }: { row: any; refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean, showWorkingHours?: boolean }) => {
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
   const id = row.original.id;
@@ -280,7 +280,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
         </>
       )}
 
-      {isRepresentative && (
+      {showWorkingHours && (
         <Dialog open={isWorkingHoursOpen} onOpenChange={setIsWorkingHoursOpen}>
           <DialogTrigger asChild>
             <button
@@ -435,7 +435,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative }: { row: any; refresh: 
   );
 };
 
-export const baseColumns = ({ refresh, t, isRepresentative, isProvider }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean, isProvider?: boolean }): ColumnDef<DataProps>[] => {
+export const baseColumns = ({ refresh, t, isRepresentative, isProvider, showWorkingHours }: { refresh: () => void; t?: (key: string) => string, isRepresentative?: boolean, isProvider?: boolean, showWorkingHours?: boolean }): ColumnDef<DataProps>[] => {
   const columns: ColumnDef<DataProps>[] = [
     {
       accessorKey: "fullName",
@@ -487,7 +487,7 @@ export const baseColumns = ({ refresh, t, isRepresentative, isProvider }: { refr
     {
       id: "actions",
       header: t?.("actions") || "Actions",
-      cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} />,
+      cell: ({ row }) => <ActionCell row={row} refresh={refresh} t={t} isRepresentative={isRepresentative} showWorkingHours={showWorkingHours} />,
     }
   );
 
