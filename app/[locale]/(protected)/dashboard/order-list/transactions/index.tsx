@@ -158,7 +158,7 @@ export default function TransactionsTable() {
           filterKey="orderNumber"
         />
 
-        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden ml-auto">
+        <div className="inline-flex flex-wrap gap-2 items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden ml-auto">
           <Button
             size="md"
             variant={selectedStatus === "all" ? "default" : "ghost"}

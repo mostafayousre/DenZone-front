@@ -185,7 +185,7 @@ const TransactionsTable = () => {
     <Card className="w-full">
       <div className="flex flex-wrap gap-4 items-center py-4 px-5">
         {isAdmin ? (
-          <div className="flex-1 flex justify-between items-center gap-4">
+          <div className="flex-1 flex flex-wrap justify-between items-center gap-4">
             <Select onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[200px] cursor-pointer">
                 <SelectValue placeholder="Select provider" />
@@ -229,14 +229,14 @@ const TransactionsTable = () => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-row justify-between w-full items-center gap-4">
+          <div className="flex flex-wrap justify-between w-full items-center gap-4">
             <Input
               placeholder="Search product..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-sm"
             />
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button 
                 variant="outline" 
                 onClick={() => downloadPriceCSV(selectedUserId ?? undefined)} 
