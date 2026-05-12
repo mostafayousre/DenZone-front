@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import DeliveryTimesTable from "./components/transactions";
-import { AddDeliveryTimeDialog } from "./components/add-delivery-time-dialog";
+
 import { DeliveryTimeSlot } from "@/types/deliveryTimeSlot";
 import useGettingAllDeliveryTimeSlots from "@/services/deliveryTimeSlots/gettingAllDeliveryTimeSlots";
+import DeliveryTimesTable from './components/transactions';
+import { AddDeliveryTimeDialog } from './components/add-delivery-time-dialog';
 
 function DeliveryTimes() {
     const { loading, error, deliveryTimeSlots, getAllDeliveryTimeSlots } = useGettingAllDeliveryTimeSlots();
@@ -27,14 +28,14 @@ function DeliveryTimes() {
 
     return (
         <div>
-            <DeliveryTimesTable 
+            <DeliveryTimesTable
                 data={deliveryTimeSlots}
                 loading={loading}
                 onAdd={handleAdd} 
                 onEdit={handleEdit} 
                 refresh={getAllDeliveryTimeSlots}
             />
-            <AddDeliveryTimeDialog 
+            <AddDeliveryTimeDialog
                 open={open} 
                 onOpenChange={(val) => {
                     setOpen(val);
