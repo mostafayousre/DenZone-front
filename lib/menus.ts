@@ -150,6 +150,13 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
                 icon: "",
             },
             {
+                href: "/dashboard/delivery-times",
+                label: t("delivery-times"),
+                active: pathname === "/dashboard/delivery-times",
+                children: [],
+                icon: "",
+            },
+            {
               href: "/dashboard/product-list",
               label: t("products"),
               active: pathname === "/dashboard/product-list",
@@ -491,6 +498,13 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
               label: t("register"),
               active: false,
               icon: "heroicons:credit-card",
+              children: [],
+            },
+            {
+              href: "/dashboard/delivery-times",
+              label: t("delivery-times"),
+              active: false,
+              icon: "heroicons:clock",
               children: [],
             },
           ]),
