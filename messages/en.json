@@ -354,6 +354,7 @@
     "status": "Status",
     "totalAmount": "Total Amount",
     "deliverDate": "Deliver Date",
+    "deliveryTime": "Delivery Time",
     "couponCode": "Coupon Code",
     "couponPercentage": "Coupon Percentage",
     "All": "All",

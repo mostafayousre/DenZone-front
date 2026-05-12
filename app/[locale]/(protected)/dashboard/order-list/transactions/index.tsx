@@ -107,7 +107,8 @@ export default function TransactionsTable() {
         gettingVendorOrders(userId);
       }
     },
-    t
+    t,
+    isRepresentative
   });
 
   const table = useReactTable({

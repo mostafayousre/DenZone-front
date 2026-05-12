@@ -251,10 +251,12 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
     );
 };
 
-export const baseColumns = ({ refresh, t }: {
+export const baseColumns = ({ refresh, t, isRepresentative }: {
   refresh: () => void;
   t: (key: string) => string;
-}): ColumnDef<Orders>[] => [
+  isRepresentative?: boolean;
+}): ColumnDef<Orders>[] => {
+  const columns: ColumnDef<Orders>[] = [
     {
       accessorKey: "orderNumber",
       header: t("orderNumber"),
@@ -318,17 +320,29 @@ export const baseColumns = ({ refresh, t }: {
       accessorKey: "deliveryOptionName",
       header: t("deliveryDate") || "delivery Date",
       cell: ({ row }) => <span>{row.getValue("deliveryOptionName") || "there is no delivery date"}</span>,
-    },
-    {
-      accessorKey: "couponCode",
-      header: t("couponCode") || "Coupon Code",
-      cell: ({ row }) => <span>{row.original.couponCode || "-"}</span>,
-    },
-    {
-      accessorKey: "couponPercentage",
-      header: t("couponPercentage") || "Coupon %",
-      cell: ({ row }) => <span>{row.original.couponPercentage ?? row.original.couponPrecentage ?? "-"}</span>,
-    },
+    },{
+      accessorKey: "deliveryTimeName",
+      header: t("deliveryTime") || "delivery Time",
+      cell: ({ row }) => <span>{row.getValue("deliveryTimeName") || "-"}</span>,
+    }
+  ];
+
+  if (!isRepresentative) {
+    columns.push(
+      {
+        accessorKey: "couponCode",
+        header: t("couponCode") || "Coupon Code",
+        cell: ({ row }) => <span>{row.original.couponCode || "-"}</span>,
+      },
+      {
+        accessorKey: "couponPercentage",
+        header: t("couponPercentage") || "Coupon %",
+        cell: ({ row }) => <span>{row.original.couponPercentage ?? row.original.couponPrecentage ?? "-"}</span>,
+      }
+    );
+  }
+
+  columns.push(
     {
       accessorKey: "deliveryName",
       header: t("deliveryName") || "Delivery",
@@ -407,4 +421,7 @@ export const baseColumns = ({ refresh, t }: {
         );
       },
     },
-  ];
+  );
+
+  return columns;
+};
