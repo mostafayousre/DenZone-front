@@ -76,11 +76,7 @@ const DeliveryTimesTable = ({ data, loading, onAdd, onEdit, refresh }: DeliveryT
       <div className="flex flex-wrap justify-between items-center py-4 px-6 border-b border-solid border-default-200 ">
         <h3 className="text-xl font-semibold text-default-900">Delivery Times</h3>
         <div className="flex items-center gap-4 flex-wrap">
-          <SearchInput
-            data={data ?? []}
-            filterKey={"from"}
-            setFilteredData={setFilteredSlots}
-          />
+         
           <Button
             variant="outline"
             className="ml-2"
