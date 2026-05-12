@@ -301,6 +301,7 @@
     "sellers": "البائعين",
     "typography": "الطباعة",
     "area": "المناطق",
+    "Roles": "الصلاحيات",
     "colors": "الألوان",
     "coupons": "الكوبونات",
     "modules": "الموديولات",
@@ -347,6 +348,8 @@
     "orderNumber": "رقم الطلب",
     "pharmacyName": "اسم الصيدلية",
     "inventoryName": "اسم المخزن",
+    "couponCode": "كود الكوبون",
+    "couponPercentage": "نسبة الكوبون",
     "date": "التاريخ",
     "provider": " المورد",
 

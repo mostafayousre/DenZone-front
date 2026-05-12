@@ -201,7 +201,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
             },
             {
               href: "/dashboard/roles",
-              label: "Roles", // hardcoded in English, or add to i18n
+              label: t("Roles"), // hardcoded in English, or add to i18n
               active: pathname === "/dashboard/roles" || pathname.startsWith("/dashboard/edit-role") || pathname === "/dashboard/add-role",
               children: [],
               icon: "",

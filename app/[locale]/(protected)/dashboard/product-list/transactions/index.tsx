@@ -124,7 +124,7 @@ const TransactionsTable = () => {
         </div>
 
         {isAdmin && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
                 <PlusCircle className="w-4 h-4" />

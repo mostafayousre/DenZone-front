@@ -128,6 +128,7 @@ const TransactionsTable = () => {
     <div className={"flex flex-col"}>
       <div className="px-5 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <SearchInput
+        placeholder="Search Email..."
           data={data ?? []}
           filterKey={"userName"}
           setFilteredData={setFilteredUsers}

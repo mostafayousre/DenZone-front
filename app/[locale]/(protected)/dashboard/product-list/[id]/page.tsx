@@ -23,16 +23,16 @@ export default function ProductDetailsPage() {
   if (!product) return null;
 
   return (
-    <div className="p-4 md:p-8 bg-slate-50 min-h-screen space-y-6">
+    <div className="p-4 md:p-8 dark:bg bg-card text-card-foreground min-h-screen space-y-6">
       
       {/* 1. Top Header Card */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold dark:text-card-foreground text-slate-800">
             {isArabic ? product.productArabicName : product.productName}
           </h1>
           <div className="flex gap-4 mt-1">
-            <p className="text-slate-700 text-[13px] font-mono uppercase tracking-wider">Product ID: {product.productId}</p>
+            <p className="text-slate-700 text-[13px] font-mono uppercase tracking-wider dark:text-default-600 ">Product ID: {product.productId}</p>
           </div>
                       <p className="text-blue-600 text-[13px] font-bold uppercase tracking-wider  px-2 py-0.5 rounded">Code: {product.productCode}</p>
 
@@ -43,7 +43,7 @@ export default function ProductDetailsPage() {
         
         {/* Left Column: Image + Timeline */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <div className="dark:text-card-foreground p-4 rounded-2xl shadow-sm border border-slate-200">
             <div className="aspect-square bg-slate-50 rounded-xl flex items-center justify-center border border-dashed border-slate-200 overflow-hidden">
               {product.images && product.images.length > 0 ? (
                 <img 
@@ -60,25 +60,25 @@ export default function ProductDetailsPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-            <h3 className="text-slate-700 font-bold text-[13px] uppercase flex items-center gap-2">
+          <div className="p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+            <h3 className="dark:text-white text-slate-700 font-bold text-[13px] uppercase flex items-center gap-2">
                System Timeline
             </h3>
             <div className="space-y-3">
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                <Calendar size={16} className="text-slate-700" />
+              <div className="dark:bg-cardbg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
+                <Calendar size={16} className="text-slate-700 dark:text-white" />
                 <div>
-                  <p className="text-[9px] text-slate-700 font-bold uppercase">Created At</p>
-                  <p className="text-xs text-slate-700 font-bold">
+                  <p className="text-[9px] text-slate-700 font-bold uppercase dark:text-white">Created At</p>
+                  <p className="text-xs text-slate-700 font-bold dark:text-default-600">
                     {new Date(product.createdAt).toLocaleDateString()} - {new Date(product.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </p>
                 </div>
               </div>
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
-                <BarChart3 size={16} className="text-slate-700" />
+              <div className="dark:bg-card bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center gap-3">
+                <BarChart3 size={16} className="text-slate-700 dark:text-white" />
                 <div>
-                  <p className="text-[9px] text-slate-700 font-bold uppercase">Last Updated</p>
-                  <p className="text-xs text-slate-700 font-bold">
+                  <p className="text-[9px] text-slate-700 font-bold uppercase dark:text-white">Last Updated</p>
+                  <p className="text-xs text-slate-700 font-bold dark:text-default-600">
                     {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : "Never"}
                   </p>
                 </div>
@@ -89,24 +89,24 @@ export default function ProductDetailsPage() {
 
         {/* Right Column: Descriptions + Details */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             
             <div className="p-8 space-y-8">
-              <h3 className="text-slate-700 font-bold text-[13px] uppercase flex items-center gap-2 border-b border-slate-50 pb-2">
+              <h3 className="dark:text-white text-slate-700 font-bold text-[13px] uppercase flex items-center gap-2 border-b border-slate-50 pb-2">
                 Content Details
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-6 text-sm">
                   <div>
-                    <label className="text-[13px] font-black text-slate-700">Preface</label>
-                    <p className="text-slate-700 leading-relaxed ">
+                    <label className="text-[13px] font-black dark:text-white text-slate-700">Preface</label>
+                    <p className=" dark:text-default-600 text-slate-700 leading-relaxed ">
                       {product.preef || "No preface available."}
                     </p>
                   </div>
                   <div>
-                    <label className="text-[13px] font-black text-slate-700 ">Description</label>
-                    <p className="text-slate-700 leading-relaxed">
+                    <label className="text-[13px] font-black text-slate-700 dark:text-white">Description</label>
+                    <p className="text-slate-700 leading-relaxed dark:text-default-600">
                       {product.description || "No description provided."}
                     </p>
                   </div>
@@ -114,14 +114,14 @@ export default function ProductDetailsPage() {
 
                 <div className="space-y-6 text-sm text-right" dir="rtl">
                   <div>
-                    <label className="text-[13px] font-black text-slate-700 ">الوصف المختصر</label>
-                    <p className="text-slate-700 leading-relaxed ">
+                    <label className="text-[13px] font-black text-slate-700 dark:text-white">الوصف المختصر</label>
+                    <p className="text-slate-700 leading-relaxed dark:text-default-600">
                       {product.arabicPreef || "غير متوفر"}
                     </p>
                   </div>
                   <div>
-                    <label className="text-[13px] font-black text-slate-700 ">الوصف الكامل</label>
-                    <p className="text-slate-700 leading-relaxed">
+                    <label className="text-[13px] font-black text-slate-700 dark:text-white">الوصف الكامل</label>
+                    <p className="text-slate-700 leading-relaxed dark:text-default-600">
                       {product.arabicDescription || "غير متوفر"}
                     </p>
                   </div>
@@ -132,8 +132,8 @@ export default function ProductDetailsPage() {
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Category */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2 mb-3 text-slate-700 uppercase font-bold text-[9px]">
+              <div className=" p-4 rounded-xl border border-slate-200">
+                <div className="dark:text-white flex items-center gap-2 mb-3 text-slate-700 uppercase font-bold text-[9px]">
                   Category Information
                 </div>
                 <div className="flex items-center gap-3">
@@ -145,28 +145,28 @@ export default function ProductDetailsPage() {
                      )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-slate-800 truncate">
+                    <p className="text-xs font-bold text-slate-800 truncate dark:text-white">
                         {isArabic ? product.category?.arabicName : product.category?.name}
                     </p>
-                    <p className="text-[9px] text-slate-700 font-mono truncate">{product.categoryId}</p>
+                    <p className="text-[9px] text-slate-700 font-mono truncate dark:text-default-600">{product.categoryId}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <div className="flex-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <p className="text-[8px] text-slate-700 uppercase font-bold">Company %</p>
+                  <div className="dark:bg-card flex-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <p className="text-[8px] text-slate-700 uppercase font-bold dark:text-white">Company %</p>
                     <p className="text-[11px] font-bold text-blue-600">{product.category?.companyPercentage ?? 0}%</p>
                   </div>
-                  <div className="flex-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <p className="text-[8px] text-slate-700 uppercase font-bold">Pref</p>
-                    <p className="text-[11px] font-bold text-slate-700 truncate">{product.category?.pref || "General"}</p>
+                  <div className="dark:bg-card flex-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <p className="text-[8px] text-slate-700 uppercase font-bold dark:text-white">Pref</p>
+                    <p className="text-[11px] font-bold text-slate-700 truncate dark:text-default-600">{product.category?.pref || "General"}</p>
                   </div>
                 </div>
               </div>
 
               {/* Provider / Inventory List */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200">
+              <div className=" p-4 rounded-xl border border-slate-200">
                 <div className="flex items-center justify-between mb-3 text-slate-700 uppercase font-bold text-[9px]">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 dark:text-white">
                     Provider
                   </div>
                 </div>
@@ -174,24 +174,24 @@ export default function ProductDetailsPage() {
                 <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
                   {product.inventories && product.inventories.length > 0 ? (
                     product.inventories.map((inv: any, index: number) => (
-                      <div key={index} className="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors">
+                      <div key={index} className="dark:bg-card bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors">
                         <div className="flex justify-between items-start mb-2">
-                          <p className="text-[13px] font-bold text-slate-800 truncate uppercase w-2/3">
+                          <p className="text-[13px] font-bold text-slate-800 truncate uppercase w-2/3 dark:text-white">
                             {inv.inventoryName}
                           </p>
                           <div className="text-right">
-                            <p className="text-[11px] font-black text-blue-600">{inv.stockQuantity}</p>
-                            <p className="text-[8px] text-slate-700 uppercase font-bold">Stock</p>
+                            <p className="text-[11px] font-black text-blue-600 dark:text-white">{inv.stockQuantity}</p>
+                            <p className="text-[8px] text-slate-700 uppercase font-bold dark:text-white">Stock</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 pt-2 border-t border-slate-200/50">
                           <div>
-                            <p className="text-[8px] text-slate-700 uppercase">Price</p>
-                            <p className="text-[13px] font-bold text-slate-700">${inv.salesPrice.toFixed(2)}</p>
+                            <p className="text-[8px] text-slate-700 uppercase dark:text-white">Price</p>
+                            <p className="text-[13px] font-bold text-slate-700 dark:text-white">${inv.salesPrice.toFixed(2)}</p>
                           </div>
                           {inv.discountRate > 0 && (
                             <div className="border-l border-slate-200 pl-3">
-                              <p className="text-[8px] text-slate-700 uppercase font-bold text-red-700">Discount</p>
+                              <p className="text-[8px] text-slate-700 uppercase font-bold text-red-700 dark:text-white">Discount</p>
                               <p className="text-[13px] font-bold text-red-500">-{inv.discountRate}%</p>
                             </div>
                           )}
