@@ -135,7 +135,7 @@ export function AddDeliveryTimeDialog({ open, onOpenChange, onSuccess, editData 
 
           <div className="flex items-center gap-3 pt-4 border-t border-default-200">
              <Button 
-                className="hover:bg-purple-600 text-white rounded-lg px-8 h-12 text-base font-medium flex-1 shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98]"
+                className="hover:bg-purple-600 dark:text-black text-white rounded-lg px-8 h-12 text-base font-medium flex-1 shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98]"
                 onClick={handleSubmit}
                 disabled={loading}
             >

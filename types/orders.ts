@@ -19,6 +19,7 @@ export type Orders = {
     couponCode?: string;
     couponPercentage?: number;
     couponPrecentage?: number;
+    orderNote?: string;
 }
 
 export interface OrderItem {
