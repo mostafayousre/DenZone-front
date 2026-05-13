@@ -98,7 +98,7 @@ const OrderDetails = () => {
 
     return (
         <>
-            {(userType === "Inventory" || userType === "Admin") && (
+            {/* {(userType === "Inventory" || userType === "Admin") && (
                 <Card>
                     <CardHeader>
                         <CardTitle>{t("orderStatus")}</CardTitle>
@@ -174,7 +174,7 @@ const OrderDetails = () => {
                         </div>
                     </CardContent>
                 </Card>
-            )}
+            )} */}
 
             <Card>
                 <CardHeader className="border-0">
