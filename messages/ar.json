@@ -543,7 +543,7 @@
   },
   "generateInvoice": {
     "invoiceGenerated": "تم إنشاء الفاتورة بنجاح.",
-    "invoiceGenerationError": "فشل في إنشاء الفاتورة. يرجى المحاولة مرة أخرى.",
+    "invoiceGenerationError": "الفاتورة موجودة بالفعل لهذا الطلب.",
     "fileUploaded": "تم رفع الملف بنجاح.",
     "fileUploadError": "فشل في رفع الملف. يرجى المحاولة مرة أخرى.",
     "uploadFile": "رفع ملف",

@@ -42,4 +42,5 @@ export interface BillSummaryProps {
     items: OrderItem[];
     deletedItems: string[];
     defaultItems?: OrderItem[];
+    totalAmount?: number;
 }

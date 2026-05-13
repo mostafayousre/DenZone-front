@@ -397,7 +397,7 @@
   },
   "generateInvoice": {
     "invoiceGenerated": "Invoice generated successfully",
-    "invoiceGenerationError": "Failed to generate invoice",
+    "invoiceGenerationError": "Invoice already exists for this order",
     "uploadFileButton": "Upload File",
     "uploadFile": "Upload File",
     "fileUploaded": "File uploaded successfully.",

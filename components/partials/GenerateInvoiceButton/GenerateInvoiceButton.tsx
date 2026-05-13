@@ -22,7 +22,7 @@ const GenerateInvoiceButton = ({ isDisabled, orderId }: Props) => {
         if (success) {
             toast.success(t("invoiceGenerated"));
         } else {
-            toast.error(t("invoiceGenerationError"));
+             toast.error(t("invoiceGenerationError"));
         }
 
     };

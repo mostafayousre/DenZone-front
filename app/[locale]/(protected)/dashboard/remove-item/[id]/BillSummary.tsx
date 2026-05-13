@@ -1,7 +1,7 @@
 import {BillSummaryProps, OrderItem} from "@/types/orders";
 import { useTranslations } from "next-intl";
 
-const BillSummary: React.FC<BillSummaryProps> = ({ items, deletedItems, defaultItems = [] }) => {
+const BillSummary: React.FC<BillSummaryProps> = ({ items, deletedItems,totalAmount, defaultItems = [] }) => {
   const activeItems: OrderItem[] = items.filter((item: OrderItem) => !deletedItems?.includes(item?.productId || ''));
   const subtotal: number = activeItems.reduce(
       (sum, item) => sum + ((item.unitPrice || 0) * (item.quantity || 0)),
@@ -82,13 +82,13 @@ const BillSummary: React.FC<BillSummaryProps> = ({ items, deletedItems, defaultI
             <span className="font-medium text-default-600 text-xs uppercase">
               {t("subtotal")}:
             </span>
-              <span className="text-default-900">{subtotal.toFixed(2)} EGP</span>
+              <span className="text-default-900">{totalAmount} EGP</span>
             </div>
             <div className="flex justify-between border-solid border-t border-default-200 pt-3">
             <span className="font-medium text-default-600 text-xs uppercase">
               {t("totalAmount")}:
             </span>
-              <span className="text-default-900 font-bold">{invoiceTotal.toFixed(2)} EGP</span>
+              <span className="text-default-900 font-bold">{totalAmount} EGP</span>
             </div>
           </div>
         </div>

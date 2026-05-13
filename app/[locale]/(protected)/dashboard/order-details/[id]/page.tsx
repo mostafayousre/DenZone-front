@@ -223,6 +223,7 @@ const OrderDetails = () => {
                         defaultItems={currentOrder.items || []}
                         items={currentOrder.items || []}
                         deletedItems={[]}
+                        totalAmount={currentOrder?.totalAmount}
                     />
                 </CardContent>
             </Card>
