@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2, Key, Clock, Plus } from "lucide-react";
+import { SquarePen, Trash2, Heart, ListOrdered, FileText, Loader2, Key, Clock, Plus, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import useDeleteUser from "@/services/users/DeleteUser";
 import useUpdateUser from "@/services/users/updateUser";
 import useChangePasswordFromAdmin from "@/services/users/ChangePasswordFromAdmin";
 import useUpdateWorkingHours, { WorkingHour } from "@/services/users/updateWorkingHours";
+import useGetUserWorkingHours from "@/services/users/getUserWorkingHours";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
@@ -155,17 +156,25 @@ const ActionCell = ({ row, refresh, t, isRepresentative, showWorkingHours }: { r
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isWorkingHoursOpen, setIsWorkingHoursOpen] = useState(false);
+  const [isViewWorkingHoursOpen, setIsViewWorkingHoursOpen] = useState(false);
   const { updateWorkingHours, loading: updatingHours } = useUpdateWorkingHours();
+  const { getWorkingHours, workingHours: fetchedWorkingHours, loading: fetchingHours } = useGetUserWorkingHours();
   const [workingHours, setWorkingHours] = useState<WorkingHour[]>([]);
 
+  useEffect(() => {
+    if (isViewWorkingHoursOpen) {
+      getWorkingHours(id as string);
+    }
+  }, [isViewWorkingHoursOpen, id, getWorkingHours]);
+
   const daysOfWeek = [
-    { value: 0, label: "Saturday" },
-    { value: 1, label: "Sunday" },
-    { value: 2, label: "Monday" },
-    { value: 3, label: "Tuesday" },
-    { value: 4, label: "Wednesday" },
-    { value: 5, label: "Thursday" },
-    { value: 6, label: "Friday" },
+    { value: 0, label: "Sunday" },
+    { value: 1, label: "Monday" },
+    { value: 2, label: "Tuesday" },
+    { value: 3, label: "Wednesday" },
+    { value: 4, label: "Thursday" },
+    { value: 5, label: "Friday" },
+    { value: 6, label: "Saturday" },
   ];
 
   const handleAddWorkingHour = () => {
@@ -278,6 +287,55 @@ const ActionCell = ({ row, refresh, t, isRepresentative, showWorkingHours }: { r
             <FileText className="w-4 h-4" />
           </Link>
         </>
+      )}
+
+      {showWorkingHours && (
+        <Dialog open={isViewWorkingHoursOpen} onOpenChange={setIsViewWorkingHoursOpen}>
+          <DialogTrigger asChild>
+            <button
+              title={t?.("viewWorkingHours") || "View Working Hours"}
+              className="p-2 text-info bg-info/20 hover:bg-info hover:text-white rounded-full transition-all cursor-pointer"
+            >
+              <CalendarDays className="w-4 h-4" />
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t?.("workingHours") || "Working Hours"} - {row.original.fullName}</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              {fetchingHours ? (
+                <div className="flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-default-400" /></div>
+              ) : !Array.isArray(fetchedWorkingHours) || fetchedWorkingHours.length === 0 ? (
+                <p className="text-center text-default-500">{t?.("noWorkingHours") || "لا يوجد مواعيد عمل"}</p>
+              ) : (
+                <div className="space-y-2">
+                  {fetchedWorkingHours.map((wh, index) => {
+                    // if wh.day is a number, we map it, else we just display it
+                    const dayLabel = typeof wh.day === 'number' 
+                      ? daysOfWeek.find(d => d.value === wh.day)?.label || wh.day 
+                      : wh.day;
+                      
+                    const start = wh.from || wh.startTime;
+                    const end = wh.to || wh.endTime;
+                    
+                    return (
+                      <div key={index} className="flex justify-between items-center border-b border-dashed border-default-200 pb-2 last:border-0 last:pb-0">
+                        <span className="font-medium text-sm">{dayLabel}</span>
+                        <span className="text-sm text-default-600">{start} - {end}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsViewWorkingHoursOpen(false)}>
+                {t?.("close") || "Close"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
 
       {showWorkingHours && (

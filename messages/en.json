@@ -708,6 +708,9 @@
     "updateActiveIngredient": "Update Active Ingredient"
   },
   "productList": {
+    "viewWorkingHours": "View Working Hours",
+    "noWorkingHours": "No working hours available",
+    "close": "Close",
     "view": "View",
     "edit": "Edit",
     "delete": "Delete",

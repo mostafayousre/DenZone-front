@@ -695,6 +695,9 @@
     "updateActiveIngredient": "تحديث المكون النشط"
   },
   "productList": {
+    "viewWorkingHours": "عرض مواعيد العمل",
+    "noWorkingHours": "لا يوجد مواعيد عمل",
+    "close": "إغلاق",
     "view": "عرض",
     "edit": "تعديل",
     "delete": "حذف",
