@@ -12,6 +12,7 @@ function useGettingOrderById() {
         status: 0,
         totalAmount: 0,
         deliverDate: '',
+        deliveryTimeName: '',
         items: []
     });
     const [loading, setLoading] = React.useState(false);
