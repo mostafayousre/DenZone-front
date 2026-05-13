@@ -358,6 +358,7 @@
     "status": "الحالة",
     "totalAmount": "المبلغ الإجمالي",
     "deliverDate": "تاريخ التسليم",
+    "deliveryTime": "وقت التوصيل",
     "actions": "الإجراءات",
     "All": "الكل",
     "orderStatus": "حالة الطلب",

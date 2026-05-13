@@ -11,6 +11,8 @@ export type Orders = {
     status: number
     totalAmount: number
     deliverDate: string
+    deliveryTimeName: string
+
     items: OrderItem[]
     orderNumber?: string;
     deliveryName?: string;
