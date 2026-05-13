@@ -174,6 +174,7 @@ export default function TransactionsTable() {
             data={allOrdersData ?? []}
             setFilteredData={setFilteredOrders}
             filterKey="orderNumber"
+            placeholder="search orders..."
           />
         </div>
 

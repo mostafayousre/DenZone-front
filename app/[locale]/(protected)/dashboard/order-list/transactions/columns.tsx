@@ -316,6 +316,13 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       cell: ({ row }) => {
         return <span>{row.getValue("totalAmount")}</span>;
       },
+    },    {
+      accessorKey: "orderNote",
+      header: t("orderNote"),
+      cell: ({ row }) => {
+        const note = row.original.orderNote || "";
+        return <span>{note.length > 10 ? note.slice(0, 10) + "..." : note || "-"}</span>;
+      },
     },
         {
       accessorKey: "deliveryOptionName",

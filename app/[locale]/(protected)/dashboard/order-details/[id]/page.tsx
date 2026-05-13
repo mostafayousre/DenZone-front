@@ -42,7 +42,6 @@ const OrderDetails = () => {
     const [selectedStatus, setSelectedStatus] = useState<OrderStatus | null>(null);
 
     const { order: orderData, getOrderById, error, loading: orderLoading } = useGettingOrderById();
-
     const { loading: invoiceLoading, error: invoiceError, invoice, getInvoiceByOrderId } =
         useGettingInvoiceByOrderId();
 
@@ -219,6 +218,11 @@ const OrderDetails = () => {
                 </CardHeader>
 
                 <CardContent>
+                    <div className="mb-6">
+                        <Label className="dark:text-white mb-2 block text-default-900 font-medium">{t("orderNote")}</Label>
+                        <p className="text-default-600">{currentOrder.orderNote || "N/A"}</p>
+                    </div>
+
                     <BillSummary
                         defaultItems={currentOrder.items || []}
                         items={currentOrder.items || []}

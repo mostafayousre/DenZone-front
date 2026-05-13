@@ -64,12 +64,12 @@ const BillSummary: React.FC<BillSummaryProps> = ({ items, deletedItems,totalAmou
                   <td className={`text-default-900 text-sm font-normal text-left px-6 py-4 ${
                       isDeleted ? 'line-through' : ''
                   }`}>
-                    {parseInt(String(data.unitPrice)).toFixed(2)} EGP
+                    {data.unitPrice?.toFixed(2)} EGP
                   </td>
                   <td className={`text-default-900 text-sm font-normal text-left last:text-right px-6 py-4 ${
                       isDeleted ? 'line-through' : ''
                   }`}>
-                    {((data.unitPrice || 0) * (data.quantity || 0)).toFixed(2)}
+                    {((data.unitPrice || 0) * (data.quantity || 0)).toFixed(2)} EGP
                   </td>
                 </tr>
             );
