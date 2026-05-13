@@ -2,9 +2,11 @@ import { useState } from "react";
 import AxiosInstance from "@/lib/AxiosInstance";
 
 export type WorkingHour = {
-    day: number;
-    startTime: string;
-    endTime: string;
+    day: number | string;
+    startTime?: string;
+    endTime?: string;
+    from?: string;
+    to?: string;
 };
 
 function useUpdateWorkingHours() {
