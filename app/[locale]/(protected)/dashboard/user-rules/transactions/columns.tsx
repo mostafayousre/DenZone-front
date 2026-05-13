@@ -371,7 +371,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative, showWorkingHours }: { r
                     <Label className="text-[12px]">{t?.("start") || "Start"}</Label>
                     <Input
                       type="time"
-                      value={wh.startTime.substring(0, 5)}
+                      value={wh.startTime?.substring(0, 5) || ""}
                       onChange={(e) => handleUpdateWorkingHour(index, 'startTime', e.target.value)}
                     />
                   </div>
@@ -379,7 +379,7 @@ const ActionCell = ({ row, refresh, t, isRepresentative, showWorkingHours }: { r
                     <Label className="text-[12px]">{t?.("end") || "End"}</Label>
                     <Input
                       type="time"
-                      value={wh.endTime.substring(0, 5)}
+                      value={wh.endTime?.substring(0, 5) || ""}
                       onChange={(e) => handleUpdateWorkingHour(index, 'endTime', e.target.value)}
                     />
                   </div>
