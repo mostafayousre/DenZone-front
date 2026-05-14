@@ -24,6 +24,8 @@ const EditUser = () => {
     const params = useParams();
     const id = params?.id as string;
     const isAdmin = Cookies.get("userRole") === "Admin";
+    const isprovider = Cookies.get("userRole") === "Inventory";
+
 
     const { loading, user, getUserById } = useGettingUserById();
     const { loading: balanceLoading, balances, getBalanceForUser } = useGettingBalanceForUser();
@@ -173,15 +175,14 @@ const EditUser = () => {
                     </div>
                     {isInventory && (
                         <>
-                            <div className="flex items-center flex-wrap gap-2">
+                        {!isprovider? <div className=""><div className="flex items-center flex-wrap gap-2">
                                 <Label className="w-[150px] flex-none" htmlFor="isPopular">{t("isPopular") || "Popular"}</Label>
                                 <Switch
                                     id="isPopular"
                                     checked={isPopular}
                                     onCheckedChange={setIsPopular}
                                 />
-                            </div>
-                            <div className="flex items-center flex-wrap gap-2">
+                            </div><div className="flex items-center flex-wrap gap-2 mt-4">
                                 <Label className="w-[150px] flex-none" htmlFor="orderNum">{t("orderNum") || "Order Number"}</Label>
                                 <Input
                                     id="orderNum"
@@ -190,7 +191,8 @@ const EditUser = () => {
                                     value={orderNum}
                                     onChange={(e) => setOrderNum(e.target.value)}
                                 />
-                            </div>
+                            </div></div> : null }
+                            
                         </>
                     )}
 
