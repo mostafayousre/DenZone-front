@@ -220,7 +220,7 @@ const OrderDetails = () => {
                 <CardContent>
                     <div className="mb-6">
                         <Label className="dark:text-white mb-2 block text-default-900 font-medium">{t("orderNote")}</Label>
-                        <p className="text-default-600">{currentOrder.orderNote || "N/A"}</p>
+                        <p className="text-default-600">{currentOrder.orderNote || "No notes were added to this order."}</p>
                     </div>
 
                     <BillSummary
