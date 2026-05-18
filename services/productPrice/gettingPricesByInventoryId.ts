@@ -38,8 +38,19 @@ function useGettingPricesByInventoryId() {
       
       const payload = response.data?.data || response.data;
       setPrices(Array.isArray(payload) ? payload : []);
-      setTotalPages(response.data?.totalPages || 0);
-      setTotalItems(response.data?.totalCount || 0);
+
+      if (response.data && typeof response.data === 'object' && 'totalPages' in response.data) {
+        setTotalPages(response.data.totalPages || 0);
+        setTotalItems(response.data.totalCount || 0);
+      } else if (Array.isArray(payload)) {
+        // If it is a plain array, compute totalPages and totalItems dynamically based on current page and page size
+        const hasNextPage = payload.length === pageSize;
+        setTotalPages(hasNextPage ? page + 1 : page);
+        setTotalItems(hasNextPage ? (page * pageSize) + 1 : ((page - 1) * pageSize) + payload.length);
+      } else {
+        setTotalPages(0);
+        setTotalItems(0);
+      }
     } catch (error: any) {
       setError(error.message);
     } finally {
