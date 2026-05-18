@@ -48,10 +48,7 @@ const SendNotificationPage = () => {
       return;
     }
 
-    if ((recipientType === "specific_doctor" || recipientType === "specific_provider") && selectedUserIds.length === 0) {
-      toast.error("Please select at least one recipient");
-      return;
-    }
+
 
     if (!expiryDate) {
       toast.error("Please select an expiry date");
@@ -77,6 +74,8 @@ const SendNotificationPage = () => {
       setTitle("");
       setMessage("");
       setSelectedUserIds([]);
+      setExpiryDate(new Date());
+      setRecipientType("all_doctors");
     } else {
       toast.error(error || "Failed to send notification");
     }
