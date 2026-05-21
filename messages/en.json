@@ -349,6 +349,7 @@
     "pharmacyName": "Pharmacy Name",
     "inventoryName": "Inventory Name",
     "orderNote": "Order Note",
+    "doctorName": "Doctor Name",
     "date": "Date",
     "provider": "Provider Name",
     "actions": "Actions",
