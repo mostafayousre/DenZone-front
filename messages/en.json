@@ -344,6 +344,7 @@
   },
   "OrderList": {
     "orderList": "Order List",
+    "searchPlaceholder": "Search by doctor name...",
     "orderDetails": "Order Details",
     "orderNumber": "Order Number",
     "pharmacyName": "Pharmacy Name",

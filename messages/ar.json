@@ -345,6 +345,7 @@
   },
   "OrderList": {
     "orderList": "قائمة الطلبات",
+    "searchPlaceholder": "البحث باسم الطبيب...",
     "doctorName": "اسم الطبيب",
     "orderDetails": "تفاصيل الطلب",
     "orderNumber": "رقم الطلب",

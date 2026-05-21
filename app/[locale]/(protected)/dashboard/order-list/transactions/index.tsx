@@ -173,8 +173,8 @@ export default function TransactionsTable() {
           <SearchInput
             data={allOrdersData ?? []}
             setFilteredData={setFilteredOrders}
-            filterKey="orderNumber"
-            placeholder="search orders..."
+            filterKey="doctorName"
+            placeholder={t("searchPlaceholder") || "Search by doctor name..."}
           />
         </div>
 
