@@ -262,6 +262,10 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       accessorKey: "orderNumber",
       header: t("orderNumber"),
       cell: ({ row }) => <span>{row.getValue("orderNumber") || "N/A"}</span>,
+    }, {
+      accessorKey: "doctorName",
+      header: t("doctorName"),
+      cell: ({ row }) => <span>{row.getValue("doctorName") || "N/A"}</span>,
     },
 
     {
