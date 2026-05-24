@@ -3,7 +3,8 @@ import {
   Eye,
   Trash2,
   Pencil,
-  Truck
+  Truck,
+  ArrowUpDown
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -264,7 +265,17 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       cell: ({ row }) => <span>{row.getValue("orderNumber") || "N/A"}</span>,
     }, {
       accessorKey: "doctorName",
-      header: t("doctorName"),
+      header: ({ column }) => {
+        return (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 hover:text-default-900 cursor-pointer bg-transparent border-none p-0 outline-none font-semibold text-sm text-default-800 transition-colors"
+          >
+            {t("doctorName")}
+            <ArrowUpDown className="h-3.5 w-3.5 text-default-500" />
+          </button>
+        );
+      },
       cell: ({ row }) => <span>{row.getValue("doctorName") || "N/A"}</span>,
     },
 
