@@ -294,6 +294,9 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
         );
 
         if (names.length === 0) {
+          if (row.original.inventoryName) {
+            return <span>{row.original.inventoryName}</span>;
+          }
           return <span>N/A</span>;
         }
 

@@ -7,6 +7,7 @@ export type Orders = {
     pharmacyName?: string;
     inventoryUserName?: string;
     inventoryUserId: string;
+    inventoryName?: string;
     orderDate: string;
     status: number
     totalAmount: number

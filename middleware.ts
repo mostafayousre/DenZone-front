@@ -8,7 +8,8 @@ function normalizeRole(role: string | undefined | null): string | null {
   const lower = role.toLowerCase();
   if (lower === 'admin') return 'Admin';
   if (lower === 'inventory') return 'Inventory';
-  if (lower === 'sales') return 'sales'; 
+  if (lower === 'sales') return 'sales';
+  if (lower === 'representative' || lower === 'Preparation representative') return 'representative';
   return null;
 }
 
@@ -22,7 +23,7 @@ function isRouteAllowed(pathname: string, role: string): boolean {
   const allowedRoutes = roleRoutes[role] || [];
 
   return allowedRoutes.some(route => {
-    
+
     if (route === "*") return true;
 
     if (route === pathname) return true;
@@ -31,9 +32,9 @@ function isRouteAllowed(pathname: string, role: string): boolean {
 
     if (route.includes(":")) {
       const pattern = "^" + route
-              .replace(/:[^/]+/g, "[^/]+") 
-              .replace(/\//g, "\\/")      
-          + "$";
+        .replace(/:[^/]+/g, "[^/]+")
+        .replace(/\//g, "\\/")
+        + "$";
       return new RegExp(pattern).test(pathname);
     }
 

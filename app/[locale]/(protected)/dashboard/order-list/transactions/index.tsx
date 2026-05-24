@@ -35,6 +35,7 @@ import { Orders } from "@/types/orders";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import Cookies from "js-cookie";
+import { normalizeRole } from "@/lib/roleRoutes";
 import useGettingMyOrders from "@/services/Orders/gettingMyOrders";
 import { Button } from "@/components/ui/button";
 import { OrderStatus, OrderStatusLabel } from "@/enum";
@@ -47,7 +48,8 @@ import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
 import useGettingDeliveryOrders from "@/services/Orders/gettingDeliveryOrders";
 
 export default function TransactionsTable() {
-  const userRole = Cookies.get("userRole");
+  const rawUserRole = Cookies.get("userRole");
+  const userRole = normalizeRole(rawUserRole) || rawUserRole;
   const isAdmin = userRole == "Admin";
   const userId = Cookies.get("userId");
 
@@ -57,10 +59,10 @@ export default function TransactionsTable() {
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
   const { loading: deliveryOrdersLoading, orders: deliveryOrders, gettingDeliveryOrders } = useGettingDeliveryOrders();
 
-  const isRepresentative = userRole?.toLowerCase() === "representative";
+  const isRepresentative = userRole === "representative";
   const isDelivery = userRole?.toLowerCase() === "delivery";
 
-  
+
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
 
@@ -76,15 +78,15 @@ export default function TransactionsTable() {
 
   const allOrdersData = React.useMemo(() => {
     if (filterUserId && isAdmin) {
-        return userOrders?.filter(order => order.totalAmount !== 0) || [];
+      return userOrders?.filter(order => order.totalAmount !== 0) || [];
     }
     let rawData;
     if (isAdmin) {
-        rawData = orders;
+      rawData = orders;
     } else if (isRepresentative || isDelivery) {
-        rawData = deliveryOrders;
+      rawData = deliveryOrders;
     } else {
-        rawData = myOrders;
+      rawData = myOrders;
     }
     return rawData?.filter(order => order.totalAmount !== 0) || [];
   }, [isAdmin, isRepresentative, isDelivery, orders, myOrders, deliveryOrders, userOrders, filterUserId]);
@@ -150,7 +152,7 @@ export default function TransactionsTable() {
         gettingAllOrders();
       }
     } else if (isRepresentative || isDelivery) {
-        gettingDeliveryOrders();
+      gettingDeliveryOrders();
     } else {
       if (userId) {
         gettingVendorOrders(userId);
@@ -248,7 +250,7 @@ export default function TransactionsTable() {
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Delivered].toLowerCase()}`)}
           </Button>
-<Button
+          <Button
             size="md"
             variant={selectedStatus === OrderStatus?.Cancel ? "default" : "outline"}
             color="default"

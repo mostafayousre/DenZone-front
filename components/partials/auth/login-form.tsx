@@ -14,7 +14,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from "sonner"
 import { useRouter } from '@/components/navigation';
 import {loginWithCredentials} from "@/services/auth/login";
-import {defaultRouteByRole} from "@/lib/roleRoutes";
+import {defaultRouteByRole, normalizeRole} from "@/lib/roleRoutes";
 import {AuthType} from "@/types/auth";
 import Cookies from "js-cookie";
 
@@ -53,7 +53,8 @@ const LoginForm = () => {
       try {
         const user: AuthType = await loginWithCredentials(data);
 
-        const role = user?.role || Cookies.get("userRole");
+        const rawRole = user?.role || Cookies.get("userRole");
+        const role = normalizeRole(rawRole);
         const route = defaultRouteByRole[role || ""] || "/dashboard/analytics";
 
         router.push(route);

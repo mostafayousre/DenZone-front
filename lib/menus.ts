@@ -1,4 +1,4 @@
-import { roleRoutes, defaultRouteByRole } from "@/lib/roleRoutes";
+import { roleRoutes, defaultRouteByRole, normalizeRole } from "@/lib/roleRoutes";
 import Cookies from "js-cookie";
 
 export type SubChildren = {
@@ -43,7 +43,8 @@ function getLocalizedRoute(route: string, locale: string): string {
 
 export function getMenuList(pathname: string, t: any, role: string, locale: string = 'en'): Group[] {
   const id = Cookies.get("userId")
-  const rawAllowedRoutes = roleRoutes[role] || [];
+  const normalizedRole = normalizeRole(role) || role;
+  const rawAllowedRoutes = roleRoutes[normalizedRole] || [];
   const allowedRoutes = new Set(
       rawAllowedRoutes.includes("*")
           ? ["*"]
@@ -421,7 +422,8 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
 }
 
 export function getHorizontalMenuList(pathname: string, t: any, role: string, locale: string = 'en'): Group[] {
-  const rawAllowedRoutes = roleRoutes[role] || [];
+  const normalizedRole = normalizeRole(role) || role;
+  const rawAllowedRoutes = roleRoutes[normalizedRole] || [];
 
   const normalizedRoutes = rawAllowedRoutes.map(route =>
       route === "*" ? route : route.replace(/^\/[a-z]{2}\//, '/')
@@ -572,6 +574,7 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
 }
 
 export function getLocalizedDefaultRoute(role: string, locale: string = 'en'): string {
-  const route = defaultRouteByRole[role] || "/dashboard/analytics";
+  const normalizedRole = normalizeRole(role) || role;
+  const route = defaultRouteByRole[normalizedRole] || "/dashboard/analytics";
   return `/${locale}${route}`;
 }

@@ -1,6 +1,7 @@
 import {useState, useCallback} from "react";
 import {Orders} from "@/types/orders";
 import AxiosInstance from "@/lib/AxiosInstance";
+import Cookies from "js-cookie";
 
 function useGettingDeliveryOrders() {
     const [orders, setOrders] = useState<Orders[]>([]);
@@ -11,7 +12,12 @@ function useGettingDeliveryOrders() {
         setLoading(true);
         setError(null);
         try {
-            const res = await AxiosInstance.get(`/api/Orders/get-delivery-orders`);
+            const rawRole = Cookies.get("userRole");
+            const endpoint = rawRole?.toLowerCase() === "preparation representative"
+                ? "/api/Orders/get-Preparation-orders"
+                : "/api/Orders/get-delivery-orders";
+
+            const res = await AxiosInstance.get(endpoint);
             if (res.status === 200 || res.status === 201) {
                 setOrders(res.data);
             } else {
