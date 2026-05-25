@@ -25,11 +25,11 @@ interface CollapseMenuButtonProps {
 export function MultiCollapseMenuButton({
     label,
     active,
-    submenus,
+    submenus = [],
 
 }: CollapseMenuButtonProps) {
     const pathname = usePathname();
-    const isSubmenuActive = submenus.some((submenu) => submenu.active || pathname.startsWith(submenu.href));
+    const isSubmenuActive = (submenus || []).some((submenu) => submenu?.active || pathname.startsWith(submenu?.href || ''));
     const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);
     const [mobileMenuConfig, setMobileMenuConfig] = useMobileMenuConfig();
     return (
@@ -87,7 +87,7 @@ export function MultiCollapseMenuButton({
                 </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                {submenus.map(({ href, label, active }, index) => (
+                {(submenus || []).map(({ href, label, active }, index) => (
 
 
                     <Button

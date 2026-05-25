@@ -25,6 +25,7 @@ const ProfileInfo = () => {
     Cookies.remove('authToken');
     Cookies.remove('userRole');
     Cookies.remove('userId');
+    sessionStorage.clear();
     window.location.href = '/en';
   }
 

@@ -46,13 +46,13 @@ import {
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'
 import { getLangDir } from 'rtl-detect';
-import {useSession} from "next-auth/react";
+import { usePermissions } from '@/hooks/use-permissions';
 
 export function MenuDragAble() {
     const t = useTranslations("Menu")
     const params = useParams<{ locale: string; }>();
     const pathname = usePathname();
-    const { data: session, status } = useSession();
+    const { permissions, loading: permissionsLoading } = usePermissions();
     const locale = params?.locale || "en";
     const [menuList, setMenuList] = useState<Group[]>([]);
     const [config, setConfig] = useConfig()
@@ -102,8 +102,8 @@ export function MenuDragAble() {
     useEffect(() => {
         const fetchMenuData = async () => {
             try {
-                if (status === "authenticated" && session?.user?.role) {
-                    const menu = getMenuList(pathname, t, session.user.role, locale);
+                if (!permissionsLoading) {
+                    const menu = getMenuList(pathname, t, permissions, locale);
                     setMenuList(menu);
                 }
             } catch (error) {
@@ -112,7 +112,7 @@ export function MenuDragAble() {
         };
 
         fetchMenuData();
-    }, [status, session, pathname, t, locale]);
+    }, [permissions, permissionsLoading, pathname, t, locale]);
 
     const sensors = useSensors(
         useSensor(MouseSensor, {}),

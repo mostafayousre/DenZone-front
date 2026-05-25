@@ -84,15 +84,11 @@ export default async function middleware(request: NextRequest) {
 
   if (token && userRole) {
     try {
-      if (userRole === 'Admin') {
-        const response = await intlMiddleware(request);
-        response.headers.set('dashcode-locale', currentLocale);
-        return response;
-      }
-
-      if (!isRouteAllowed(pathname, userRole)) {
-        return NextResponse.redirect(new URL(`/${currentLocale}/`, request.url));
-      }
+      // Let the client-side PermissionGuard check route authorization dynamically 
+      // based on real-time permissions fetched from the backend API.
+      const response = await intlMiddleware(request);
+      response.headers.set('dashcode-locale', currentLocale);
+      return response;
     } catch (_) {
       return NextResponse.redirect(new URL(`/${currentLocale}/login`, request.url));
     }

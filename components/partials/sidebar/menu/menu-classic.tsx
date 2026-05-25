@@ -20,7 +20,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { getLangDir } from 'rtl-detect';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import Cookies from "js-cookie";
+import { usePermissions } from "@/hooks/use-permissions";
 
 export function MenuClassic({ }) {
     const t = useTranslations("Menu");
@@ -34,17 +34,18 @@ export function MenuClassic({ }) {
     const collapsed = config.collapsed;
 
     const scrollableNodeRef = useRef<HTMLDivElement>(null);
+    const { permissions, loading: permissionsLoading } = usePermissions();
     const [menuList, setMenuList] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
-    const roleFromCookie = Cookies.get('userRole');
 
     useEffect(() => {
-        if (!roleFromCookie) return;
+        if (permissionsLoading) return;
         setLoading(true);
-        const menu = getMenuList(pathname, t, roleFromCookie, locale);
+        const menu = getMenuList(pathname, t, permissions, locale);
         setMenuList(menu);
         setLoading(false);
-    }, [pathname, t, locale, roleFromCookie]);
+    }, [pathname, t, locale, permissions, permissionsLoading]);
+
 
     if (loading) {
         return (

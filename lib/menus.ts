@@ -1,4 +1,3 @@
-import { roleRoutes, defaultRouteByRole, normalizeRole } from "@/lib/roleRoutes";
 import Cookies from "js-cookie";
 
 export type SubChildren = {
@@ -6,6 +5,7 @@ export type SubChildren = {
   label: string;
   active: boolean;
   children?: SubChildren[];
+  permission?: string;
 };
 
 export type Submenu = {
@@ -15,6 +15,7 @@ export type Submenu = {
   icon: any;
   submenus?: Submenu[];
   children?: SubChildren[];
+  permission?: string;
 };
 
 export type Menu = {
@@ -24,6 +25,7 @@ export type Menu = {
   icon: any;
   submenus: Submenu[];
   id: string;
+  permission?: string;
 };
 
 export type Group = {
@@ -32,43 +34,13 @@ export type Group = {
   id: string;
 };
 
-function getLocalizedRoute(route: string, locale: string): string {
-  if (route === "*") return route;
-  if (route.startsWith(`/${locale}/`)) return route;
-  if (/^\/[a-z]{2}\//.test(route)) {
-    return route.replace(/^\/[a-z]{2}\//, `/${locale}/`);
-  }
-  return `/${locale}${route}`;
-}
+export function getMenuList(pathname: string, t: any, permissions: string[] = [], locale: string = 'en'): Group[] {
+  const id = Cookies.get("userId");
+  const isSuperAdmin = permissions.includes("*") || permissions.includes("Permissions.All");
 
-export function getMenuList(pathname: string, t: any, role: string, locale: string = 'en'): Group[] {
-  const id = Cookies.get("userId")
-  const normalizedRole = normalizeRole(role) || role;
-  const rawAllowedRoutes = roleRoutes[normalizedRole] || [];
-  const allowedRoutes = new Set(
-      rawAllowedRoutes.includes("*")
-          ? ["*"]
-          : rawAllowedRoutes.map(route => route.replace(/^\/[a-z]{2}\//, '/'))
-  );
-
-  const isAllowed = (href: string) => {
-    if (allowedRoutes.has("*")) return true;
-
-    const normalizedHref = href.replace(/^\/[a-z]{2}\//, '/');
-
-    for (const route of Array.from(allowedRoutes)) {
-      if (route === normalizedHref) return true;
-
-      if (route.includes(":")) {
-        const pattern = "^" + route
-            .replace(/:[^/]+/g, "[^/]+") 
-            .replace(/\//g, "\\/") + "$";
-        if (new RegExp(pattern).test(normalizedHref)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  const hasPerm = (perm?: string) => {
+    if (!perm) return true; // Default to accessible if no permission defined
+    return isSuperAdmin || permissions.includes(perm);
   };
 
   const localizeHref = (href: string): string => {
@@ -88,6 +60,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
           label: t("dashboard"),
           active: pathname.includes("/dashboard"),
           icon: "heroicons-outline:home",
+          permission: "",
           submenus: [
             {
               href: "/dashboard/analytics",
@@ -95,14 +68,15 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/analytics",
               icon: "",
               children: [],
+              permission: "Permissions.Report.View", 
             },
-            
             {
               href: "/dashboard/order-list",
               label: t("orders"),
               active: pathname === "/dashboard/order-list",
               children: [],
               icon: "",
+              permission: "Permissions.Order.View",
             },
             {
               href: "/dashboard/return-list",
@@ -110,6 +84,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/return-list",
               children: [],
               icon: "",
+              permission: "Permissions.ReturnOrder.View",
             },
             {
               href: "/dashboard/categories",
@@ -117,6 +92,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/categories",
               children: [],
               icon: "",
+              permission: "Permissions.Category.View",
             },
             {
               href: "/dashboard/brand",
@@ -124,22 +100,26 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/brand",
               children: [],
               icon: "",
+              permission: "Permissions.Brand.View",
             },
             {
                 href: "/dashboard/banners",
                 label: t("ads"),
                 active: pathname.includes("/dashboard/banners") || pathname.includes("/dashboard/special-offers"),
                 icon: "heroicons-outline:megaphone",
+                permission: "Permissions.Banner.View",
                 children: [
                     {
                         href: "/dashboard/banners",
                         label: t("banners"),
                         active: pathname === "/dashboard/banners",
+                        permission: "Permissions.Banner.View",
                     },
                     {
                         href: "/dashboard/special-offers",
                         label: t("specialOffers"),
                         active: pathname === "/dashboard/special-offers",
+                        permission: "Permissions.SpecialOffer.View",
                     }
                 ],
             },
@@ -149,6 +129,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
                 active: pathname === "/dashboard/coupons",
                 children: [],
                 icon: "",
+                permission: "Permissions.Coupon.View",
             },
             {
                 href: "/dashboard/delivery-times",
@@ -156,6 +137,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
                 active: pathname === "/dashboard/delivery-times",
                 children: [],
                 icon: "",
+                permission: "Permissions.DeliveryTimeSlot.View",
             },
             {
               href: "/dashboard/product-list",
@@ -163,27 +145,15 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/product-list",
               children: [],
               icon: "",
+              permission: "Permissions.Product.View",
             },
-            // {
-            //   href: "/dashboard/cities",
-            //   label: t("cities"),
-            //   active: pathname === "/dashboard/cities",
-            //   children: [],
-            //   icon: "",
-            // },
-            // {
-            //   href: "/dashboard/favorites",
-            //   label: t("favorites"),
-            //   active: pathname === "/dashboard/favorites",
-            //   children: [],
-            //   icon: "heroicons-outline:heart",
-            // },
              {
               href: "/dashboard/inventory-management",
               label: t("price-management"),
               active: pathname === "/dashboard/inventory-management",
               children: [],
               icon: "",
+              permission: "Permissions.ProductPrice.View",
             },
             {
               href: `/dashboard/edit-user/${id}`,
@@ -191,6 +161,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname.startsWith(`/dashboard/edit-user/`),
               children: [],
               icon: "",
+              permission: "Permissions.User.Edit",
             },
              {
               href: "/dashboard/register",
@@ -198,62 +169,54 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/register",
               icon: "",
               children: [],
+              permission: "Permissions.User.Create",
             },
-            
             {
               href: "/dashboard/user-rules",
               label: t("User Management"),
               active: pathname === "/dashboard/user-rules",
               children: [],
               icon: "",
+              permission: "Permissions.User.View",
             },
             {
               href: "/dashboard/roles",
-              label: t("Roles"), // hardcoded in English, or add to i18n
+              label: t("Roles"), 
               active: pathname === "/dashboard/roles" || pathname.startsWith("/dashboard/edit-role") || pathname === "/dashboard/add-role",
               children: [],
               icon: "",
+              permission: "Permissions.Role.View",
             },
-            // {
-            //   href: "/dashboard/pharmacy-list",
-            //   label: t("Doctors details"),
-            //   active: pathname === "/dashboard/pharmacy-list",
-            //   children: [],
-            //   icon: "",
-            // },
-            // {
-            //   href: "/dashboard/inventory-managers",
-            //   label: t("Providers details"),
-            //   active: pathname === "/dashboard/inventory-managers",
-            //   children: [],
-            //   icon: "",
-            // },
-           
             {
               href: "/dashboard/reports",
               label: t("Reports"),
               active: pathname === "/dashboard/reports" || pathname.startsWith("/dashboard/reports/"),
               icon: "",
+              permission: "Permissions.Order.View",
               children: [
                 {
                   href: "/dashboard/reports/orders",
                   label: t("orders"),
                   active: pathname === "/dashboard/reports/orders",
+                  permission: "Permissions.Order.Vieww",
                 },
                 {
                   href: "/dashboard/reports/invoices",
                   label: t("invoices"),
                   active: pathname === "/dashboard/reports/invoices",
+                  permission: "Permissions.Invoice.View",
                 },
                 {
                   href: "/dashboard/reports/balance",
                   label: t("balance"),
                   active: pathname === "/dashboard/reports/balance",
+                  permission: "Permissions.BalanceReport.View",
                 },
                 {
                   href: "/dashboard/reports/summary",
                   label: t("summary"),
                   active: pathname === "/dashboard/reports/summary",
+                  permission: "Permissions.Report.View",
                 }
               ],
             },
@@ -263,6 +226,7 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/send-notification",
               children: [],
               icon: "",
+              permission: "Permissions.Notification.View",
             },
             {
               href: "/dashboard/location",
@@ -273,31 +237,37 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
                       pathname.startsWith("/dashboard/zone") || 
                       pathname.startsWith("/dashboard/area-zone"),
               icon: "",
+              permission: "",
               children: [
                 {
                   href: "/dashboard/country",
                   label: t("country"),
                   active: pathname === "/dashboard/country",
+                  permission: "Permissions.Country.View",
                 },
                 {
                   href: "/dashboard/city",
                   label: t("city"),
                   active: pathname === "/dashboard/city",
+                  permission: "Permissions.City.View",
                 },
                 {
                   href: "/dashboard/area",
                   label: t("area"),
                   active: pathname === "/dashboard/area",
+                  permission: "Permissions.Area.View",
                 },
                 {
                   href: "/dashboard/zone",
                   label: t("zone"),
                   active: pathname === "/dashboard/zone",
+                  permission: "Permissions.Zone.View",
                 },
                 {
                   href: "/dashboard/area-zone",
                   label: t("areaZone"),
                   active: pathname === "/dashboard/area-zone",
+                  permission: "Permissions.AreaZone.View",
                 },
               ],
             },
@@ -306,21 +276,25 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               label: t("policy"),
               active: pathname.startsWith("/dashboard/policy"),
               icon: "",
+              permission: "",
               children: [
                 {
                   href: "/dashboard/policy",
                   label: t("policy"),
                   active: pathname === "/dashboard/policy",
+                  permission: "Permissions.Policy.View",
                 },
                 {
                   href: "/dashboard/policy/refund-policy",
                   label: t("refund_policy"),
                   active: pathname === "/dashboard/policy/refund-policy",
+                  permission: "Permissions.RefundPolicy.View",
                 },
                 {
                   href: "/dashboard/policy/terms-and-conditions",
                   label: t("terms_and_conditions"),
                   active: pathname === "/dashboard/policy/terms-and-conditions",
+                  permission: "Permissions.TermsAndConditions.View",
                 },
               ],
             },
@@ -330,89 +304,87 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
               active: pathname === "/dashboard/settings",
               children: [],
               icon: "",
+              permission: "Permissions.User.View",
             },
           ],
         },
       ],
     },
-    //  {
-    //   groupLabel: t("Upcoming Features"),
-    //   id: "app",
-    //   menus: [
-    //     {
-    //       id: "chat",
-    //       href: "/app/chat",
-    //       label: t("chat"),
-    //       active: pathname.includes("/app/chat"),
-    //       icon: "heroicons-outline:chat",
-    //       submenus: [],
-    //     },
-    //     {
-    //       id: "email",
-    //       href: "/app/email",
-    //       label: t("email"),
-    //       active: pathname.includes("/app/email"),
-    //       icon: "heroicons-outline:mail",
-    //       submenus: [],
-    //     },
-    //     {
-    //       id: "kanban",
-    //       href: "/app/kanban",
-    //       label: t("kanban"),
-    //       active: pathname.includes("/app/kanban"),
-    //       icon: "heroicons-outline:view-boards",
-    //       submenus: [],
-    //     },
-    //     {
-    //       id: "calendar",
-    //       href: "/app/calendar",
-    //       label: t("calendar"),
-    //       active:pathname.includes("/app/calendar"),
-    //       icon: "heroicons-outline:calendar",
-    //       submenus: [],
-    //     },
-    //     {
-    //       id: "todo",
-    //       href: "/app/todo",
-    //       label: t("todo"),
-    //       active:pathname.includes("/app/todo"),
-    //       icon: "heroicons-outline:clipboard-check",
-    //       submenus: [],
-    //     },
-    //   ],
-    // },
   ];
+
+  // Helper function to recursively filter sub-children levels
+  const filterSubChildren = (children?: SubChildren[]): SubChildren[] => {
+    if (!children) return [];
+    return children
+      .filter((child) => hasPerm(child.permission))
+      .map((child) => ({
+        ...child,
+        href: child.href,
+        active: pathname === child.href,
+        children: child.children ? filterSubChildren(child.children) : (child.children ? [] : undefined),
+      }));
+  };
+
+  // Helper function to recursively filter submenu levels
+  const filterSubmenus = (submenus?: Submenu[]): Submenu[] => {
+    if (!submenus) return [];
+    const mapped: (Submenu | null)[] = submenus
+      .filter((sub) => hasPerm(sub.permission))
+      .map((sub): Submenu | null => {
+        const filteredChildren = filterSubChildren(sub.children);
+        const filteredSubs = filterSubmenus(sub.submenus);
+
+        const originallyHadChildren = sub.children !== undefined && sub.children.length > 0;
+        const originallyHadSubs = sub.submenus !== undefined && sub.submenus.length > 0;
+
+        // If it originally had sub-items but all of them are now filtered out, prune this folder
+        if (originallyHadChildren && filteredChildren.length === 0) {
+          return null;
+        }
+        if (originallyHadSubs && filteredSubs.length === 0) {
+          return null;
+        }
+
+        return {
+          ...sub,
+          href: sub.href,
+          active: pathname === sub.href,
+          children: sub.children ? filteredChildren : undefined,
+          submenus: sub.submenus ? filteredSubs : undefined,
+        };
+      });
+
+    return mapped.filter((sub): sub is Submenu => sub !== null);
+  };
+
   const filteredGroups: Group[] = [];
 
   for (const group of allMenus) {
     const filteredMenus: Menu[] = [];
 
     for (const menu of group.menus) {
-      const filteredSubmenus: Submenu[] = menu.submenus?.filter((sub) => {
-        if (role === "Inventory" && sub.href === "/dashboard/inventory-management") {
-          return true;
-        }
-        return isAllowed(sub.href);
-      }) ?? [];
+      if (!hasPerm(menu.permission)) continue;
 
-      const includeMenu: boolean =
-          isAllowed(menu.href) || filteredSubmenus.length > 0;
+      const filteredSubmenus = filterSubmenus(menu.submenus);
 
-      if (includeMenu) {
-        filteredMenus.push({
-          ...menu,
-          active: Boolean(menu.href && pathname.startsWith(menu.href)),
-          submenus: filteredSubmenus.map((sub) => ({
-            ...sub,
-            active: pathname === sub.href,
-          })),
-        });
+      // If the parent menu originally had submenus, but they are all filtered out, hide the parent
+      if (menu.submenus && menu.submenus.length > 0 && filteredSubmenus.length === 0) {
+        continue;
       }
+
+      filteredMenus.push({
+        ...menu,
+        href: menu.href,
+        active: Boolean(menu.href && pathname.startsWith(menu.href)),
+        submenus: filteredSubmenus,
+      });
     }
 
     if (filteredMenus.length > 0) {
       filteredGroups.push({
         ...group,
+        id: group.id,
+        groupLabel: group.groupLabel,
         menus: filteredMenus,
       });
     }
@@ -421,38 +393,25 @@ export function getMenuList(pathname: string, t: any, role: string, locale: stri
   return filteredGroups;
 }
 
-export function getHorizontalMenuList(pathname: string, t: any, role: string, locale: string = 'en'): Group[] {
-  const normalizedRole = normalizeRole(role) || role;
-  const rawAllowedRoutes = roleRoutes[normalizedRole] || [];
+export function getHorizontalMenuList(pathname: string, t: any, permissions: string[] = [], locale: string = 'en'): Group[] {
+  const isSuperAdmin = permissions.includes("*") || permissions.includes("Permissions.All");
 
-  const normalizedRoutes = rawAllowedRoutes.map(route =>
-      route === "*" ? route : route.replace(/^\/[a-z]{2}\//, '/')
-  );
-
-  const localizeHref = (href: string): string => {
-    if (!href.startsWith('/')) return href;
-    if (/^\/[a-z]{2}\//.test(href)) return href;
-    return `/${locale}${href}`;
-  };
-
-  const isAllowed = (href: string) => {
-    if (normalizedRoutes.includes("*")) return true;
-    const normalizedHref = href.replace(/^\/[a-z]{2}\//, '/');
-    return normalizedRoutes.includes(normalizedHref);
+  const hasPerm = (perm?: string) => {
+    if (!perm) return true;
+    return isSuperAdmin || permissions.includes(perm);
   };
 
   const filterSubmenus = (submenus: Submenu[]): Submenu[] => {
     return submenus
-        .map((submenu) => {
-          const localizedHref = localizeHref(submenu.href);
-          return {
-            ...submenu,
-            href: localizedHref,
-            children: submenu.children || [],
-            active: pathname === localizedHref,
-          };
-        })
-        .filter((submenu) => isAllowed(submenu.href));
+      .map((submenu) => {
+        return {
+          ...submenu,
+          href: submenu.href,
+          children: submenu.children || [],
+          active: pathname === submenu.href,
+        };
+      })
+      .filter((submenu) => hasPerm(submenu.permission));
   };
 
   const groups: Group[] = [
@@ -462,10 +421,11 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
       menus: [
         {
           id: "dashboard",
-          href: localizeHref("/dashboard/analytics"),
+          href: "/dashboard/analytics",
           label: t("dashboard"),
-          active: pathname.includes(localizeHref("/dashboard")),
+          active: pathname.includes("/dashboard"),
           icon: "heroicons-outline:home",
+          permission: "",
           submenus: filterSubmenus([
             {
               href: "/dashboard/analytics",
@@ -473,34 +433,7 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
               active: false,
               icon: "heroicons:arrow-trending-up",
               children: [],
-            },
-            {
-              href: "/dashboard/dash-ecom",
-              label: t("ecommerce"),
-              active: false,
-              icon: "heroicons:shopping-cart",
-              children: [],
-            },
-            {
-              href: "/dashboard/project",
-              label: t("project"),
-              active: false,
-              icon: "heroicons:document",
-              children: [],
-            },
-            {
-              href: "/dashboard/crm",
-              label: t("crm"),
-              active: false,
-              icon: "heroicons:share",
-              children: [],
-            },
-            {
-              href: "/dashboard/register",
-              label: t("register"),
-              active: false,
-              icon: "heroicons:credit-card",
-              children: [],
+              permission: "",
             },
             {
               href: "/dashboard/delivery-times",
@@ -508,56 +441,7 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
               active: false,
               icon: "heroicons:clock",
               children: [],
-            },
-          ]),
-        },
-      ],
-    },
-    {
-      groupLabel: t("apps"),
-      id: "app",
-      menus: [
-        {
-          id: "app",
-          href: localizeHref("/app/chat"),
-          label: t("apps"),
-          active: pathname.includes(localizeHref("/app")),
-          icon: "heroicons-outline:chat",
-          submenus: filterSubmenus([
-            {
-              href: "/app/chat",
-              label: t("chat"),
-              active: false,
-              icon: "heroicons-outline:chat",
-              children: [],
-            },
-            {
-              href: "/app/email",
-              label: t("email"),
-              active: false,
-              icon: "heroicons-outline:mail",
-              children: [],
-            },
-            {
-              href: "/app/kanban",
-              label: t("kanban"),
-              active: false,
-              icon: "heroicons-outline:view-boards",
-              children: [],
-            },
-            {
-              href: "/app/calendar",
-              label: t("calendar"),
-              active: false,
-              icon: "heroicons-outline:calendar",
-              children: [],
-            },
-            {
-              href: "/app/todo",
-              label: t("todo"),
-              active: false,
-              icon: "heroicons-outline:clipboard-check",
-              children: [],
+              permission: "Permissions.DeliveryTimeSlot.View",
             },
           ]),
         },
@@ -566,15 +450,19 @@ export function getHorizontalMenuList(pathname: string, t: any, role: string, lo
   ];
 
   return groups
-      .map((group) => ({
-        ...group,
-        menus: group.menus.filter((menu) => menu.submenus.length > 0),
-      }))
-      .filter((group) => group.menus.length > 0);
+    .map((group) => ({
+      ...group,
+      menus: group.menus
+        .filter((menu) => hasPerm(menu.permission) && menu.submenus.length > 0)
+        .map((menu) => ({
+          ...menu,
+          submenus: filterSubmenus(menu.submenus),
+        })),
+    }))
+    .filter((group) => group.menus.length > 0);
 }
 
 export function getLocalizedDefaultRoute(role: string, locale: string = 'en'): string {
-  const normalizedRole = normalizeRole(role) || role;
-  const route = defaultRouteByRole[normalizedRole] || "/dashboard/analytics";
-  return `/${locale}${route}`;
+  // Keeping this for backwards compatibility, but in the new system we route dynamically
+  return `/${locale}/dashboard/analytics`;
 }

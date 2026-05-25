@@ -68,7 +68,7 @@ export function CollapseMenuButton({
 
 }: CollapseMenuButtonProps) {
     const pathname = usePathname();
-    const isSubmenuActive = submenus.some((submenu) => submenu.active || pathname.startsWith(submenu.href));
+    const isSubmenuActive = (submenus || []).some((submenu) => submenu?.active || pathname.startsWith(submenu?.href || ''));
     const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);
     const [mobileMenuConfig, setMobileMenuConfig] = useMobileMenuConfig()
     const [config] = useConfig();
@@ -133,7 +133,7 @@ export function CollapseMenuButton({
                     </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                    {submenus.map(({ href, label, active }, index) => (
+                    {(submenus || []).map(({ href, label, active }, index) => (
 
 
                         <Button
@@ -220,9 +220,9 @@ export function CollapseMenuButton({
                 </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                {submenus.map(({ href, label, active, children: subChildren }, index) => (
+                {(submenus || []).map(({ href, label, active, children: subChildren }, index) => (
 
-                    subChildren?.length === 0 ? (
+                    (!subChildren || subChildren.length === 0) ? (
                         <Button
                             onClick={() => setMobileMenuConfig({ ...mobileMenuConfig, isOpen: false })}
                             key={index}
@@ -304,8 +304,8 @@ export function CollapseMenuButton({
                 <DropdownMenuGroup>
 
 
-                    {submenus.map(({ href, label, icon, active, children }, index) => (
-                        children?.length === 0 ? (
+                    {(submenus || []).map(({ href, label, icon, active, children }, index) => (
+                        (!children || children.length === 0) ? (
                             <DropdownMenuItem key={index} asChild className={cn('focus:bg-secondary', {
                                 'bg-secondary text-secondary-foreground ': active
                             })}>

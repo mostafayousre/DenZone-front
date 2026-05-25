@@ -4,24 +4,27 @@ import DashCodeSidebar from '@/components/partials/sidebar'
 import DashCodeFooter from '@/components/partials/footer'
 import ThemeCustomize from '@/components/partials/customizer'
 import DashCodeHeader from '@/components/partials/header'
-import RoleGuard from "@/components/RoleGuard";
-
+import { PermissionsProvider } from "@/providers/permissions-provider";
+import PermissionGuard from "@/components/PermissionGuard";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
 
     return (
-        <LayoutProvider >
-            <ThemeCustomize />
-            <DashCodeHeader />
-            <DashCodeSidebar />
-            <LayoutContentProvider>
-                {children}
-            </LayoutContentProvider>
-            <DashCodeFooter />
-        </LayoutProvider>
+        <PermissionsProvider>
+            <LayoutProvider >
+                <ThemeCustomize />
+                <DashCodeHeader />
+                <DashCodeSidebar />
+                <LayoutContentProvider>
+                    <PermissionGuard>
+                        {children}
+                    </PermissionGuard>
+                </LayoutContentProvider>
+                <DashCodeFooter />
+            </LayoutProvider>
+        </PermissionsProvider>
     )
-
-
 };
 
 export default layout;
+

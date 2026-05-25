@@ -22,7 +22,29 @@ AxiosInstance.interceptors.request.use(
 );
 
 AxiosInstance.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => {
+        // Clear cached permissions on any successful mutation to role or user endpoints
+        const url = response.config.url || "";
+        const method = response.config.method?.toLowerCase() || "";
+        if (
+            ["post", "put", "delete", "patch"].includes(method) &&
+            (url.includes("/Roles/") || url.includes("/Users/") || url.includes("/api/Roles") || url.includes("/api/Users"))
+        ) {
+            if (typeof window !== "undefined") {
+                try {
+                    for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                        const key = sessionStorage.key(i);
+                        if (key && key.startsWith("user_permissions_")) {
+                            sessionStorage.removeItem(key);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to clear sessionStorage permissions cache:", e);
+                }
+            }
+        }
+        return response;
+    },
     async (error: AxiosError) => {
         const status = error.response?.status;
         if ([401, 403].includes(status ?? 0)) {

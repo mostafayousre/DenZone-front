@@ -17,11 +17,10 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar"
 import { useMediaQuery } from "@/hooks/use-media-query";
-import {useSession} from "next-auth/react";
 import {useParams} from "next/navigation";
+import { usePermissions } from "@/hooks/use-permissions";
 
 export default function HorizontalMenu() {
-  const { data: session, status } = useSession();
   const params = useParams<{ locale: string; }>();
   const locale = params?.locale || "en";
   const [menuList, setMenuList] = useState<Group[]>([]);
@@ -32,12 +31,13 @@ export default function HorizontalMenu() {
   const t = useTranslations("Menu");
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+  const { permissions, loading: permissionsLoading } = usePermissions();
 
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        if (status === "authenticated" && session?.user?.role) {
-          const menu = getHorizontalMenuList(pathname, t, session.user.role, locale);
+        if (!permissionsLoading) {
+          const menu = getHorizontalMenuList(pathname, t, permissions, locale);
           setMenuList(menu);
         }
       } catch (error) {
@@ -48,7 +48,7 @@ export default function HorizontalMenu() {
     };
 
     fetchMenuData();
-  }, [status, session, pathname, t, locale]);
+  }, [permissions, permissionsLoading, pathname, t, locale]);
 
   const [openDropdown, setOpenDropdown] = React.useState<boolean>(false);
 

@@ -8,24 +8,24 @@ import IconNav from './icon-nav';
 import SidebarNav from './sideabr-nav';
 import { useTranslations } from 'next-intl';
 import {useParams} from "next/navigation";
-import {useSession} from "next-auth/react";
+import { usePermissions } from '@/hooks/use-permissions';
 
 
 export function MenuTwoColumn() {
     // translate
     const t = useTranslations("Menu")
-    const { data: session, status } = useSession();
     const params = useParams<{ locale: string; }>();
     const locale = params?.locale || "en";
     const pathname = usePathname();
+    const { permissions, loading: permissionsLoading } = usePermissions();
 
     const [menuList, setMenuList] = useState<Group[]>([]);
 
     useEffect(() => {
         const fetchMenuData = async () => {
             try {
-                if (status === "authenticated" && session?.user?.role) {
-                    const menu = getMenuList(pathname, t, session.user.role, locale);
+                if (!permissionsLoading) {
+                    const menu = getMenuList(pathname, t, permissions, locale);
                     setMenuList(menu);
                 }
             } catch (error) {
@@ -34,7 +34,7 @@ export function MenuTwoColumn() {
         };
 
         fetchMenuData();
-    }, [status, session, pathname, t, locale]);
+    }, [permissions, permissionsLoading, pathname, t, locale]);
 
     return (
         <>
