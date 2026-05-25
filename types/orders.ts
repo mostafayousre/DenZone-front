@@ -21,6 +21,8 @@ export type Orders = {
     couponPercentage?: number;
     couponPrecentage?: number;
     orderNote?: string;
+    isGrouped?: boolean;
+    orders?: Orders[];
 }
 
 export interface OrderItem {

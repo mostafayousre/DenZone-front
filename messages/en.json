@@ -397,7 +397,9 @@
     "selectPreparation": "Select Preparation Person",
     "selectPreparationPlaceholder": "Select Preparation Person",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "showLess": "Show less",
+    "more": "more"
   },
   "generateInvoice": {
     "invoiceGenerated": "Invoice generated successfully",

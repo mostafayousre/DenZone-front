@@ -396,7 +396,9 @@
     "selectPreparation": "اختر مسؤول التجهيز",
     "selectPreparationPlaceholder": "اختر مسؤول التجهيز",
     "cancel": "إلغاء",
-    "save": "حفظ"
+    "save": "حفظ",
+    "showLess": "عرض أقل",
+    "more": "المزيد"
   },
   "OrderDetails": {
     "orderDetails": "تفاصيل الطلب",

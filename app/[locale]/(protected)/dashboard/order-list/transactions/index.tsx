@@ -47,6 +47,43 @@ import { Save } from "lucide-react";
 import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
 import useGettingDeliveryOrders from "@/services/Orders/gettingDeliveryOrders";
 
+const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
+  if (!rawGroups || !Array.isArray(rawGroups)) return [];
+  return rawGroups.map((group: any) => {
+    if (!group.orders) return group;
+    
+    const subOrders = group.orders || [];
+    const firstOrder = subOrders[0] || {};
+    
+    // Merge items
+    const mergedItems = subOrders.flatMap((o: any) => o.items || []);
+    
+    // Sum totalAmount
+    const totalAmount = subOrders.reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0);
+    
+    // Merge orderNotes
+    const mergedNotes = subOrders.map((o: any) => o.orderNote).filter(Boolean).join(" | ");
+    
+    // Merge deliveryNames
+    const deliveryNames = Array.from(
+      new Set(subOrders.map((o: any) => o.deliveryName).filter((n: any) => n && n !== "there is no deleivry yet"))
+    );
+    const mergedDeliveryName = deliveryNames.length > 0 ? deliveryNames.join(", ") : "there is no delivery yet";
+
+    return {
+      ...firstOrder,
+      id: firstOrder.id || group.orderNumber,
+      orderNumber: group.orderNumber,
+      isGrouped: true,
+      orders: subOrders,
+      items: mergedItems,
+      totalAmount,
+      orderNote: mergedNotes,
+      deliveryName: mergedDeliveryName,
+    };
+  });
+};
+
 export default function TransactionsTable() {
   const rawUserRole = Cookies.get("userRole");
   const userRole = normalizeRole(rawUserRole) || rawUserRole;
@@ -82,7 +119,7 @@ export default function TransactionsTable() {
     }
     let rawData;
     if (isAdmin) {
-      rawData = orders;
+      rawData = mapGroupedOrders(orders);
     } else if (isRepresentative || isDelivery) {
       rawData = deliveryOrders;
     } else {
@@ -139,7 +176,12 @@ export default function TransactionsTable() {
     if (status === "all") {
       setFilteredOrders(allOrdersData);
     } else {
-      const filtered = allOrdersData.filter(order => order.status === status);
+      const filtered = allOrdersData.filter(order => {
+        if (order.isGrouped) {
+          return order.orders?.some((o: any) => o.status === status);
+        }
+        return order.status === status;
+      });
       setFilteredOrders(filtered);
     }
   };
