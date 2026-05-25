@@ -30,15 +30,15 @@ const ProfileInfo = () => {
 
   return (
     <div className="block">
-          <div
-              onClick={handleSignOut}
-            className="flex items-center gap-2 text-sm font-medium text-default-600 capitalize my-1 px-3 cursor-pointer"
-          >
-            <button type="button" className="w-full flex items-center gap-2 cursor-pointer" >
-              <Icon icon="heroicons:power" className="w-4 h-4" />
-              <span className="hidden md:inline-block">Log out</span>
-            </button>
-          </div>
+      <div
+        onClick={handleSignOut}
+        className="flex items-center gap-2 text-sm font-medium text-default-600 capitalize my-1 px-3 cursor-pointer"
+      >
+        <button type="button" className="w-full flex items-center gap-2 cursor-pointer" >
+          <Icon icon="heroicons:power" className="w-4 h-4" />
+          <span className="hidden md:inline-block">Log out</span>
+        </button>
+      </div>
 
     </div>
   );
