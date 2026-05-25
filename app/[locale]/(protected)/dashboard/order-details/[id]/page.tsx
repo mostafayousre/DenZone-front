@@ -68,7 +68,7 @@ const OrderDetails = () => {
         if (id) {
             const refreshInterval = setInterval(() => {
                 getOrderById(id as string);
-            }, 30000); 
+            }, 30000);
 
             return () => clearInterval(refreshInterval);
         }
@@ -156,7 +156,7 @@ const OrderDetails = () => {
                                             return;
                                         }
 
-                                        const result = await updateOrderStatus(id as string, selectedStatus);
+                                        const result = await updateOrderStatus((currentOrder?.orderNumber || id) as string, selectedStatus);
 
                                         if (result.success) {
                                             toast.success(t("updateStatusSuccess"));
@@ -175,62 +175,77 @@ const OrderDetails = () => {
                 </Card>
             )} */}
 
-            <Card>
-                <CardHeader className="border-0">
-                    <div className="flex justify-between flex-wrap gap-4 items-center">
-                        <div>
-                            <span className="block text-default-900 font-medium text-xl">
-                                {t("orderDetails")}
-                            </span>
-
-                           
-                                <div className="flex space-x-2 mt-2">
-                                    <p>{t("providerName")}:</p>
-
-                                    <span>
-                                        {currentOrder.items?.length > 0
-                                            ? Array.from(
-                                                new Set(
-                                                    currentOrder.items
-                                                        .map((item: any) => item?.inventoryName)
-                                                        .filter(Boolean)
-                                                )
-                                            ).join(", ")
-                                            : "N/A"}
-                                    </span>
-                             
-                            </div>
-                        </div>
-
-                        <div className="space-y-1 text-xs text-default-600 uppercase">
-                            <h4>
-                                {t("date")}:{" "}
-                                {currentOrder.orderDate
-                                    ? new Date(currentOrder.orderDate).toLocaleString()
-                                    : "N/A"}
-                            </h4>
-
-                            <h4>
-                                {t("status")}: {t(`statusOptions.${OrderStatus[currentOrder.status]}`)}
-                            </h4>
-                        </div>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h2 className="text-2xl font-semibold text-default-900 dark:text-white">
+                        {t("orderDetails")} #{currentOrder.orderNumber || id}
+                    </h2>
+                    <p className="text-sm text-default-500 mt-1">
+                        {t("date")}: {currentOrder.orderDate ? new Date(currentOrder.orderDate).toLocaleString() : "N/A"}
+                    </p>
+                </div>
+                {currentOrder.totalAmount !== undefined && (
+                    <div className="text-right">
+                        <span className="text-xs text-default-500 uppercase block">{t("totalAmount")}</span>
+                        <span className="text-2xl font-bold text-default-900 dark:text-white">
+                            {currentOrder.totalAmount}
+                        </span>
                     </div>
-                </CardHeader>
+                )}
+            </div>
 
-                <CardContent>
-                    <div className="mb-6">
-                        <Label className="dark:text-white mb-2 block text-default-900 font-medium">{t("orderNote")}</Label>
-                        <p className="text-default-600">{currentOrder.orderNote || "No notes were added to this order."}</p>
-                    </div>
+            {(() => {
+                const subOrdersList = currentOrder.orders && currentOrder.orders.length > 0 
+                    ? currentOrder.orders 
+                    : [currentOrder];
 
-                    <BillSummary
-                        defaultItems={currentOrder.items || []}
-                        items={currentOrder.items || []}
-                        deletedItems={[]}
-                        totalAmount={currentOrder?.totalAmount}
-                    />
-                </CardContent>
-            </Card>
+                return subOrdersList.map((subOrder: any, index: number) => {
+                    const subStatus = subOrder.status as OrderStatus;
+                    
+                    return (
+                        <Card key={subOrder.id || index} className="mb-6">
+                            <CardHeader className="border-b border-default-200">
+                                <div className="flex justify-between flex-wrap gap-4 items-center">
+                                    <div>
+                                        <span className="block text-default-900 font-semibold text-lg">
+                                            {subOrder.inventoryName || t("providerName")}
+                                        </span>
+                                        {subOrder.id && (
+                                            <span className="text-xs text-default-500 font-mono block mt-1">
+                                                ID: {subOrder.id}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-xs text-default-600 uppercase text-right">
+                                            <h4>
+                                                {t("status")}: <span className="font-semibold">{t(`statusOptions.${OrderStatus[subStatus]}`)}</span>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="pt-6">
+                                {subOrder.orderNote && (
+                                    <div className="mb-6 bg-default-50 dark:bg-default-900/50 p-4 rounded-lg border border-default-200">
+                                        <Label className="dark:text-white mb-1 block text-default-900 font-medium">{t("orderNote")}</Label>
+                                        <p className="text-default-600 text-sm">{subOrder.orderNote}</p>
+                                    </div>
+                                )}
+
+                                <BillSummary
+                                    defaultItems={subOrder.items || []}
+                                    items={subOrder.items || []}
+                                    deletedItems={[]}
+                                    totalAmount={subOrder?.totalAmount}
+                                />
+                            </CardContent>
+                        </Card>
+                    );
+                });
+            })()}
         </>
     );
 };

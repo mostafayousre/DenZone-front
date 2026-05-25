@@ -6,7 +6,7 @@ function useUpdateOrderStatus() {
   const [loading, setLoading] = useState(false);
 
   const updateOrderStatus = async (
-    id: string | string[] | undefined,
+    orderNumber: string,
     status: OrderStatus
   ): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
@@ -18,7 +18,7 @@ function useUpdateOrderStatus() {
         throw new Error("Unsupported status");
       }
 
-      const url = `/api/Orders/${statusPath}/${id}`;
+      const url = `/api/Orders/${statusPath}/${orderNumber}`;
       console.log("REQUEST URL:", url);
 
       const response = await AxiosInstance.put(url);

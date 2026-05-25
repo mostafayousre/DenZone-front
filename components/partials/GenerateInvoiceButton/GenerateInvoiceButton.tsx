@@ -8,16 +8,16 @@ import useGenerateOrderInvoice from "@/services/invoices/generate/generateOrderI
 import { useTranslations } from "next-intl";
 
 interface Props {
-    orderId: string;
+    orderNumber: string;
     isDisabled?: boolean;
 }
 
-const GenerateInvoiceButton = ({ isDisabled, orderId }: Props) => {
+const GenerateInvoiceButton = ({ isDisabled, orderNumber }: Props) => {
     const t = useTranslations("generateInvoice");
     const {loading, generateOrderInvoice} = useGenerateOrderInvoice()
 
     const handleGenerateInvoice = async () => {
-        const {success, error} =  await generateOrderInvoice(orderId);
+        const {success, error} =  await generateOrderInvoice(orderNumber);
 
         if (success) {
             toast.success(t("invoiceGenerated"));

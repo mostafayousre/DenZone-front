@@ -41,6 +41,18 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
     cell: ({ row }) => {
       return <span>{row.getValue("creditUsed")}</span>;
     },
+  },  {
+    accessorKey: "coupon",
+    header: "coupon",
+    cell: ({ row }) => {
+      return <span>{row.getValue("coupon")}</span>;
+    },
+  },  {
+    accessorKey: "shippingFees",
+    header: "Shipping Fees",
+    cell: ({ row }) => {
+      return <span>{row.getValue("shippingFees")}</span>;
+    },
   },
   {
     accessorKey: "totalAmount",

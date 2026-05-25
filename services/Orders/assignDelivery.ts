@@ -5,7 +5,7 @@ function useAssignDelivery() {
   const [loading, setLoading] = useState(false);
 
   const assignDelivery = async (
-    orderId: string,
+    orderNumber: string,
     deliveryUserId: string,
     preparationUserId: string
   ): Promise<{ success: boolean; error?: string }> => {
@@ -14,7 +14,7 @@ function useAssignDelivery() {
     try {
       const url = `/api/Orders/assign-delivery`;
       const payload = {
-        orderId,
+        orderNumber,
         deliveryUserId,
         preparationUserId
       };
