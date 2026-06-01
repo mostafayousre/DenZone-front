@@ -74,6 +74,17 @@ const OrderDetails = () => {
         }
     }, [id]);
 
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const resolvedOrder = order || orderData;
+        if (searchParams.get("print") === "true" && !orderLoading && !invoiceLoading && resolvedOrder) {
+            const timer = setTimeout(() => {
+                window.print();
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [orderLoading, invoiceLoading, order, orderData]);
+
     if (orderLoading || invoiceLoading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -96,7 +107,35 @@ const OrderDetails = () => {
     const hasStatusChanged = selectedStatus !== null && selectedStatus !== currentStatus;
 
     return (
-        <>
+        <div id="printable-order">
+            {/* Print Styles */}
+            <style dangerouslySetInnerHTML={{ __html: `
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    #printable-order,
+                    #printable-order * {
+                        visibility: visible;
+                    }
+                    #printable-order {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        margin: 0;
+                        padding: 0;
+                        background: white !important;
+                        color: black !important;
+                    }
+                    .no-print,
+                    .no-print * {
+                        visibility: hidden !important;
+                        display: none !important;
+                    }
+                }
+            `}} />
+
             {/* {(userType === "Inventory" || userType === "Admin") && (
                 <Card>
                     <CardHeader>
@@ -246,7 +285,7 @@ const OrderDetails = () => {
                     );
                 });
             })()}
-        </>
+        </div>
     );
 };
 
