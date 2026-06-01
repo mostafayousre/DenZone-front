@@ -38,6 +38,7 @@ export const routePermissions: Record<string, string | string[]> = {
   "/dashboard/reports": "Permissions.Report.View",
   "/dashboard/reports/orders": "Permissions.Order.View",
   "/dashboard/reports/invoices": "Permissions.Invoice.View",
+  "/dashboard/reports/invoices/details": "Permissions.Invoice.View",
   "/dashboard/reports/balance": "Permissions.BalanceReport.View",
   "/dashboard/reports/summary": "Permissions.Report.View",
   

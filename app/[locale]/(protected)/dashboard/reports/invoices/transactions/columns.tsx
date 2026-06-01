@@ -1,12 +1,26 @@
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  Eye,
-  Trash2,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import {Orders} from "@/types/orders";
-import {formatDateToDMY} from "@/utils";
+import { Eye } from "lucide-react";
+import { formatDateToDMY } from "@/utils";
+import { Link } from "@/i18n/routing";
+
+const ViewInvoiceAction = ({ row }: { row: any }) => {
+  const invoice = row.original;
+
+  const handleClick = () => {
+    sessionStorage.setItem("selectedInvoice", JSON.stringify(invoice));
+  };
+
+  return (
+    <Link
+      href="/dashboard/reports/invoices/details"
+      onClick={handleClick}
+      className="flex items-center p-2 text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
+      title="View Details"
+    >
+      <Eye className="w-4 h-4" />
+    </Link>
+  );
+};
 
 export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[] => [
   {
@@ -15,10 +29,10 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
     cell: ({ row }) => <span>{row.getValue("invoiceNumber")}</span>,
   },
   {
-    accessorKey: "fullName",
+    accessorKey: "userName",
     header: "Doctor",
     cell: ({ row }) => {
-      const name = row.original.fullName;
+      const name = row.original.userName;
       return (
         <div className="font-medium text-card-foreground/80">
           <span className="text-sm text-default-600 whitespace-nowrap">
@@ -68,42 +82,17 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
       return <span>{formatDateToDMY(row.original.invoiceDate)}</span>;
     },
   },
-  // {
-  //   id: "actions",
-  //   accessorKey: "action",
-  //   header: "Actions",
-  //   enableHiding: false,
-  //   cell: ({ row }) => {
-  //     const userRole = Cookies.get("userRole");
-  //     const isAdmin = userRole == "Admin";
-  //     return (
-  //       <div className="flex items-center gap-1">
-  //         <Link
-  //           href={`/dashboard/order-details/${row.original.id}`}
-  //           className="flex items-center p-2 border-b text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
-  //         >
-  //           <Eye className="w-4 h-4" />
-  //         </Link>
-  //         {isAdmin && (
-  //             <>
-  //               <Link
-  //                   href={`/dashboard/remove-item/${row.original.id}`}
-  //                   className="flex items-center p-2 text-destructive bg-destructive/40 duration-200 transition-all hover:bg-destructive/80 hover:text-destructive-foreground rounded-full cursor-pointer"
-  //               >
-  //                 <Trash2 className="w-4 h-4" />
-  //               </Link>
-  //               <ChangeInventoryUserDialog
-  //                 orderId={row.original.id}
-  //                 inventoryUserId={row.original.inventoryUserId}
-  //                 onSuccess={() => refresh()}
-  //               />
-  //
-  //               <GenerateInvoiceButton orderId={row.original.id}/>
-  //
-  //             </>
-  //         )}
-  //       </div>
-  //     );
-  //   },
-  // },
+  {
+    id: "actions",
+    accessorKey: "action",
+    header: "Actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center gap-1">
+          <ViewInvoiceAction row={row} />
+        </div>
+      );
+    },
+  },
 ];
