@@ -1067,7 +1067,14 @@
     "unknown": "Unknown",
     "actions": "Actions",
     "select_city": "Select City",
-    "search_city": "Search City..."
+    "search_city": "Search City...",
+    "import_area": "Import Area",
+    "export_area": "Export Area",
+    "import_success": "Areas imported successfully.",
+    "import_failed": "Failed to import areas.",
+    "export_failed": "Failed to export areas.",
+    "importing": "Importing...",
+    "exporting": "Exporting..."
   },
   "zones": {
     "zones": "Zones",

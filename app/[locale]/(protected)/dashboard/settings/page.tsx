@@ -11,11 +11,12 @@ import { useUpdateLimitOrder } from "@/services/Orders/updateLimitOrder";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+
 function Settings() {
     const { limit, getLimitOrder } = useGetLimitOrder();
     const { updateLimitOrder, loading: updatingLimit } = useUpdateLimitOrder();
     const [editableLimit, setEditableLimit] = useState("");
-
+ 
     useEffect(() => {
         getLimitOrder();
     }, []);
