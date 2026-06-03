@@ -35,56 +35,56 @@ const InvoiceDetailsPage = () => {
     }
   }, []);
 
-  const downloadPDF = async () => {
-    const element = document.getElementById("printable-invoice");
-    if (!element || !invoice) return;
+  // const downloadPDF = async () => {
+  //   const element = document.getElementById("printable-invoice");
+  //   if (!element || !invoice) return;
 
-    try {
-      // @ts-ignore
-      const html2canvasModule = await import("html2canvas-pro");
-      const html2canvas = html2canvasModule.default || html2canvasModule;
-      // @ts-ignore
-      const { jsPDF } = await import("jspdf");
+  //   try {
+  //     // @ts-ignore
+  //     const html2canvasModule = await import("html2canvas-pro");
+  //     const html2canvas = html2canvasModule.default || html2canvasModule;
+  //     // @ts-ignore
+  //     const { jsPDF } = await import("jspdf");
 
-      const opt = {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        ignoreElements: (el: Element) => {
-          return el.classList.contains("no-print");
-        }
-      };
+  //     const opt = {
+  //       scale: 2,
+  //       useCORS: true,
+  //       logging: false,
+  //       ignoreElements: (el: Element) => {
+  //         return el.classList.contains("no-print");
+  //       }
+  //     };
 
-      const canvas = await html2canvas(element, opt);
-      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+  //     const canvas = await html2canvas(element, opt);
+  //     const imgData = canvas.toDataURL("image/jpeg", 0.98);
 
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4"
-      });
+  //     const pdf = new jsPDF({
+  //       orientation: "portrait",
+  //       unit: "mm",
+  //       format: "a4"
+  //     });
 
-      const imgWidth = 210; // A4 size width in mm
-      const pageHeight = 295; // A4 size height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+  //     const imgWidth = 210; // A4 size width in mm
+  //     const pageHeight = 295; // A4 size height in mm
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //     let heightLeft = imgHeight;
+  //     let position = 0;
 
-      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+  //     pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+  //     heightLeft -= pageHeight;
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+  //     while (heightLeft >= 0) {
+  //       position = heightLeft - imgHeight;
+  //       pdf.addPage();
+  //       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+  //       heightLeft -= pageHeight;
+  //     }
 
-      pdf.save(`invoice-${invoice.invoiceNumber || 'details'}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
-  };
+  //     pdf.save(`invoice-${invoice.invoiceNumber || 'details'}.pdf`);
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -166,7 +166,7 @@ const InvoiceDetailsPage = () => {
               <Printer className="w-4 h-4" />
               Print
             </Button>
-            <Button
+            {/* <Button
               variant="soft"
               color="success"
               size="sm"
@@ -175,7 +175,7 @@ const InvoiceDetailsPage = () => {
             >
               <Download className="w-4 h-4" />
               Download
-            </Button>
+            </Button> */}
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-default-900">

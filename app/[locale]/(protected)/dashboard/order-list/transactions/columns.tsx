@@ -4,7 +4,8 @@ import {
   Trash2,
   Pencil,
   Truck,
-  ArrowUpDown
+  ArrowUpDown,
+  Printer
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -372,6 +373,10 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       accessorKey: "deliveryTimeName",
       header: t("deliveryTime") || "delivery Time",
       cell: ({ row }) => <span>{row.getValue("deliveryTimeName") || "-"}</span>,
+    },{
+      accessorKey: "latlong",
+      header: t("latlong") || "latlong",
+      cell: ({ row }) => <span>{row.getValue("latlong") || "-"}</span>,
     }
   ];
 
@@ -424,12 +429,23 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
                 <Eye className="w-3.5 h-3.5" />
               </div>
             ) : (
-              <Link
-                href={`/dashboard/order-details/${order.orderNumber || order.id}`}
-                className="flex items-center p-1.5 border-b text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
-              >
-                <Eye className="w-3.5 h-3.5" />
-              </Link>
+              <>
+                <Link
+                  href={`/dashboard/order-details/${order.orderNumber || order.id}`}
+                  className="flex items-center p-1.5 border-b text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
+                  title="View Details"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  href={`/dashboard/order-details/${order.orderNumber || order.id}?print=true`}
+                  target="_blank"
+                  className="flex items-center p-1.5 border-b text-info hover:text-info-foreground bg-info/20 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
+                  title="Print Order"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                </Link>
+              </>
             )}
 
             {isAdmin && (
@@ -460,7 +476,9 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
                   </>
                 )}
 
-                <GenerateInvoiceButton isDisabled={order.status == 10} orderNumber={order.orderNumber || order.id} />
+                {order.status === OrderStatus.Completed && (
+                  <GenerateInvoiceButton isDisabled={false} orderNumber={order.orderNumber || order.id} />
+                )}
               </>
             )}
           </div>
