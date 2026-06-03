@@ -79,7 +79,7 @@ const TransactionsTable = () => {
 
   const selectedRoleName = roles?.find(r => r.id === selectedRole)?.name;
   const isRepresentative = selectedRoleName === "representative" || selectedRoleName === "Preparation representative";
-  const showWorkingHours = selectedRoleName === "representative";
+  const showWorkingHours = selectedRoleName === "representative" || selectedRoleName === "Inventory";
   const isProvider = roles?.find(r => r.id === selectedRole)?.name === "Inventory";
   const columns = baseColumns({ refresh: () => gettingAllUsers(), isRepresentative, isProvider, showWorkingHours, t });
 
