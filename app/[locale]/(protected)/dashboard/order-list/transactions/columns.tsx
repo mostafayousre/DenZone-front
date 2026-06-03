@@ -415,9 +415,13 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       cell: ({ row }) => {
         const userRole = Cookies.get("userRole");
         const isAdmin = userRole == "Admin";
+        const rawRole = userRole?.toLowerCase();
+        const isInventoryOrProvider = rawRole === "inventory" || rawRole === "provider";
 
         const order = row.original;
         const isReassigned = order.status === 7;
+
+        const orderIdOrNum = isInventoryOrProvider ? order.id : (order.orderNumber || order.id);
 
         return (
           <div className="flex items-center gap-1.5 py-1 justify-center">
@@ -431,14 +435,14 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
             ) : (
               <>
                 <Link
-                  href={`/dashboard/order-details/${order.orderNumber || order.id}`}
+                  href={`/dashboard/order-details/${orderIdOrNum}`}
                   className="flex items-center p-1.5 border-b text-warning hover:text-warning-foreground bg-warning/20 hover:bg-warning duration-200 transition-all rounded-full cursor-pointer"
                   title="View Details"
                 >
                   <Eye className="w-3.5 h-3.5" />
                 </Link>
                 <Link
-                  href={`/dashboard/order-details/${order.orderNumber || order.id}?print=true`}
+                  href={`/dashboard/order-details/${orderIdOrNum}?print=true`}
                   target="_blank"
                   className="flex items-center p-1.5 border-b text-info hover:text-info-foreground bg-info/20 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
                   title="Print Order"
