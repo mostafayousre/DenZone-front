@@ -29,9 +29,11 @@ export interface SummaryReport {
     totalCredit: number;
     totalOrders: number;
     totalInvoices: number;
+    totalRecentOrders: number;
     activeUsers?: number;
     inactiveUsers?: number;
     totalActiveUser?: number;
+    totalRecentUser?:number;
     totalNonActiveUser?: number;
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GetUsers from "@/services/users/GetAllUsers";
+import AxiosInstance from "@/lib/AxiosInstance";
 
 function useDeleteUser() {
     const { gettingAllUsers } = GetUsers(); 
@@ -13,27 +14,22 @@ function useDeleteUser() {
         setError(null);
 
         try {
-            const response = await fetch(`https://dentzoneapi.runasp.net/api/Users/delete-user/${userId}`, {
-                method: "DELETE",
-                headers: {
-                    "Accept": "*/*",
-                },
-            });
+            const response = await AxiosInstance.delete(`/api/Users/delete-user/${userId}`);
 
-            if (response.ok) { 
+            if (response.status === 200) { 
                 if (typeof gettingAllUsers === "function") {
                     gettingAllUsers();
                 }
                 setIsDeleted(true);
                 return { success: true };
             } else {
-                const message = await response.text();
-                throw new Error(message || "فشل حذف المستخدم");
+                throw new Error("فشل حذف المستخدم");
             }
         } catch (err: any) {
-            setError(err.message);
+            const message = err.response?.data?.message || err.response?.data || err.message || "فشل حذف المستخدم";
+            setError(message);
             setIsDeleted(false);
-            return { success: false, error: err.message };
+            return { success: false, error: message };
         } finally {
             setLoading(false);
         }
