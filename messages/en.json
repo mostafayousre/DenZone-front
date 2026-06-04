@@ -335,7 +335,8 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "noResults": "No special offers found.",
-    "searchPlaceholder": "Search special offers..."
+    "searchPlaceholder": "Search special offers...",
+    "link": "Link"
   },
   "Changelog": {
     "version": "Version",
@@ -986,6 +987,7 @@
     "image": "Image",
     "order": "Order",
     "banner_image": "Banner Image",
+    "link": "Link",
     "actions": "Actions",
     "unknown": "Unknown",
     "delete_banner": "Delete Banner",

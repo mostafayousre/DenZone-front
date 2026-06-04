@@ -118,6 +118,20 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
         },
     },
     {
+        accessorKey: "link", 
+        header: t("link"),
+        cell: ({ row }) => {
+            const link = row.getValue("link") as string;
+            return link ? (
+                <a href={link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline max-w-[200px] truncate block">
+                    {link}
+                </a>
+            ) : (
+                <span className="text-muted-foreground">—</span>
+            );
+        },
+    },
+    {
         id: "actions",
         accessorKey: "action",
         header: t("actions"),

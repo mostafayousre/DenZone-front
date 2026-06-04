@@ -5,7 +5,7 @@ function useUpdateBanner() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const updateBanner = async (id: string, bannerData: { imageFile?: File | null; order: number }) => {
+    const updateBanner = async (id: string, bannerData: { imageFile?: File | null; order: number; link?: string }) => {
         setLoading(true);
         setError(null);
         try {
@@ -15,6 +15,9 @@ function useUpdateBanner() {
             }
             formData.append("order", bannerData.order.toString());
             formData.append("id", id);
+            if (bannerData.link) {
+                formData.append("link", bannerData.link);
+            }
 
             const response = await AxiosInstance.put(`/api/Banners/${id}`, formData, {
                 headers: {

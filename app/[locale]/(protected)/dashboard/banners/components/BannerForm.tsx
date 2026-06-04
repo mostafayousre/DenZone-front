@@ -15,8 +15,9 @@ interface BannerFormProps {
         id?: string;
         imageName?: string;
         order?: number;
+        link?: string | null;
     };
-    onSubmit: (data: { imageFile: File | null; order: number }) => Promise<void>;
+    onSubmit: (data: { imageFile: File | null; order: number; link?: string }) => Promise<void>;
     loading: boolean;
     title: string;
 }
@@ -24,6 +25,7 @@ interface BannerFormProps {
 const BannerForm = ({ initialData, onSubmit, loading, title }: BannerFormProps) => {
     const t = useTranslations("banners");
     const [order, setOrder] = useState<number>(initialData?.order || 0);
+    const [link, setLink] = useState<string>(initialData?.link || "");
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.imageName || null);
 
@@ -45,7 +47,7 @@ const BannerForm = ({ initialData, onSubmit, loading, title }: BannerFormProps) 
             toast.error(t("image_required"));
             return;
         }
-        await onSubmit({ imageFile, order });
+        await onSubmit({ imageFile, order, link });
     };
 
     return (
@@ -66,6 +68,19 @@ const BannerForm = ({ initialData, onSubmit, loading, title }: BannerFormProps) 
                                 className="flex-1 min-w-[200px]"
                                 value={order}
                                 onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                            />
+                        </div>
+
+                        <div className="flex items-center flex-wrap gap-4">
+                            <Label className="w-[150px] flex-none" htmlFor="bannerLink">
+                                {t("link")}
+                            </Label>
+                            <Input
+                                id="bannerLink"
+                                type="text"
+                                className="flex-1 min-w-[200px]"
+                                value={link}
+                                onChange={(e) => setLink(e.target.value)}
                             />
                         </div>
 

@@ -11,7 +11,7 @@ const AddBannerPage = () => {
     const router = useRouter();
     const t = useTranslations("banners");
 
-    const handleSubmit = async (data: { imageFile: File | null; order: number }) => {
+    const handleSubmit = async (data: { imageFile: File | null; order: number; link?: string }) => {
         if (!data.imageFile) {
             toast.error(t("image_required"));
             return;
@@ -19,7 +19,8 @@ const AddBannerPage = () => {
 
         const success = await addBanner({
             imageFile: data.imageFile,
-            order: data.order
+            order: data.order,
+            link: data.link
         });
 
         if (success) {

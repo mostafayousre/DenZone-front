@@ -60,6 +60,10 @@ export const baseColumns = ({refresh } : { refresh: () => void }): ColumnDef<Cou
             accessorKey: "perUserLimit",
             header: "Per User Limit",
             cell: ({row}) => <span>{row.original.perUserLimit || "N/A"}</span>,
+        },{
+            accessorKey: "copunUsages",
+            header: "Coupon Usages",
+            cell: ({row}) => <span>{row.original.copunUsages}</span>,
         },
         {
             accessorKey: "startDate",

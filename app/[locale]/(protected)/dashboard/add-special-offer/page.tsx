@@ -12,12 +12,15 @@ function AddSpecialOfferPage() {
     const router = useRouter();
     const { addSpecialOffer, loading } = useAddSpecialOffer();
 
-    const handleSubmit = async (data: { imageFile: File | null; sectionNum: number }) => {
+    const handleSubmit = async (data: { imageFile: File | null; sectionNum: number; link?: string }) => {
         const formData = new FormData();
         if (data.imageFile) {
             formData.append("file", data.imageFile);
         }
         formData.append("SectionNum", data.sectionNum.toString());
+        if (data.link) {
+            formData.append("link", data.link);
+        }
 
         const result = await addSpecialOffer(formData);
         if (result.success) {

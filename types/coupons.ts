@@ -14,4 +14,5 @@ export type Coupon = {
     createdAt?: string;
     updatedAt?: string;
     applicabilities?: any | null;
+    copunUsages?: number;
 };

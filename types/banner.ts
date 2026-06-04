@@ -3,4 +3,5 @@ export type BannerType = {
   imageName: string;
   order: number;
   imageFile?: File | null;
+  link?: string | null;
 };

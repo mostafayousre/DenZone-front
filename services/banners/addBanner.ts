@@ -5,13 +5,16 @@ function useAddBanner() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const addBanner = async (bannerData: { imageFile: File; order: number }) => {
+    const addBanner = async (bannerData: { imageFile: File; order: number; link?: string }) => {
         setLoading(true);
         setError(null);
         try {
             const formData = new FormData();
             formData.append("imageFile", bannerData.imageFile);
             formData.append("order", bannerData.order.toString());
+            if (bannerData.link) {
+                formData.append("link", bannerData.link);
+            }
 
             const response = await AxiosInstance.post("/api/Banners", formData, {
                 headers: {

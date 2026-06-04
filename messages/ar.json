@@ -336,7 +336,8 @@
     "confirm": "تأكيد",
     "cancel": "إلغاء",
     "noResults": "لا توجد عروض خاصة.",
-    "searchPlaceholder": "البحث عن عروض خاصة..."
+    "searchPlaceholder": "البحث عن عروض خاصة...",
+    "link": "الرابط"
   },
   "Changelog": {
     "version": "النسخة",
@@ -998,6 +999,7 @@
     "add_banner": "إضافة بانر",
     "edit_banner": "تعديل البانر",
     "banner_image": "صورة البانر",
+    "link": "الرابط",
     "choose_image": "اختر صورة",
     "image_required": "الصورة مطلوبة",
     "banner_added_success": "تم إضافة البانر بنجاح.",

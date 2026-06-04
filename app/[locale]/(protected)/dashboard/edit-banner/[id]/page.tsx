@@ -24,10 +24,11 @@ const EditBannerPage = () => {
         }
     }, [id]);
 
-    const handleSubmit = async (data: { imageFile: File | null; order: number }) => {
+    const handleSubmit = async (data: { imageFile: File | null; order: number; link?: string }) => {
         const success = await updateBanner(id, {
             imageFile: data.imageFile,
-            order: data.order
+            order: data.order,
+            link: data.link
         });
 
         if (success) {
