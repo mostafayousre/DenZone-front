@@ -41,7 +41,8 @@ const TransactionsTable = () => {
 
   const userRole = Cookies.get("userRole");
   const isAdmin = userRole === "Admin";
-
+  const ispreparationrepresentative = userRole === "Preparation representative";
+  
   // ✅ state واحد للسيرش فقط
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -123,7 +124,7 @@ const TransactionsTable = () => {
           />
         </div>
 
-        {isAdmin && (
+        {isAdmin || ispreparationrepresentative && (
           <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
