@@ -55,7 +55,6 @@ const TransactionsTable = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
@@ -99,20 +98,22 @@ const TransactionsTable = () => {
   const [rowSelection, setRowSelection] = useState({});
 
   const isAdmin = userRole === "Admin";
-  const tableData = isAdmin ? adminPrices : managerPrices;
-  const isLoading = isAdmin ? inventoryIdLoading : managerLoading;
+  const ispreparationrepresentative = userRole === "Preparation representative";
+  const showProviderSelect = isAdmin || ispreparationrepresentative;
+  const tableData = showProviderSelect ? adminPrices : managerPrices;
+  const isLoading = showProviderSelect ? inventoryIdLoading : managerLoading;
 
   const t = useTranslations("inventoryManagement");
 
   const handleRefresh = useCallback(() => {
-    if (isAdmin) {
+    if (showProviderSelect) {
       if (selectedUserId) {
         gettingPricesByInventoryId(selectedUserId, currentPage, PAGE_SIZE, undefined, debouncedSearchQuery);
       }
     } else {
       gettingPricesForInventoryManager(undefined, currentPage, PAGE_SIZE, debouncedSearchQuery);
     }
-  }, [isAdmin, selectedUserId, currentPage, PAGE_SIZE, debouncedSearchQuery, gettingPricesByInventoryId, gettingPricesForInventoryManager]);
+  }, [showProviderSelect, selectedUserId, currentPage, PAGE_SIZE, debouncedSearchQuery, gettingPricesByInventoryId, gettingPricesForInventoryManager]);
 
   const columns = baseColumns({ t, refresh: handleRefresh });
 
@@ -123,7 +124,7 @@ const TransactionsTable = () => {
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    pageCount: isAdmin ? adminTotalPages : managerTotalPages,
+    pageCount: showProviderSelect ? adminTotalPages : managerTotalPages,
     state: {
       sorting,
       columnFilters,
@@ -143,16 +144,16 @@ const TransactionsTable = () => {
       const newPage = newPagination.pageIndex + 1;
       setCurrentPage(newPage);
       
-      if (isAdmin && selectedUserId) {
+      if (showProviderSelect && selectedUserId) {
         gettingPricesByInventoryId(selectedUserId, newPage, PAGE_SIZE, undefined, debouncedSearchQuery);
-      } else if (!isAdmin) {
+      } else if (!showProviderSelect) {
         gettingPricesForInventoryManager(undefined, newPage, PAGE_SIZE, debouncedSearchQuery);
       }
     },
   });
 
   useEffect(() => {
-    if (isAdmin) {
+    if (showProviderSelect) {
       getUsersByRoleId("1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D");
     } else {
       gettingPricesForInventoryManager(undefined, 1, PAGE_SIZE);
@@ -167,7 +168,7 @@ const TransactionsTable = () => {
   }, [selectedUserId, debouncedSearchQuery]);
 
   useEffect(() => {
-    if (!isAdmin) {
+    if (!showProviderSelect) {
       gettingPricesForInventoryManager(undefined, 1, PAGE_SIZE, debouncedSearchQuery);
       setCurrentPage(1);
     }
@@ -184,7 +185,7 @@ const TransactionsTable = () => {
   return (
     <Card className="w-full">
       <div className="flex flex-wrap gap-4 items-center py-4 px-5">
-        {isAdmin ? (
+        {isAdmin || ispreparationrepresentative ? (
           <div className="flex-1 flex flex-wrap justify-between items-center gap-4">
             <Select onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[200px] cursor-pointer">
@@ -275,7 +276,7 @@ const TransactionsTable = () => {
         )}
       </div>
 
-      {isAdmin && !selectedUserId ? (
+      {showProviderSelect && !selectedUserId ? (
         <div className="text-center text-gray-500 py-10">Please select a provider to view their prices.</div>
       ) : isLoading ? (
         <div className="flex items-center justify-center h-48">
@@ -319,7 +320,7 @@ const TransactionsTable = () => {
           </div>
         </CardContent>
       )}
-      {!isAdmin || selectedUserId ? <TablePagination table={table} /> : null}
+      {!showProviderSelect || selectedUserId ? <TablePagination table={table} /> : null}
     </Card>
   );
 };
