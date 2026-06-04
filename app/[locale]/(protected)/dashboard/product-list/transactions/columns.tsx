@@ -20,6 +20,7 @@ const ActionCell = ({
   userRole: string | undefined;
 }) => {
   const isAdmin = userRole === "Admin";
+  const isPreparationRepresentative = userRole === "Preparation representative";
   const isInventory = userRole?.toLowerCase() === "inventory";
   const { loading, deleteProductById } = useDeleteProductById();
 
@@ -69,7 +70,7 @@ const ActionCell = ({
       )}
 
       {/* زر التعديل - Edit */}
-      {(isAdmin || isInventory) && (
+      {(isAdmin || isInventory || isPreparationRepresentative) && (
         <Link
           href={`/dashboard/edit-product/${row.original.id}`}
           className="p-2 text-info bg-info/10 rounded-full hover:bg-info hover:text-white transition-all"
@@ -199,7 +200,7 @@ export const baseColumns = ({
     },
   ];
 
-  if (userRole === "Admin" || userRole?.toLowerCase() === "inventory") {
+  if (userRole === "Admin" || userRole?.toLowerCase() === "inventory" || userRole === "Preparation representative") {
     columns.push({
       id: "actions",
       header: isArabic ? "الإجراءات" : "Actions",
