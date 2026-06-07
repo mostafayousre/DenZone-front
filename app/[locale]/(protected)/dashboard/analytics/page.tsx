@@ -66,7 +66,6 @@ const DashboardPage = () => {
     const end = new Date();
     const start = new Date();
     start.setDate(end.getDate() - 10);
-    end.setHours(23, 59, 59, 999);
   
 
     setStartDate(start);
