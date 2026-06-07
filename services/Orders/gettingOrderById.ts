@@ -11,6 +11,7 @@ function useGettingOrderById() {
         inventoryUserId: '',
         orderDate: '',
         status: 0,
+        couponCode: '',
         totalAmount: 0,
         deliverDate: '',
         deliveryTimeName: '',
@@ -87,6 +88,9 @@ function useGettingOrderById() {
                     orderNote: mergedNotes || firstOrder.orderNote || '',
                     deliveryName: mergedDeliveryName,
                     status: data.status !== undefined ? data.status : firstOrder.status,
+                    coupon: data.coupon,
+                    shippingFees: data.shippingFees,
+                    totalAmountOrder: data.totalAmountOrder,
                 };
 
                 setOrder(mappedOrder);

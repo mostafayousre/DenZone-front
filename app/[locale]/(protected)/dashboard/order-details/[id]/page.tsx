@@ -263,6 +263,7 @@ const OrderDetails = () => {
                                             </h4>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </CardHeader>
 
@@ -284,6 +285,66 @@ const OrderDetails = () => {
                         </Card>
                     );
                 });
+            })()}
+
+            {/* Payment Summary */}
+            {(() => {
+                const shipping = currentOrder.shippingFees ?? 0;
+                const couponVal = currentOrder.coupon ?? 0;
+                const total = currentOrder.totalAmountOrder ?? currentOrder.totalAmount ?? 0;
+                const subtotal = total - shipping + couponVal;
+
+                return (
+                    <div className="flex flex-col sm:flex-row sm:justify-end mt-6">
+                        <Card className="w-full sm:w-96 border border-default-200">
+                            <CardHeader className="border-b border-default-200 py-4">
+                                <CardTitle className="text-base font-semibold text-default-800 dark:text-white">
+                                    {t("paymentSummary") || "ملخص الدفع"}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-4 space-y-3">
+                                {/* <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">{t("subtotal") || "المجموع الفرعي"}:</span>
+                                    <span className="font-semibold text-default-800 dark:text-white">
+                                        {subtotal.toFixed(2)} EGP
+                                    </span>
+                                </div> */}
+
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">{t("shippingFees") || "مصاريف الشحن"}:</span>
+                                    <span className="font-semibold text-default-800 dark:text-white">
+                                        +{shipping.toFixed(2)} EGP
+                                    </span>
+                                </div>
+
+                                {currentOrder.couponCode && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-muted-foreground">{t("couponCode") || "كود الكوبون"}:</span>
+                                        <span className="font-semibold text-default-800 dark:text-white">
+                                            {currentOrder.couponCode}
+                                        </span>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">{t("couponDiscount") || "خصم الكوبون"}:</span>
+                                    <span className="font-semibold text-destructive">
+                                        -{couponVal.toFixed(2)} EGP
+                                    </span>
+                                </div>
+
+                                <div className="flex justify-between items-center pt-2 border-t border-default-200">
+                                    <span className="font-bold text-default-900 dark:text-white text-base">
+                                        {t("totalAmount") || "المبلغ الإجمالي"}:
+                                    </span>
+                                    <span className="text-xl font-extrabold text-default-900 dark:text-white">
+                                        {total.toFixed(2)} EGP
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                );
             })()}
         </div>
     );
