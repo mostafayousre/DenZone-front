@@ -180,6 +180,14 @@ export function getMenuList(pathname: string, t: any, permissions: string[] = []
               permission: "Permissions.User.View",
             },
             {
+              href: "/dashboard/doctors",
+              label: t("Doctors"),
+              active: pathname === "/dashboard/doctors",
+              children: [],
+              icon: "",
+              permission: "Permissions.User.View",
+            },
+            {
               href: "/dashboard/roles",
               label: t("Roles"), 
               active: pathname === "/dashboard/roles" || pathname.startsWith("/dashboard/edit-role") || pathname === "/dashboard/add-role",

@@ -39,7 +39,12 @@ import { OrderStatus, OrderStatusLabel, UserRole, UserRoleLabel } from "@/enum";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-const TransactionsTable = () => {
+interface TransactionsTableProps {
+  defaultRoleName?: string;
+  hideTabs?: boolean;
+}
+
+const TransactionsTable = ({ defaultRoleName, hideTabs = false }: TransactionsTableProps = {}) => {
   const t = useTranslations("productList"); // Using productList for orderNum or common keys
 
   const { data, loading, gettingAllUsers } = GetUsers()
@@ -117,9 +122,23 @@ const TransactionsTable = () => {
   });
 
   useEffect(() => {
-    gettingAllUsers()
+    if (!defaultRoleName) {
+      gettingAllUsers()
+    }
     getAllRoles()
-  }, []);
+  }, [defaultRoleName]);
+
+  useEffect(() => {
+    if (roles && defaultRoleName) {
+      const foundRole = roles.find(
+        (r) => r.name.toLowerCase() === defaultRoleName.toLowerCase()
+      );
+      if (foundRole) {
+        setSelectedRole(foundRole.id);
+        getUsersByRoleId(foundRole.id);
+      }
+    }
+  }, [roles, defaultRoleName]);
 
   // Remove redundant useEffect that sets filteredUsers only once
 
@@ -128,36 +147,38 @@ const TransactionsTable = () => {
     <div className={"flex flex-col"}>
       <div className="px-5 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <SearchInput
-        placeholder="Search Email..."
-          data={data ?? []}
+          placeholder="Search Email..."
+          data={defaultRoleName ? (usersByRole ?? []) : (data ?? [])}
           filterKey={"userName"}
           setFilteredData={setFilteredUsers}
         />
 
-        <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
-          <Button
-            size="md"
-            variant={selectedRole === "all" ? "default" : "ghost"}
-            color="default"
-            className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
-            onClick={() => handleRoleFilter("all")}
-          >
-            All
-          </Button>
-
-          {roles?.map((role) => (
+        {!hideTabs && (
+          <div className="inline-flex flex-wrap items-center border border-solid divide-x divide-default-200 divide-solid rounded-md overflow-hidden">
             <Button
-              key={role.id}
               size="md"
-              variant={selectedRole === role.id ? "default" : "ghost"}
+              variant={selectedRole === "all" ? "default" : "ghost"}
               color="default"
               className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
-              onClick={() => handleRoleFilter(role.id)}
+              onClick={() => handleRoleFilter("all")}
             >
-              {role.name}
+              All
             </Button>
-          ))}
-        </div>
+
+            {roles?.map((role) => (
+              <Button
+                key={role.id}
+                size="md"
+                variant={selectedRole === role.id ? "default" : "ghost"}
+                color="default"
+                className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-none cursor-pointer"
+                onClick={() => handleRoleFilter(role.id)}
+              >
+                {role.name}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
       {loading == true || loadingByRole == true ? (
         <div className="flex justify-center items-center">

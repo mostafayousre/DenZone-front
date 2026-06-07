@@ -60,7 +60,7 @@ export function MenuClassic({ }) {
             <nav className="mt-4 w-full">
                 <ul className={cn("flex flex-col gap-2 w-full transition-all duration-300", {
                     "px-4": !collapsed,
-                    "px-0": collapsed 
+                    "px-0": collapsed
                 })}>
                     {menuList?.map(({ groupLabel, menus }, index) => (
                         <li className="w-full flex flex-col items-center" key={index}>
@@ -72,12 +72,12 @@ export function MenuClassic({ }) {
 
                             <div className={cn("flex flex-col gap-1 w-full", {
                                 "items-center": collapsed,
-                                "items-stretch": !collapsed 
+                                "items-stretch": !collapsed
                             })}>
                                 {menus.map((item, menuIndex) => (
                                     <div key={menuIndex} className={cn("flex transition-all duration-300", {
                                         "w-full": !collapsed,
-                                        "w-full flex justify-center": collapsed 
+                                        "w-full flex justify-center": collapsed
                                     })}>
                                         {item.submenus.length === 0 ? (
                                             <TooltipProvider disableHoverableContent>
@@ -86,9 +86,9 @@ export function MenuClassic({ }) {
                                                         <div className={cn("w-full flex items-center", {
                                                             "justify-center": collapsed
                                                         })}>
-                                                            <MenuItem 
+                                                            <MenuItem
                                                                 {...item}
-                                                                collapsed={collapsed} 
+                                                                collapsed={collapsed}
                                                             />
                                                         </div>
                                                     </TooltipTrigger>
