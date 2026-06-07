@@ -186,7 +186,7 @@ const InvoiceDetailsPage = () => {
             </p>
           </div>
         </div>
-        {invoice.totalAmount !== undefined && (
+        {/* {invoice.totalAmount !== undefined && (
           <div className="text-right">
             <span className="text-xs text-default-500 uppercase block">
               Total Amount
@@ -195,7 +195,7 @@ const InvoiceDetailsPage = () => {
               {formatAmount(invoice.totalAmount)}
             </span>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Info Cards */}
@@ -418,8 +418,14 @@ const InvoiceDetailsPage = () => {
           </CardHeader>
           <CardContent className="pt-4 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Shipping Fees:</span>
+              <span className="text-muted-foreground">Subtotal:</span>
               <span className="font-semibold text-default-800">
+                {formatAmount(invoice.totalAmount)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Shipping Fees:</span>
+              <span className="font-semibold text-green-600">
                 +{formatAmount(invoice.shippingFees)}
               </span>
             </div>
@@ -446,7 +452,7 @@ const InvoiceDetailsPage = () => {
                 Total Amount:
               </span>
               <span className="text-xl font-extrabold text-primary">
-                {formatAmount(invoice.totalAmount)}
+                {formatAmount(invoice.totalAmount - Number(invoice.coupon) + Number(invoice.shippingFees))}
               </span>
             </div>
           </CardContent>

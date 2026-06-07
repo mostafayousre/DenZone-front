@@ -223,14 +223,14 @@ const OrderDetails = () => {
                         {t("date")}: {currentOrder.orderDate ? new Date(currentOrder.orderDate).toLocaleString() : "N/A"}
                     </p>
                 </div>
-                {currentOrder.totalAmount !== undefined && (
+                {/* {currentOrder.totalAmount !== undefined && (
                     <div className="text-right">
                         <span className="text-xs text-default-500 uppercase block">{t("totalAmount")}</span>
                         <span className="text-2xl font-bold text-default-900 dark:text-white">
-                            {currentOrder.totalAmount}
+                            {totalAmountOrder}
                         </span>
                     </div>
-                )}
+                )} */}
             </div>
 
             {(() => {
@@ -292,7 +292,7 @@ const OrderDetails = () => {
                 const shipping = currentOrder.shippingFees ?? 0;
                 const couponVal = currentOrder.coupon ?? 0;
                 const total = currentOrder.totalAmountOrder ?? currentOrder.totalAmount ?? 0;
-                const subtotal = total - shipping + couponVal;
+                const totalAmountOrder = total - couponVal + shipping;
 
                 return (
                     <div className="flex flex-col sm:flex-row sm:justify-end mt-6">
@@ -303,16 +303,16 @@ const OrderDetails = () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-4 space-y-3">
-                                {/* <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t("subtotal") || "المجموع الفرعي"}:</span>
                                     <span className="font-semibold text-default-800 dark:text-white">
-                                        {subtotal.toFixed(2)} EGP
+                                        {total.toFixed(2)} EGP
                                     </span>
-                                </div> */}
+                                </div>
 
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t("shippingFees") || "مصاريف الشحن"}:</span>
-                                    <span className="font-semibold text-default-800 dark:text-white">
+                                    <span className="font-semibold text-green-600 dark:text-white">
                                         +{shipping.toFixed(2)} EGP
                                     </span>
                                 </div>
@@ -338,7 +338,7 @@ const OrderDetails = () => {
                                         {t("totalAmount") || "المبلغ الإجمالي"}:
                                     </span>
                                     <span className="text-xl font-extrabold text-default-900 dark:text-white">
-                                        {total.toFixed(2)} EGP
+                                        {totalAmountOrder.toFixed(2)} EGP
                                     </span>
                                 </div>
                             </CardContent>
