@@ -1,13 +1,13 @@
 "use client";
 
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePathname } from "@/components/navigation";
 import { getMenuList, type Group, type Menu, type Submenu } from "@/lib/menus";
 
 import IconNav from './icon-nav';
 import SidebarNav from './sideabr-nav';
 import { useTranslations } from 'next-intl';
-import {useParams} from "next/navigation";
+import { useParams } from "next/navigation";
 import { usePermissions } from '@/hooks/use-permissions';
 
 

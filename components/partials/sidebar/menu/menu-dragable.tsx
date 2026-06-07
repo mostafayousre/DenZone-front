@@ -1,13 +1,13 @@
 "use client";
 
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import Logo from '@/components/logo';
 import SidebarHoverToggle from '@/components/partials/sidebar/sidebar-hover-toggle';
 import { Ellipsis } from "lucide-react";
 import { usePathname } from "@/components/navigation";
 
 import { cn } from "@/lib/utils";
-import { getMenuList, Group} from "@/lib/menus";
+import { getMenuList, Group } from "@/lib/menus";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -181,7 +181,7 @@ export function MenuDragAble() {
                                                             <Tooltip delayDuration={100}>
                                                                 <TooltipTrigger asChild>
 
-                                                                <MenuItem label={label} icon={icon} href={href} active={active} id={id} collapsed={collapsed} />
+                                                                    <MenuItem label={label} icon={icon} href={href} active={active} id={id} collapsed={collapsed} />
                                                                 </TooltipTrigger>
                                                                 {collapsed && (
                                                                     <TooltipContent side="right">
