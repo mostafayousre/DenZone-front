@@ -20,6 +20,9 @@ export type Orders = {
     couponCode?: string;
     couponPercentage?: number;
     couponPrecentage?: number;
+    coupon?: number;
+    shippingFees?: number;
+    totalAmountOrder?: number;
     orderNote?: string;
     isGrouped?: boolean;
     orders?: Orders[];
