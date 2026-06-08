@@ -86,9 +86,7 @@ function useUploadCsv() {
               downloadError
             );
           }
-        } else {
-        }
-
+        } 
         return {
           success: true,
           data: response.data,
