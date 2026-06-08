@@ -451,7 +451,6 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
                 </Link>
                 <Link
                   href={`/dashboard/order-details/${orderIdOrNum}?print=true`}
-                  target="_blank"
                   className="flex items-center p-1.5 border-b text-info hover:text-info-foreground bg-info/20 hover:bg-info duration-200 transition-all rounded-full cursor-pointer"
                   title="Print Order"
                 >
