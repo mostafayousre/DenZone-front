@@ -15,7 +15,6 @@ function useGettingBalanceForUser() {
                 throw new Error('Failed to fetch balance for user');
             }
             const accountsArray = convertAccountsToArray(response.data);
-            console.log(accountsArray);
             setBalances(accountsArray);
         }).catch((error) => {
             setError(error.message);

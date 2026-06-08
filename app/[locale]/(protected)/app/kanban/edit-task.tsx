@@ -75,7 +75,6 @@ const EditTask = ({ open, setOpen }: EditTaskProps) => {
     formState: { errors },
   } = useForm<Inputs>()
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data)
     setOpen(false)
   }
   return (

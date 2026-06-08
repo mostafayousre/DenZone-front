@@ -95,13 +95,7 @@ export const basecolumns = ({ t }: { t: (key: string) => string }): ColumnDef<an
         const returnId = row.original.id;
         const userRole = Cookies.get("userRole");
 
-        
-        console.log("Return ID:", returnId);
-        console.log("User Role:", userRole);
-        console.log("Status value:", row.original.status);
-
         const targetPath = `/dashboard/return-details/${returnId}`;
-        console.log("Navigating to:", targetPath);
 
         router.push(targetPath);
       };

@@ -17,7 +17,6 @@ const LockScreen = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
-  console.log(watch("example"));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">

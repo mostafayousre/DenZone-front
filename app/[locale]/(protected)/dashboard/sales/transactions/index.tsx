@@ -183,7 +183,6 @@ export default function TransactionsTable({ type = "area" }: TransactionsTablePr
             params.set('PageSize', pageSize.toString());
         }
 
-        console.log(params.toString())
 
         
         if (isSummary) {

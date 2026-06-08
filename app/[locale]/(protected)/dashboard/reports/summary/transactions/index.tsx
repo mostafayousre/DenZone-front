@@ -95,8 +95,6 @@ export default function TransactionsTable() {
             params.set('PaymentMethod', paymentMethod);
         }
 
-        console.log(params.toString());
-
         fetchSummaryReports(params.toString());
     };
 
