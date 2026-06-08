@@ -291,6 +291,12 @@ const InvoiceDetailsPage = () => {
                         <th className="p-4 text-default-700 font-semibold text-center w-24">
                           Qty
                         </th>
+                        <th className="p-4 text-default-700 font-semibold text-center w-24">
+                          Purchase Price
+                        </th>
+                        <th className="p-4 text-default-700 font-semibold text-center w-24">
+                          Revenue Percentage
+                        </th>
                         <th className="p-4 text-default-700 font-semibold text-right w-32">
                           Price
                         </th>
@@ -314,6 +320,12 @@ const InvoiceDetailsPage = () => {
                             </td>
                             <td className="p-4 text-center text-default-600 font-semibold">
                               {item.quantity}
+                            </td>
+                            <td className="p-4 text-center text-default-600 font-semibold">
+                              {formatAmount(item.purchasePrice)}
+                            </td>
+                            <td className="p-4 text-center text-default-600 font-semibold">
+                              {item.revenuePercentage}%
                             </td>
                             <td className="p-4 text-right text-default-600 font-medium">
                               {formatAmount(item.price)}
