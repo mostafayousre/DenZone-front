@@ -23,6 +23,7 @@ export type Orders = {
     coupon?: number;
     shippingFees?: number;
     totalAmountOrder?: number;
+    totalAmountOrderAfter?: number;
     orderNote?: string;
     isGrouped?: boolean;
     orders?: Orders[];

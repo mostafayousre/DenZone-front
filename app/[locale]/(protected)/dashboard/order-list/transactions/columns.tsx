@@ -266,7 +266,7 @@ const StatusDialog = ({ row, refresh, t }: { row: any; refresh: () => void; t: (
                   </SelectContent>
                 </Select>
               </div>
-
+              
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">{t("selectPreparation") || "Select Preparation Person"}</label>
                 <Select
@@ -322,7 +322,8 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       accessorKey: "orderNumber",
       header: t("orderNumber"),
       cell: ({ row }) => <span>{row.getValue("orderNumber") || "N/A"}</span>,
-    }, {
+    },
+    {
       accessorKey: "doctorName",
       header: ({ column }) => {
         return (
@@ -351,13 +352,20 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
         return <span>{formatDateToDMY(row.original.orderDate)}</span>;
       },
     },
+    // {
+    //   accessorKey: "totalAmount",
+    //   header: t("totalAmount"),
+    //   cell: ({ row }) => {
+    //     return <span>{row.getValue("totalAmount")}</span>;
+    //   },
+    // },
+    
     {
-      accessorKey: "totalAmount",
-      header: t("totalAmount"),
-      cell: ({ row }) => {
-        return <span>{row.getValue("totalAmount")}</span>;
-      },
-    }, {
+      accessorKey: "totalAmountOrderAfter",
+      header: "totalAmountOrderAfter",
+      cell: ({ row }) => <span>{row.getValue("totalAmountOrderAfter") || "N/A"}</span>,
+    },
+    {
       accessorKey: "orderNote",
       header: t("orderNote"),
       cell: ({ row }) => {

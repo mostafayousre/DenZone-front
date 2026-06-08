@@ -80,6 +80,10 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
       totalAmount,
       orderNote: mergedNotes,
       deliveryName: mergedDeliveryName,
+      totalAmountOrder: group.totalAmountOrder,
+      totalAmountOrderAfter: group.totalAmountOrderAfter,
+      coupon: group.coupon,
+      shippingFees: group.shippingFees,
     };
   });
 };
