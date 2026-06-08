@@ -69,10 +69,10 @@ export const baseColumns = ({refresh} : {refresh: () => void}) : ColumnDef<any>[
     },
   },
   {
-    accessorKey: "totalAmount",
+    accessorKey: "totalAmountAfter",
     header: "Total Amount",
     cell: ({ row }) => {
-      return <span>{row.getValue("totalAmount")}</span>;
+      return <span>{row.getValue("totalAmountAfter")}</span>;
     },
   },
   {
