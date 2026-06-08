@@ -50,7 +50,6 @@ function useUploadCsv() {
           contentType?.includes("excel") ||
           contentDisposition?.includes("attachment")
         ) {
-          console.log("File detected! Starting download...");
 
           let filename = "Failed_Prices.xlsx";
           if (contentDisposition) {
@@ -80,7 +79,6 @@ function useUploadCsv() {
             }, 100);
 
             downloadedFile = filename;
-            console.log("Download completed:", filename);
           } catch (downloadError) {
             window.URL.revokeObjectURL(url);
             console.error(
@@ -89,7 +87,6 @@ function useUploadCsv() {
             );
           }
         } else {
-          console.log("JSON response detected - no failed entries");
         }
 
         return {

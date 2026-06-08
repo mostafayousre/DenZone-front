@@ -23,13 +23,6 @@ export const PermissionGuard = ({ children }: PermissionGuardProps) => {
     const requiredPermission = matchRoutePermission(pathname);
     const hasPerm = !requiredPermission || hasPermission(requiredPermission);
     
-    console.log(
-      "[PermissionGuard Debug]",
-      "\n- Pathname:", pathname,
-      "\n- Required Permission:", requiredPermission,
-      "\n- User Has Permission:", hasPerm,
-      "\n- User's Permissions List:", permissions
-    );
 
     if (hasPerm) {
       setAuthorized(true);

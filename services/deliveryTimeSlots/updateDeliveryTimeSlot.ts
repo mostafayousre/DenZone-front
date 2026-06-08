@@ -8,10 +8,8 @@ function useUpdateDeliveryTimeSlot() {
     const updateDeliveryTimeSlot = async (id: string | number, data: any) => {
         setLoading(true);
         setError(null);
-        console.log(`Calling PUT /api/DeliveryTimeSlots/${id} with data:`, data);
         try {
             const response = await AxiosInstance.put(`/api/DeliveryTimeSlots/${id}`, data);
-            console.log("Update response:", response);
             if (response.status !== 200 && response.status !== 204) {
                 throw new Error('Failed to update delivery time slot');
             }

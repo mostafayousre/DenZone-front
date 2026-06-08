@@ -142,7 +142,6 @@ export default function TransactionsTable() {
 
         params.set('PageNumber', pageNumber.toString());
         params.set('PageSize', pageSize.toString());
-        console.log(params.toString())
 
         fetchInvoiceReports(params.toString());
     };

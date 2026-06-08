@@ -111,7 +111,6 @@ export default function TransactionsTable({ type = "account" }: BalanceTableType
         params.set('PageNumber', pageNumber.toString());
         params.set('PageSize', pageSize.toString());
 
-        console.log(`${type} params:`, params.toString());
 
         switch (type) {
             case "transaction": fetchTransactions(params.toString()); break;

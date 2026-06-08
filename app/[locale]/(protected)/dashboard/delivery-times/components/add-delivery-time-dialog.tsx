@@ -61,17 +61,14 @@ export function AddDeliveryTimeDialog({ open, onOpenChange, onSuccess, editData 
     }
 
     try {
-        console.log("Submitting form data:", formData, "Mode:", editData ? "Edit" : "Add");
         if (editData) {
             const payload = {
                 id: editData.id,
                 ...formData,
             };
-            console.log("Update payload:", payload);
             await updateDeliveryTimeSlot(editData.id, payload);
             toast.success("Delivery time slot updated successfully");
         } else {
-            console.log("Create payload:", formData);
             await createDeliveryTimeSlot(formData);
             toast.success("Delivery time slot created successfully");
         }

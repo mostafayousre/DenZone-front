@@ -64,7 +64,6 @@ const KanBanApp = ({ defaultCols, defaultTasks }: { defaultCols: Column[], defau
         const isActiveAColumn = active.data.current?.type === "Column";
         if (!isActiveAColumn) return;
 
-        console.log("DRAG END");
 
         setColumns((columns) => {
             const activeColumnIndex = columns.findIndex((col) => col.id === activeId);

@@ -44,8 +44,6 @@ const RemoveItems: React.FC = () => {
     if (order) {
       setItems(order.items);
       setOriginalItems(order.items);
-      console.log("Order items loaded:", order?.items);
-      console.log("Order items loaded:", order?.items[0]?.inventoryName);
 
     }
   }, [order]);
