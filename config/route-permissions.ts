@@ -44,6 +44,7 @@ export const routePermissions: Record<string, string | string[]> = {
   
   // Notifications
   "/dashboard/send-notification": "Permissions.Notification.Send",
+  "/dashboard/notifications-list": "Permissions.Notification.View",
   
   // Locations
   "/dashboard/country": "Permissions.Country.View",
