@@ -187,6 +187,30 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (ke
     );
 };
 
+const MessageCell = ({ message, t }: { message: string; t: (key: string) => string }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    if (!message) return <span className="text-muted-foreground">—</span>;
+
+    const shouldTruncate = message.length > 80 || message.split('\n').length > 2;
+
+    return (
+        <div className="text-sm text-default-500 max-w-[350px]">
+            <div className={`whitespace-pre-line ${!isExpanded && shouldTruncate ? "line-clamp-2" : ""}`}>
+                {message}
+            </div>
+            {shouldTruncate && (
+                <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-primary text-xs font-semibold hover:underline mt-1 cursor-pointer block"
+                >
+                    {isExpanded ?  "See less" :  "See more"}
+                </button>
+            )}
+        </div>
+    );
+};
+
 export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<TransformedNotificationItem>[] => [
     {
         accessorKey: "groupName",
@@ -240,14 +264,7 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
     {
         accessorKey: "message",
         header: t("message"),
-        cell: ({ row }) => {
-            const message = row.getValue("message") as string;
-            return (
-                <div className="text-sm text-default-500 max-w-[350px] whitespace-pre-line truncate" title={message}>
-                    {message}
-                </div>
-            );
-        },
+        cell: ({ row }) => <MessageCell message={row.getValue("message") as string} t={t} />,
     },
     {
         accessorKey: "createdAt",
