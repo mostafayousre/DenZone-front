@@ -230,11 +230,24 @@ export function getMenuList(pathname: string, t: any, permissions: string[] = []
             },
             {
               href: "/dashboard/send-notification",
-              label: t("send-notification"),
-              active: pathname === "/dashboard/send-notification",
-              children: [],
-              icon: "",
+              label: t("notifications"),
+              active: pathname.includes("/dashboard/send-notification") || pathname.includes("/dashboard/notifications-list"),
+              icon: "heroicons-outline:bell",
               permission: "Permissions.Notification.View",
+              children: [
+                {
+                  href: "/dashboard/send-notification",
+                  label: t("send-notification"),
+                  active: pathname === "/dashboard/send-notification",
+                  permission: "Permissions.Notification.View",
+                },
+                {
+                  href: "/dashboard/notifications-list",
+                  label: t("view-notifications"),
+                  active: pathname === "/dashboard/notifications-list",
+                  permission: "Permissions.Notification.View",
+                },
+              ],
             },
             {
               href: "/dashboard/location",
