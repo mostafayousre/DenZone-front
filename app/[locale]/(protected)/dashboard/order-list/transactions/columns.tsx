@@ -338,6 +338,11 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       },
       cell: ({ row }) => <span>{row.getValue("doctorName") || "N/A"}</span>,
     },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone Number",
+      cell: ({ row }) => <span>{row.getValue("phoneNumber") || "N/A"}</span>,
+    },
 
     {
       accessorKey: "inventoryName",

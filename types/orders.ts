@@ -13,6 +13,8 @@ export type Orders = {
     totalAmount: number
     deliverDate: string
     deliveryTimeName: string
+    doctorName: string;
+    phoneNumber: string;
 
     items: OrderItem[]
     orderNumber?: string;

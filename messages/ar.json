@@ -438,6 +438,8 @@
     "inventoryManger": "اسم المخزن",
     "status": "الحالة",
     "totalAmount": "المبلغ الإجمالي",
+    "doctorName": "اسم الطبيب",
+    "phoneNumber": "رقم الهاتف",
     "shippingFees": "مصاريف الشحن",
     "coupon": "الكوبون",
     "couponCode": "كود الكوبون",

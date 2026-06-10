@@ -217,11 +217,20 @@ const OrderDetails = () => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-semibold text-default-900 dark:text-white">
-                        {t("orderDetails")} #{currentOrder.orderNumber || id}
+                        {t("orderDetails")}: #{currentOrder.orderNumber || id}
                     </h2>
                     <p className="text-sm text-default-500 mt-1">
                         {t("date")}: {currentOrder.orderDate ? new Date(currentOrder.orderDate).toLocaleString() : "N/A"}
                     </p>
+                    <p className="text-sm text-default-500 mt-1">
+                        {t("doctorName")}: {currentOrder.doctorName || "N/A"}
+                    </p>
+                    <p className="text-sm text-default-500 mt-1">
+                        {t("phoneNumber")}: {currentOrder.phoneNumber || "N/A"}
+                    </p>
+                </div>
+                <div>
+
                 </div>
                 {/* {currentOrder.totalAmount !== undefined && (
                     <div className="text-right">

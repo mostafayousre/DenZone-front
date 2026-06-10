@@ -15,6 +15,8 @@ function useGettingOrderById() {
         totalAmount: 0,
         deliverDate: '',
         deliveryTimeName: '',
+        doctorName: '',
+        phoneNumber: '',
         items: []
     });
     const [loading, setLoading] = React.useState(false);
@@ -48,6 +50,8 @@ function useGettingOrderById() {
                     ...data,
                     id: data.id || data.orderNumber || (orderNum as string),
                     orderNumber: data.orderNumber,
+                    doctorName: data.doctorName,
+                    phoneNumber: data.phoneNumber,
                     isGrouped: Array.isArray(data.orders) && data.orders.length > 0,
                     orders: subOrders,
                     items: data.items || [],
@@ -81,6 +85,8 @@ function useGettingOrderById() {
                     ...firstOrder,
                     id: firstOrder.id || data.orderNumber,
                     orderNumber: data.orderNumber,
+                    doctorName: data.doctorName,
+                    phoneNumber: data.phoneNumber,
                     isGrouped: true,
                     orders: subOrders,
                     items: mergedItems,

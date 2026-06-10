@@ -80,6 +80,7 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
       deliveryName: mergedDeliveryName,
       totalAmountOrder: group.totalAmountOrder,
       totalAmountOrderAfter: group.totalAmountOrderAfter,
+      phoneNumber: group.phoneNumber,
       coupon: group.coupon,
       shippingFees: group.shippingFees,
     };

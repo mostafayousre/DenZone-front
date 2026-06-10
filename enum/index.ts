@@ -36,7 +36,7 @@ export const OrderStatusLabel: Record<OrderStatus, string> = {
 
 export const StatusPathMap: Record<OrderStatus, string> = {
     [OrderStatus.Pending]: "pending",
-    [OrderStatus.Confirmed]: "confirm",
+    [OrderStatus.Confirmed]: "approve",
     [OrderStatus.Rejected]: "reject",
     [OrderStatus.Prepared]: "prepare",
     [OrderStatus.Shipped]: "ship",

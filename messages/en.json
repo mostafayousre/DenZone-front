@@ -454,6 +454,8 @@
     "inventoryManger": "Inventory Manager",
     "status": "Status",
     "totalAmount": "Total Amount",
+    "doctorName": "Doctor Name",
+    "phoneNumber": "Phone Number",
     "shippingFees": "Shipping Fees",
     "coupon": "Coupon",
     "couponCode": "Coupon Code",
