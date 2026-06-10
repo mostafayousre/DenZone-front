@@ -1,40 +1,39 @@
 import { useState } from "react";
 import AxiosInstance from "@/lib/AxiosInstance";
 
-export interface RecentUser {
+export interface InactiveUser {
   id: string;
   fullName: string;
   email: string;
   userName: string;
   phoneNumber: string;
   createdAt: string;
-  roleName: string;
 }
 
-function useGetRecentUsers() {
+function useGetInactiveUsersLast10Days() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
+  const [inactiveUsers, setInactiveUsers] = useState<InactiveUser[]>([]);
 
-  const getRecentUsers = async () => {
+  const getInactiveUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await AxiosInstance.get("/api/Users/get-recent-users");
+      const response = await AxiosInstance.get("/api/Users/GetInActive-Users-Last10Days");
       if (response.status === 200) {
-        setRecentUsers(Array.isArray(response.data) ? response.data : []);
+        setInactiveUsers(Array.isArray(response.data) ? response.data : []);
       } else {
-        throw new Error("Failed to fetch recent users");
+        throw new Error("Failed to fetch inactive users");
       }
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || "An error occurred");
-      setRecentUsers([]);
+      setInactiveUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, error, recentUsers, getRecentUsers };
+  return { loading, error, inactiveUsers, getInactiveUsers };
 }
 
-export default useGetRecentUsers;
+export default useGetInactiveUsersLast10Days;

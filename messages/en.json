@@ -371,6 +371,7 @@
     "statusCode": {
       "pending": "Pending",
       "approved": "Approved",
+      "confirmed": "Confirmed",
       "rejected": "Rejected",
       "prepared": "Prepared",
       "shipped": "Shipped",
