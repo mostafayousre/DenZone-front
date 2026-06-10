@@ -310,7 +310,9 @@
     "specialOffers": "العروض الخاصة",
     "ads": "الإعلانات",
     "cities": "المدن",
+    "notifications": "الإشعارات",
     "send-notification": "إرسال إشعار",
+    "view-notifications": "عرض الإشعارات",
     "add_coupon": "إضافة كوبون"
   },
   "overall": {
@@ -1132,5 +1134,34 @@
     "fetch_error": "حدث خطأ أثناء تحميل البيانات.",
     "loading": "جاري تحميل المحتوى...",
     "select_language": "اللغة"
+  },
+  "NotificationsList": {
+    "title": "قائمة الإشعارات",
+    "id": "الرقم التعريفي",
+    "user": "اسم المستخدم",
+    "notificationTitle": "العنوان",
+    "message": "الرسالة",
+    "createdAt": "تاريخ الإنشاء",
+    "expired": "تاريخ الانتهاء",
+    "actions": "الإجراءات",
+    "delete": "حذف",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الإشعار؟",
+    "confirmResend": "هل أنت متأكد من إعادة إرسال هذا الإشعار؟",
+    "noNotifications": "لم يتم العثور على إشعارات.",
+    "loading": "جاري تحميل الإشعارات...",
+    "deleteSuccess": "تم حذف الإشعار بنجاح.",
+    "deleteError": "فشل في حذف الإشعار.",
+    "searchPlaceholder": "البحث باسم المستخدم أو العنوان...",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "resend": "إعادة إرسال",
+    "resendSuccess": "تم إعادة إرسال الإشعار بنجاح!",
+    "resendError": "فشل في إعادة إرسال الإشعار.",
+    "allDoctors": "كل الأطباء",
+    "specific": "محدد",
+    "recipientsList": "قائمة المستلمين",
+    "recipientsCountDescription": "المستخدمين الذين تلقوا هذا الإشعار:",
+    "close": "إغلاق"
   }
 }
