@@ -14,7 +14,7 @@ export const UserRoleLabel: Record<UserRole, string> = {
 
 export enum OrderStatus {
     Pending = 0,
-    Approved = 1,
+    Confirmed = 1,
     Rejected = 2,
     Prepared = 3,
     Shipped = 4,
@@ -25,7 +25,7 @@ export enum OrderStatus {
 
 export const OrderStatusLabel: Record<OrderStatus, string> = {
     [OrderStatus.Pending]: "Pending",
-    [OrderStatus.Approved]: "Approved",
+    [OrderStatus.Confirmed]: "Confirmed",
     [OrderStatus.Rejected]: "Rejected",
     [OrderStatus.Prepared]: "Prepared",
     [OrderStatus.Shipped]: "Shipped",
@@ -36,7 +36,7 @@ export const OrderStatusLabel: Record<OrderStatus, string> = {
 
 export const StatusPathMap: Record<OrderStatus, string> = {
     [OrderStatus.Pending]: "pending",
-    [OrderStatus.Approved]: "approve",
+    [OrderStatus.Confirmed]: "confirm",
     [OrderStatus.Rejected]: "reject",
     [OrderStatus.Prepared]: "prepare",
     [OrderStatus.Shipped]: "ship",
@@ -47,7 +47,7 @@ export const StatusPathMap: Record<OrderStatus, string> = {
 
 export enum ReturnStatus {
     Requested = 0,
-    Approved = 1,
+    Confirmed = 1,
     Rejected = 2,
     Processing = 3,
     Completed = 4
@@ -55,7 +55,7 @@ export enum ReturnStatus {
 
 export const ReturnStatusLabel: Record<ReturnStatus, string> = {
     [ReturnStatus.Requested]: "Requested",
-    [ReturnStatus.Approved]: "Approved",
+    [ReturnStatus.Confirmed]: "Confirmed",
     [ReturnStatus.Rejected]: "Rejected",
     [ReturnStatus.Processing]: "Processing",
     [ReturnStatus.Completed]: "Completed"

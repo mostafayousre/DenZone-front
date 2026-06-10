@@ -64,7 +64,7 @@ const StatusCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (ke
 
   const statusTranslationKeys: Record<number, string> = {
     0: "statusCode.pending",
-    1: "statusCode.approved",
+    1: "statusCode.confirmed",
     2: "statusCode.rejected",
     3: "statusCode.prepared",
     4: "statusCode.shipped",
@@ -321,7 +321,7 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
     {
       accessorKey: "orderNumber",
       header: t("orderNumber"),
-      cell: ({ row }) => <span>{row.getValue("orderNumber") || "N/A"}</span>,
+      cell: ({ row }) => <span><Link href={`/dashboard/order-details/${row.original.orderNumber}`} className="hover:text-default-900 cursor-pointer bg-transparent border-none p-0 outline-none font-semibold text-sm text-default-800 transition-colors" >{row.getValue("orderNumber") || "N/A"}</Link></span>,
     },
     {
       accessorKey: "doctorName",
@@ -362,7 +362,7 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
     
     {
       accessorKey: "totalAmountOrderAfter",
-      header: "totalAmountOrderAfter",
+      header: "total Amount",
       cell: ({ row }) => <span>{row.getValue("totalAmountOrderAfter") || "N/A"}</span>,
     },
     {

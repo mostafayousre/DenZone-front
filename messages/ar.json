@@ -371,6 +371,7 @@
     "statusCode": {
       "pending": "قيد الانتظار",
       "approved": "موافق عليه",
+      "confirmed": "تم التاكيد",
       "rejected": "مرفوض",
       "prepared": "تم التجهيز",
       "shipped": "تم الشحن",

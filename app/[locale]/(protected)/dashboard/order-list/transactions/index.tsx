@@ -54,7 +54,6 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
     
     const subOrders = group.orders || [];
     const firstOrder = subOrders[0] || {};
-    
     // Merge items
     const mergedItems = subOrders.flatMap((o: any) => o.items || []);
     
@@ -69,7 +68,6 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
       new Set(subOrders.map((o: any) => o.deliveryName).filter((n: any) => n && n !== "there is no deleivry yet"))
     );
     const mergedDeliveryName = deliveryNames.length > 0 ? deliveryNames.join(", ") : "there is no delivery yet";
-
     return {
       ...firstOrder,
       id: firstOrder.id || group.orderNumber,
@@ -125,7 +123,7 @@ export default function TransactionsTable() {
     if (isAdmin) {
       rawData = mapGroupedOrders(orders);
     } else if (isRepresentative || isDelivery) {
-      rawData = deliveryOrders;
+      rawData = mapGroupedOrders(deliveryOrders);
     } else {
       rawData = myOrders;
     }
@@ -249,12 +247,12 @@ export default function TransactionsTable() {
 
           <Button
             size="md"
-            variant={selectedStatus === OrderStatus.Approved ? "default" : "outline"}
+            variant={selectedStatus === OrderStatus.Confirmed ? "default" : "outline"}
             color="default"
             className="ring-0 outline-0 hover:ring-0 hover:ring-offset-0 font-normal border-default-200 rounded-md cursor-pointer"
-            onClick={() => filterOrdersByStatus(OrderStatus.Approved)}
+            onClick={() => filterOrdersByStatus(OrderStatus.Confirmed)}
           >
-            {t(`statusCode.${OrderStatusLabel[OrderStatus.Approved].toLowerCase()}`)}
+            {t(`statusCode.${OrderStatusLabel[OrderStatus.Confirmed].toLowerCase()}`)}
           </Button>
 
           <Button

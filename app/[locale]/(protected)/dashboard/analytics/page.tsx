@@ -12,13 +12,16 @@ import MostSales from "./components/most-sales";
 import OverviewRadialChart from "./components/overview-radial";
 import { useTranslations } from "next-intl";
 import useSummaryReports from "@/services/Reports/summary/summaryReports";
-import { Loader2, Mail, Phone, User, Calendar, Hash, DollarSign } from "lucide-react";
+import { Loader2, Mail, Phone, User, Calendar, Hash, DollarSign, User2Icon } from "lucide-react";
 import {SummaryReport} from "@/types/reports";
 import AxiosInstance from "@/lib/AxiosInstance";
 import useOrderReports from "@/services/Reports/Orders/orderReports";
 import useGettingAllMainAreas from "@/services/area/gettingAllMainAreas";
 import useGetRecentUsers from "@/services/users/getRecentUsers";
 import useGetRecentOrders from "@/services/Orders/getRecentOrders";
+import useGetActiveUsersLast10Days from "@/services/users/getActiveUsersLast10Days";
+import useGetInactiveUsersLast10Days from "@/services/users/getInactiveUsersLast10Days";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +55,12 @@ const DashboardPage = () => {
 
   const { loading: loadingRecentOrders, recentOrders, getRecentOrders } = useGetRecentOrders();
   const [recentOrdersDialogOpen, setRecentOrdersDialogOpen] = useState(false);
+
+  const { loading: loadingActiveUsers, activeUsers, getActiveUsers } = useGetActiveUsersLast10Days();
+  const [activeUsersDialogOpen, setActiveUsersDialogOpen] = useState(false);
+
+  const { loading: loadingInactiveUsers, inactiveUsers, getInactiveUsers } = useGetInactiveUsersLast10Days();
+  const [inactiveUsersDialogOpen, setInactiveUsersDialogOpen] = useState(false);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -159,11 +168,13 @@ const DashboardPage = () => {
                   </CardHeader>
                   <CardContent className="p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                      <Link className="cursor-pointer transition-transform hover:scale-[1.02]" href="/dashboard/order-list">
                       <StatisticsBlock
                           title={"Total Orders"}
                           total={(regionSummary?.totalOrders ?? summaryReports?.totalOrders) ?? "--"}
                           className="bg-info/10 border-none shadow-none"
                       />
+                      </Link>
                       <div
                         className="cursor-pointer transition-transform hover:scale-[1.02]"
                         onClick={() => {
@@ -177,11 +188,13 @@ const DashboardPage = () => {
                             className="bg-warning/10 border-none shadow-none"
                         />
                       </div>
+                      <Link className="cursor-pointer transition-transform hover:scale-[1.02]" href="/dashboard/reports/invoices">
                       <StatisticsBlock
                           title={"Total Invoices"}
                           total={(regionSummary?.totalInvoices ?? summaryReports?.totalInvoices) ?? "--"}
                           className="bg-primary/10 border-none shadow-none"
                       />
+                      </Link>
                       <div
                         className="cursor-pointer transition-transform hover:scale-[1.02]"
                         onClick={() => {
@@ -195,16 +208,32 @@ const DashboardPage = () => {
                             className="bg-destructive/10 border-none shadow-none"
                         />
                       </div>
-                      <StatisticsBlock
-                          title={"Total Active Users"}
-                          total={totalActiveUsers}
-                          className="bg-success/10 border-none shadow-none"
-                      />
-                      <StatisticsBlock
-                          title={"Total Inactive Users"}
-                          total={totalInactiveUsers}
-                          className="bg-destructive/10 border-none shadow-none"
-                      />
+                      <div
+                        className="cursor-pointer transition-transform hover:scale-[1.02]"
+                        onClick={() => {
+                          setActiveUsersDialogOpen(true);
+                          getActiveUsers();
+                        }}
+                      >
+                        <StatisticsBlock
+                            title={"Total Active Users"}
+                            total={totalActiveUsers}
+                            className="bg-success/10 border-none shadow-none"
+                        />
+                      </div>
+                      <div
+                        className="cursor-pointer transition-transform hover:scale-[1.02]"
+                        onClick={() => {
+                          setInactiveUsersDialogOpen(true);
+                          getInactiveUsers();
+                        }}
+                      >
+                        <StatisticsBlock
+                            title={"Total Inactive Users"}
+                            total={totalInactiveUsers}
+                            className="bg-destructive/10 border-none shadow-none"
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -384,6 +413,10 @@ const DashboardPage = () => {
                           <span dir="ltr">{user.phoneNumber}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
+                          <User2Icon className="w-3.5 h-3.5" />
+                          <span dir="ltr">{user.roleName}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5" />
                           <span>{new Date(user.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
                         </div>
@@ -453,6 +486,108 @@ const DashboardPage = () => {
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5" />
                           <span>{new Date(order.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Active Users Dialog */}
+        <Dialog open={activeUsersDialogOpen} onOpenChange={setActiveUsersDialogOpen}>
+          <DialogContent size="md" className="max-h-[85vh] flex flex-col overflow-hidden">
+            <DialogHeader>
+              <DialogTitle>Active Users (Last 10 Days)</DialogTitle>
+              <DialogDescription>
+                <span>List of active users in the last 10 days</span>
+              </DialogDescription>
+            </DialogHeader>
+            {loadingActiveUsers ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : activeUsers.length === 0 ? (
+              <div className="text-center text-muted-foreground py-12">
+                No active users found.
+              </div>
+            ) : (
+              <ScrollArea className="h-[60vh] overflow-y-auto pr-4">
+                <div className="space-y-3">
+                  {activeUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="flex flex-col gap-2 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-default-900">{user.fullName}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5" />
+                          <span dir="ltr">{user.phoneNumber}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>{new Date(user.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Inactive Users Dialog */}
+        <Dialog open={inactiveUsersDialogOpen} onOpenChange={setInactiveUsersDialogOpen}>
+          <DialogContent size="md" className="max-h-[85vh] flex flex-col overflow-hidden">
+            <DialogHeader>
+              <DialogTitle>Inactive Users (Last 10 Days)</DialogTitle>
+              <DialogDescription>
+                <span>List of inactive users in the last 10 days</span>
+              </DialogDescription>
+            </DialogHeader>
+            {loadingInactiveUsers ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : inactiveUsers.length === 0 ? (
+              <div className="text-center text-muted-foreground py-12">
+                No inactive users found.
+              </div>
+            ) : (
+              <ScrollArea className="h-[60vh] overflow-y-auto pr-4">
+                <div className="space-y-3">
+                  {inactiveUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="flex flex-col gap-2 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="font-medium text-default-900">{user.fullName}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5" />
+                          <span dir="ltr">{user.phoneNumber}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>{new Date(user.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
                         </div>
                       </div>
                     </div>
