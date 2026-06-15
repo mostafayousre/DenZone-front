@@ -5,7 +5,8 @@ import {
   Pencil,
   Truck,
   ArrowUpDown,
-  Printer
+  Printer,
+  MapPin
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -389,7 +390,27 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
     },{
       accessorKey: "latlong",
       header: t("latlong") || "latlong",
-      cell: ({ row }) => <span>{row.getValue("latlong") || "-"}</span>,
+      cell: ({ row }) => {
+        const latlong = row.getValue("latlong") as string;
+        if (!latlong) return <span>-</span>;
+        
+        const trimmed = latlong.trim();
+        if (!trimmed || trimmed === "-") return <span>-</span>;
+
+        return (
+          <div className="flex items-center justify-center">
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center p-1.5 text-primary bg-primary/10 hover:bg-primary hover:text-primary-foreground duration-200 transition-all rounded-full cursor-pointer"
+              title={trimmed}
+            >
+              <MapPin className="w-4 h-4" />
+            </a>
+          </div>
+        );
+      }
     }
   ];
 

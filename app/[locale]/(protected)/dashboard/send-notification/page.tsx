@@ -58,7 +58,7 @@ const SendNotificationPage = () => {
     let recipientTypeValue = RecipientType.Specific;
     if (recipientType === "all_doctors") recipientTypeValue = RecipientType.AllDoctors;
     else if (recipientType === "all_providers") recipientTypeValue = RecipientType.AllProviders;
-
+    
     const payload = {
       recipientType: recipientTypeValue,
       userIds: recipientType.startsWith("specific") ? selectedUserIds : [],
@@ -68,7 +68,6 @@ const SendNotificationPage = () => {
     };
 
     const { success, error } = await sendNotification(payload);
-
     if (success) {
       toast.success("Notification sent successfully!");
       setTitle("");
