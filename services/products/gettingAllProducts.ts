@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { ProductType } from "@/types/product";
 import AxiosInstance from "@/lib/AxiosInstance";
+import axios from "axios";
 
 function useGettingAllProducts() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -11,6 +12,9 @@ function useGettingAllProducts() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+  // 
 
   const lastParamsRef = useRef({
     includeDeleted: "false",
@@ -27,8 +31,22 @@ function useGettingAllProducts() {
   ) => {
     lastParamsRef.current = { includeDeleted, page, size, searchValue };
 
+    // إلغاء أي طلب معلق سابق
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    // 
+
+    // إنشاء متحكم جديد للطلب الحالي
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    // 
+
     setLoading(true);
     setError(null);
+
+    let isCanceled = false;
+    // 
 
     try {
       const response = await AxiosInstance.get(`/api/Products/GetProducts`, {
@@ -43,6 +61,7 @@ function useGettingAllProducts() {
           "Cache-Control": "no-cache",
           Pragma: "no-cache",
         },
+        signal: controller.signal, // تمرير الـ signal لإمكانية الإلغاء
       });
 
       if (response.status === 204) {
@@ -76,6 +95,13 @@ function useGettingAllProducts() {
         }
       }
     } catch (err: any) {
+      if (axios.isCancel(err)) {
+        isCanceled = true;
+        console.log("Request canceled successfully:", searchValue);
+        return;
+      }
+      // 
+
       console.error("Error fetching products:", err);
 
       if (err?.response?.status === 404) {
@@ -95,7 +121,10 @@ function useGettingAllProducts() {
         setError("An unexpected error occurred.");
       }
     } finally {
-      setLoading(false);
+      if (!isCanceled) {
+        setLoading(false);
+      }
+      // 
     }
   };
 
