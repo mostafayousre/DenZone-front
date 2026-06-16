@@ -124,7 +124,7 @@ const TransactionsTable = () => {
           />
         </div>
 
-        {ispreparationrepresentative ||isAdmin   && (
+        {ispreparationrepresentative || isAdmin   && (
           <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
@@ -141,25 +141,6 @@ const TransactionsTable = () => {
             />
           </div>
         )}
-        {/* <div>
-          {isAdmin && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <Link href="/dashboard/add-product">
-              <Button size="md" variant="outline" className="gap-2">
-                <PlusCircle className="w-4 h-4" />
-                {t("addProduct")}
-              </Button>
-            </Link>
-            <ExportCSVButton />
-            <ExcelUploadButton
-              onSuccess={() => {
-                refreshProducts("false");
-                toast.success(t("dataRefreshed"));
-              }}
-            />
-          </div>
-        )}
-        </div> */}
       </div>
 
       {loading ? (
@@ -191,7 +172,7 @@ const TransactionsTable = () => {
                     table.getRowModel().rows.map((row) => (
                       <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="h-[75px]">
+                          <TableCell key={cell.id} className="h-18.75">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
