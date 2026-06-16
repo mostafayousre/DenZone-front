@@ -192,7 +192,7 @@ const MessageCell = ({ message, t }: { message: string; t: (key: string) => stri
 
     if (!message) return <span className="text-muted-foreground">—</span>;
 
-    const shouldTruncate = message.length > 80 || message.split('\n').length > 2;
+    const shouldTruncate = message.length > 30 || message.split('\n').length > 2;
 
     return (
         <div className="text-sm text-default-500 max-w-[350px]">
