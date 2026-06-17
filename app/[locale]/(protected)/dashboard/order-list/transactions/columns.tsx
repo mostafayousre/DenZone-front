@@ -353,7 +353,17 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
 
     {
       accessorKey: "orderDate",
-      header: t("date"),
+      header: ({ column }) => {
+        return (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 hover:text-default-900 cursor-pointer bg-transparent border-none p-0 outline-none font-semibold text-sm text-default-800 transition-colors"
+          >
+            {t("date")}
+            <ArrowUpDown className="h-3.5 w-3.5 text-default-500" />
+          </button>
+        );
+      },
       cell: ({ row }) => {
         return <span>{formatDateToDMY(row.original.orderDate)}</span>;
       },
