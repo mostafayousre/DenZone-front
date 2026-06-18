@@ -124,7 +124,7 @@ const TransactionsTable = () => {
           />
         </div>
 
-        {ispreparationrepresentative || isAdmin   && (
+        {(ispreparationrepresentative || isAdmin)   && (
           <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">

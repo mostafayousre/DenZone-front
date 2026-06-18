@@ -367,15 +367,7 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
       cell: ({ row }) => {
         return <span>{formatDateToDMY(row.original.orderDate)}</span>;
       },
-    },
-    // {
-    //   accessorKey: "totalAmount",
-    //   header: t("totalAmount"),
-    //   cell: ({ row }) => {
-    //     return <span>{row.getValue("totalAmount")}</span>;
-    //   },
-    // },
-    
+    },    
     {
       accessorKey: "totalAmountOrderAfter",
       header: "total Amount",
