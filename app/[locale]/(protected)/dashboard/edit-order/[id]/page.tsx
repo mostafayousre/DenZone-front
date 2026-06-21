@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useDebounce } from "use-debounce";
 
 const EditOrder: React.FC = () => {
   const t = useTranslations("removeItem");
@@ -32,11 +33,13 @@ const EditOrder: React.FC = () => {
   const { order, loading, error: fetchError, getOrderById } = useGettingOrderById();
   const { editOrder } = useEditOrder();
   const { users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
-  const { products, getAllProducts } = useGettingAllProducts();
+  const { products, getAllProducts, loading: productsLoading } = useGettingAllProducts();
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [saving, setSaving] = useState(false);
   const [openComboboxId, setOpenComboboxId] = useState<string | null>(null);
+  const [productSearch, setProductSearch] = useState("");
+  const [debouncedProductSearch] = useDebounce(productSearch, 500);
 
   // Grouped sub-orders state
   const [subOrders, setSubOrders] = useState<{
@@ -57,9 +60,18 @@ const EditOrder: React.FC = () => {
     if (id) {
       getOrderById(id).finally(() => setIsInitialLoad(false));
       getUsersByRoleId("1A5A84FB-23C3-4F9B-A122-4C5BC6C5CB2D"); // Inventory Manager Role
-      getAllProducts("false", 1, 1000, ""); // Fetch products
     }
   }, [id]);
+
+  useEffect(() => {
+    getAllProducts("false", 1, 50, debouncedProductSearch);
+  }, [debouncedProductSearch]);
+
+  useEffect(() => {
+    if (openComboboxId) {
+      setProductSearch("");
+    }
+  }, [openComboboxId]);
 
   useEffect(() => {
     if (order) {
@@ -317,40 +329,50 @@ const EditOrder: React.FC = () => {
                                 >
                                   <span className="truncate max-w-[200px]">
                                     {item.productId
-                                      ? products.find((p) => (p.id || p.productId) === item.productId)?.name ||
-                                      products.find((p) => (p.id || p.productId) === item.productId)?.productName ||
-                                      products.find((p) => (p.id || p.productId) === item.productId)?.arabicName ||
-                                      "Unnamed Product"
+                                      ? item.productName || "Unnamed Product"
                                       : "Select Product"}
                                   </span>
                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-[250px] p-0">
-                                <Command>
-                                  <CommandInput placeholder="Search product..." />
-                                  <CommandEmpty>No product found.</CommandEmpty>
+                                <Command shouldFilter={false}>
+                                  <CommandInput
+                                    placeholder="Search product..."
+                                    value={productSearch}
+                                    onValueChange={(val) => setProductSearch(val)}
+                                  />
                                   <CommandList>
-                                    <CommandGroup>
-                                      {products.map((p) => (
-                                        <CommandItem
-                                          key={p.id || p.productId}
-                                          value={p.name || p.productName || p.arabicName || "Unnamed Product"}
-                                          onSelect={() => {
-                                            handleItemProductChange(subOrderIdx, itemIdx, (p.id || p.productId) as string);
-                                            setOpenComboboxId(null);
-                                          }}
-                                        >
-                                          <Check
-                                            className={cn(
-                                              "mr-2 h-4 w-4 flex-shrink-0",
-                                              item.productId === (p.id || p.productId) ? "opacity-100" : "opacity-0"
-                                            )}
-                                          />
-                                          <span className="truncate">{p.name || p.productName || p.arabicName || "Unnamed Product"}</span>
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
+                                    {productsLoading ? (
+                                      <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Loading products...
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <CommandEmpty>No product found.</CommandEmpty>
+                                        <CommandGroup>
+                                          {products.map((p) => (
+                                            <CommandItem
+                                              key={p.id || p.productId}
+                                              value={p.name || p.productName || p.arabicName || "Unnamed Product"}
+                                              onSelect={() => {
+                                                handleItemProductChange(subOrderIdx, itemIdx, (p.id || p.productId) as string);
+                                                setOpenComboboxId(null);
+                                              }}
+                                            >
+                                              <Check
+                                                className={cn(
+                                                  "mr-2 h-4 w-4 flex-shrink-0",
+                                                  item.productId === (p.id || p.productId) ? "opacity-100" : "opacity-0"
+                                                )}
+                                              />
+                                              <span className="truncate">{p.name || p.productName || p.arabicName || "Unnamed Product"}</span>
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </>
+                                    )}
                                   </CommandList>
                                 </Command>
                               </PopoverContent>
