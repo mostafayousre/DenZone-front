@@ -124,7 +124,7 @@ const TransactionsTable = () => {
           />
         </div>
 
-        {isAdmin || ispreparationrepresentative && (
+        {(ispreparationrepresentative || isAdmin)   && (
           <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
@@ -172,7 +172,7 @@ const TransactionsTable = () => {
                     table.getRowModel().rows.map((row) => (
                       <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="h-[75px]">
+                          <TableCell key={cell.id} className="h-18.75">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

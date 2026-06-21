@@ -5,7 +5,8 @@ import {
   Pencil,
   Truck,
   ArrowUpDown,
-  Printer
+  Printer,
+  MapPin
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -352,19 +353,21 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
 
     {
       accessorKey: "orderDate",
-      header: t("date"),
+      header: ({ column }) => {
+        return (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1.5 hover:text-default-900 cursor-pointer bg-transparent border-none p-0 outline-none font-semibold text-sm text-default-800 transition-colors"
+          >
+            {t("date")}
+            <ArrowUpDown className="h-3.5 w-3.5 text-default-500" />
+          </button>
+        );
+      },
       cell: ({ row }) => {
         return <span>{formatDateToDMY(row.original.orderDate)}</span>;
       },
-    },
-    // {
-    //   accessorKey: "totalAmount",
-    //   header: t("totalAmount"),
-    //   cell: ({ row }) => {
-    //     return <span>{row.getValue("totalAmount")}</span>;
-    //   },
-    // },
-    
+    },    
     {
       accessorKey: "totalAmountOrderAfter",
       header: "total Amount",
@@ -389,7 +392,27 @@ export const baseColumns = ({ refresh, t, isRepresentative }: {
     },{
       accessorKey: "latlong",
       header: t("latlong") || "latlong",
-      cell: ({ row }) => <span>{row.getValue("latlong") || "-"}</span>,
+      cell: ({ row }) => {
+        const latlong = row.getValue("latlong") as string;
+        if (!latlong) return <span>-</span>;
+        
+        const trimmed = latlong.trim();
+        if (!trimmed || trimmed === "-") return <span>-</span>;
+
+        return (
+          <div className="flex items-center justify-center">
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center p-1.5 text-primary bg-primary/10 hover:bg-primary hover:text-primary-foreground duration-200 transition-all rounded-full cursor-pointer"
+              title={trimmed}
+            >
+              <MapPin className="w-4 h-4" />
+            </a>
+          </div>
+        );
+      }
     }
   ];
 
