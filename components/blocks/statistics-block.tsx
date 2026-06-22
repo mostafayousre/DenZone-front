@@ -38,9 +38,9 @@ const StatisticsBlock = ({
   // const options: any = { ...chart options here };
 
   return (
-      <Card className={cn("", className)}>
-        <CardContent className="py-[18px] px-4">
-          <div className="flex gap-6 items-center">
+      <Card className={cn("h-full w-full", className)}>
+        <CardContent className="py-[12px] px-4 h-full flex items-center">
+          <div className="flex gap-6 items-center w-full">
             {/* Chart commented out */}
             {/*
           <div className="flex-none">

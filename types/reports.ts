@@ -35,6 +35,7 @@ export interface SummaryReport {
     totalActiveUser?: number;
     totalRecentUser?:number;
     totalNonActiveUser?: number;
+    totalUsers?: number;
 }
 
 export interface AccountBalanceItem {
