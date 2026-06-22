@@ -386,7 +386,7 @@ export default function SalesRepDoctorsPage({ params }: { params: { locale: stri
             <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
               {dict.cancel}
             </Button>
-            <Button type="button" variant="destructive" onClick={handleDelete}>
+            <Button type="button" variant="soft" onClick={handleDelete}>
               {isAr ? "حذف" : "Delete"}
             </Button>
           </DialogFooter>
