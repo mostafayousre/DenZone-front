@@ -17,7 +17,7 @@ export const baseColumns = ({refresh } : { refresh: () => void }): ColumnDef<Cou
                 return (
                     <div className="font-medium text-card-foreground/80">
             <span className="text-sm text-default-600">
-              {code ?? "N/A"}
+                    {code ?? "N/A"}
             </span>
                     </div>
                 );
