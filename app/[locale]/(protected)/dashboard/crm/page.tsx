@@ -9,7 +9,7 @@ import TransactionsTable from "./components/transactions";
 import { useTranslations } from "next-intl";
 
 const CrmPage = () => {
-   const t = useTranslations("CrmDashboard");
+  const t = useTranslations("CrmDashboard");
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-12 gap-5">

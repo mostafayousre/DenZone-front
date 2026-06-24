@@ -15,7 +15,8 @@ import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserType } from "@/types/users";
 import useEditOrder from "@/services/Orders/editOrder";
-import useGettingAllProducts from "@/services/products/gettingAllProducts";
+import AxiosInstance from "@/lib/AxiosInstance";
+import { ProductType } from "@/types/product";
 import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -24,7 +25,7 @@ import { useDebounce } from "use-debounce";
 
 const EditOrder: React.FC = () => {
   const t = useTranslations("removeItem");
-  const tCommon = useTranslations("common"); // Fallback for common words if needed
+  const tCommon = useTranslations("common");
 
   const router = useRouter();
   const params = useParams();
@@ -33,7 +34,6 @@ const EditOrder: React.FC = () => {
   const { order, loading, error: fetchError, getOrderById } = useGettingOrderById();
   const { editOrder } = useEditOrder();
   const { users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
-  const { products, getAllProducts, loading: productsLoading } = useGettingAllProducts();
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,7 +41,9 @@ const EditOrder: React.FC = () => {
   const [productSearch, setProductSearch] = useState("");
   const [debouncedProductSearch] = useDebounce(productSearch, 500);
 
-  // Grouped sub-orders state
+  const [rowProducts, setRowProducts] = useState<Record<string, ProductType[]>>({});
+  const [rowProductsLoading, setRowProductsLoading] = useState<Record<string, boolean>>({});
+
   const [subOrders, setSubOrders] = useState<{
     id: string;
     inventoryUserId: string;
@@ -53,8 +55,36 @@ const EditOrder: React.FC = () => {
       productName: string;
       quantity: number;
       amount: number;
+      providerId?: string;
+      providerName?: string;
     }[];
   }[]>([]);
+
+  const fetchProductsByProvider = async (rowId: string, providerId: string, searchVal: string) => {
+    if (!providerId) return;
+    setRowProductsLoading(prev => ({ ...prev, [rowId]: true }));
+    try {
+      const response = await AxiosInstance.get(`/api/Products/GetProducts-byProvider`, {
+        params: {
+          inventoryId: providerId,
+          search: searchVal,
+          _t: Date.now(),
+        },
+      });
+      if (response.status === 200 || response.status === 201) {
+        const data = response.data?.data || response.data || [];
+        const fetchedList = Array.isArray(data) ? data : [];
+        setRowProducts(prev => ({ ...prev, [rowId]: fetchedList }));
+      } else {
+        setRowProducts(prev => ({ ...prev, [rowId]: [] }));
+      }
+    } catch (err) {
+      console.error("Error fetching products by provider:", err);
+      setRowProducts(prev => ({ ...prev, [rowId]: [] }));
+    } finally {
+      setRowProductsLoading(prev => ({ ...prev, [rowId]: false }));
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -64,8 +94,17 @@ const EditOrder: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    getAllProducts("false", 1, 50, debouncedProductSearch);
-  }, [debouncedProductSearch]);
+    if (openComboboxId) {
+      const [subOrderIdxStr, itemIdxStr] = openComboboxId.split("-");
+      const subOrderIdx = parseInt(subOrderIdxStr);
+      const itemIdx = parseInt(itemIdxStr);
+      const item = subOrders[subOrderIdx]?.items[itemIdx];
+      const providerId = item?.providerId || subOrders[subOrderIdx]?.inventoryUserId;
+      if (providerId) {
+        fetchProductsByProvider(openComboboxId, providerId, debouncedProductSearch);
+      }
+    }
+  }, [debouncedProductSearch, openComboboxId]);
 
   useEffect(() => {
     if (openComboboxId) {
@@ -87,6 +126,8 @@ const EditOrder: React.FC = () => {
           productName: item.productName || item.arabicName || "Unnamed Product",
           quantity: item.quantity || 0,
           amount: item.unitPrice || item.amount || 0,
+          providerId: so.inventoryUserId || "",
+          providerName: so.inventoryName || "Unnamed Provider",
         }))
       }));
       setSubOrders(mappedSubOrders);
@@ -106,11 +147,26 @@ const EditOrder: React.FC = () => {
 
   const handleAddProduct = (subOrderIdx: number) => {
     const newSubOrders = [...subOrders];
-    newSubOrders[subOrderIdx].items = [
-      ...newSubOrders[subOrderIdx].items,
-      { id: "00000000-0000-0000-0000-000000000000", productId: "", productName: "", quantity: 1, amount: 0 }
+    const subOrder = newSubOrders[subOrderIdx];
+    subOrder.items = [
+      ...subOrder.items,
+      {
+        id: "00000000-0000-0000-0000-000000000000",
+        productId: "",
+        productName: "",
+        quantity: 1,
+        amount: 0,
+        providerId: subOrder.inventoryUserId || "",
+        providerName: subOrder.inventoryName || "Unnamed Provider",
+      }
     ];
     setSubOrders(newSubOrders);
+
+    if (subOrder.inventoryUserId) {
+      const newRowIdx = subOrder.items.length - 1;
+      const comboId = `${subOrderIdx}-${newRowIdx}`;
+      fetchProductsByProvider(comboId, subOrder.inventoryUserId, "");
+    }
   };
 
   const handleRemoveProduct = (subOrderIdx: number, itemIdx: number) => {
@@ -121,26 +177,64 @@ const EditOrder: React.FC = () => {
     setSubOrders(newSubOrders);
   };
 
+  const handleItemProviderChange = (subOrderIdx: number, itemIdx: number, newProviderId: string) => {
+    const newSubOrders = [...subOrders];
+    const manager = inventoryManagers.find((u: any) => u.id === newProviderId);
+    const providerName = manager?.fullName || manager?.userName || "Unknown";
+
+    newSubOrders[subOrderIdx].inventoryUserId = newProviderId;
+    newSubOrders[subOrderIdx].inventoryName = providerName;
+
+    const itemsList = [...newSubOrders[subOrderIdx].items];
+    itemsList[itemIdx] = {
+      ...itemsList[itemIdx],
+      providerId: newProviderId,
+      providerName: providerName,
+      productId: "",
+      productName: "",
+      amount: 0
+    };
+
+    itemsList.forEach((it, idx) => {
+      if (idx !== itemIdx && !it.providerId) {
+        it.providerId = newProviderId;
+        it.providerName = providerName;
+      }
+    });
+
+    newSubOrders[subOrderIdx].items = itemsList;
+    setSubOrders(newSubOrders);
+
+    const comboId = `${subOrderIdx}-${itemIdx}`;
+    fetchProductsByProvider(comboId, newProviderId, "");
+  };
+
   const handleItemProductChange = (subOrderIdx: number, itemIdx: number, newProductId: string) => {
     const newSubOrders = [...subOrders];
     const itemsList = [...newSubOrders[subOrderIdx].items];
-    const selectedProduct = products.find(p => p.id === newProductId || p.productId === newProductId);
+    const comboId = `${subOrderIdx}-${itemIdx}`;
+    const currentProducts = rowProducts[comboId] || [];
+    const selectedProduct = currentProducts.find(p => p.id === newProductId || p.productId === newProductId);
 
     if (selectedProduct) {
-      const defaultPrice = selectedProduct.prices && selectedProduct.prices.length > 0
-        ? selectedProduct.prices[0].salesPrice
-        : 0;
+      const defaultPrice =
+        (selectedProduct as any).salesPrice ??
+        (selectedProduct as any).price ??
+        (selectedProduct as any).unitPrice ??
+        (selectedProduct.prices && selectedProduct.prices.length > 0 ? selectedProduct.prices[0].salesPrice : undefined) ??
+        (selectedProduct.inventories && selectedProduct.inventories.length > 0 ? selectedProduct.inventories[0].salesPrice : undefined) ??
+        0;
 
       itemsList[itemIdx] = {
         ...itemsList[itemIdx],
         productId: selectedProduct.id || selectedProduct.productId || newProductId,
         productName: selectedProduct.name || selectedProduct.productName || selectedProduct.arabicName || "Unknown",
-        amount: defaultPrice
+        amount: defaultPrice,
+        providerId: selectedProduct.inventoryUserId || itemsList[itemIdx].providerId,
       };
 
       newSubOrders[subOrderIdx].items = itemsList;
 
-      // Auto-update provider (inventory manager) if the product has one
       const providerId = selectedProduct.inventoryUserId || (selectedProduct.inventories?.[0]?.inventoryUserId) || (selectedProduct.inventories?.[0]?.userId);
       if (providerId) {
         newSubOrders[subOrderIdx].inventoryUserId = providerId;
@@ -148,22 +242,21 @@ const EditOrder: React.FC = () => {
         if (manager) {
           newSubOrders[subOrderIdx].inventoryName = manager.fullName || manager.userName || "Unknown";
         }
-        toast.success(`Inventory Manager automatically changed to the new product's provider.`);
       }
 
       setSubOrders(newSubOrders);
     }
   };
 
-  const handleInventoryUserChange = (subOrderIdx: number, newManagerId: string) => {
-    const newSubOrders = [...subOrders];
-    newSubOrders[subOrderIdx].inventoryUserId = newManagerId;
-    const manager = inventoryManagers.find((u: any) => u.id === newManagerId);
-    if (manager) {
-      newSubOrders[subOrderIdx].inventoryName = manager.fullName || manager.userName || "Unknown";
-    }
-    setSubOrders(newSubOrders);
-  };
+  // const handleInventoryUserChange = (subOrderIdx: number, newManagerId: string) => {
+  //   const newSubOrders = [...subOrders];
+  //   newSubOrders[subOrderIdx].inventoryUserId = newManagerId;
+  //   const manager = inventoryManagers.find((u: any) => u.id === newManagerId);
+  //   if (manager) {
+  //     newSubOrders[subOrderIdx].inventoryName = manager.fullName || manager.userName || "Unknown";
+  //   }
+  //   setSubOrders(newSubOrders);
+  // };
 
   const handleSave = async () => {
     // Validate: check if any sub-order does not have an inventory manager selected
@@ -187,9 +280,9 @@ const EditOrder: React.FC = () => {
           productId: i.productId,
           quantity: i.quantity,
           amount: i.amount
-        }))
+        }
+      ))
       };
-
       const { success, error } = await editOrder(payload);
       if (success) {
         successCount++;
@@ -268,26 +361,6 @@ const EditOrder: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-default-600">Inventory Manager:</span>
-                    <Select
-                      value={subOrder.inventoryUserId}
-                      onValueChange={(val) => handleInventoryUserChange(subOrderIdx, val)}
-                    >
-                      <SelectTrigger className="w-[200px] h-9">
-                        <SelectValue placeholder="Select Inventory Manager" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {inventoryManagers.map((user: UserType) => (
-                          <SelectItem key={user.id} value={user.id} className="text-xs">
-                            {user.userName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-6">
@@ -303,6 +376,7 @@ const EditOrder: React.FC = () => {
                 <table className="w-full text-left text-sm">
                   <thead className="bg-gray-100 dark:text-black">
                     <tr>
+                      <th className="p-3 w-48">Provider</th>
                       <th className="p-3">Product Name</th>
                       <th className="p-3 w-32">Quantity</th>
                       <th className="p-3 w-32">Amount</th>
@@ -316,14 +390,42 @@ const EditOrder: React.FC = () => {
                       return (
                         <tr key={itemIdx} className="border-t">
                           <td className="p-3">
+                            <Select
+                              value={item.providerId || ""}
+                              onValueChange={(val) => {
+                                handleItemProviderChange(subOrderIdx, itemIdx, val);
+                              }}
+                            >
+                              <SelectTrigger className="w-full md:w-[180px] h-9">
+                                <SelectValue placeholder="Select Provider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {inventoryManagers.map((user: UserType) => (
+                                  <SelectItem key={user.id} value={user.id} className="text-xs">
+                                    {user.userName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="p-3">
                             <Popover
                               open={openComboboxId === comboId}
-                              onOpenChange={(open) => setOpenComboboxId(open ? comboId : null)}
+                              onOpenChange={(open) => {
+                                setOpenComboboxId(open ? comboId : null);
+                                if (open) {
+                                  const providerId = item.providerId || subOrder.inventoryUserId;
+                                  if (providerId && (!rowProducts[comboId] || rowProducts[comboId].length === 0)) {
+                                    fetchProductsByProvider(comboId, providerId, "");
+                                  }
+                                }
+                              }}
                             >
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="outline"
                                   role="combobox"
+                                  disabled={!item.providerId && !subOrder.inventoryUserId}
                                   aria-expanded={openComboboxId === comboId}
                                   className="w-full md:w-[250px] justify-between font-normal"
                                 >
@@ -343,7 +445,7 @@ const EditOrder: React.FC = () => {
                                     onValueChange={(val) => setProductSearch(val)}
                                   />
                                   <CommandList>
-                                    {productsLoading ? (
+                                    {rowProductsLoading[comboId] ? (
                                       <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Loading products...
@@ -352,7 +454,7 @@ const EditOrder: React.FC = () => {
                                       <>
                                         <CommandEmpty>No product found.</CommandEmpty>
                                         <CommandGroup>
-                                          {products.map((p) => (
+                                          {(rowProducts[comboId] || []).map((p) => (
                                             <CommandItem
                                               key={p.id || p.productId}
                                               value={p.name || p.productName || p.arabicName || "Unnamed Product"}
