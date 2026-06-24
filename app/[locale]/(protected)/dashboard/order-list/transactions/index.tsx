@@ -72,6 +72,7 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
       ...firstOrder,
       id: firstOrder.id || group.orderNumber,
       orderNumber: group.orderNumber,
+      status: group.status,
       isGrouped: true,
       orders: subOrders,
       items: mergedItems,
@@ -180,9 +181,6 @@ export default function TransactionsTable() {
       setFilteredOrders(allOrdersData);
     } else {
       const filtered = allOrdersData.filter(order => {
-        if (order.isGrouped) {
-          return order.orders?.some((o: any) => o.status === status);
-        }
         return order.status === status;
       });
       setFilteredOrders(filtered);
