@@ -227,7 +227,7 @@ const EditOrder: React.FC = () => {
 
       itemsList[itemIdx] = {
         ...itemsList[itemIdx],
-        productId: selectedProduct.id || selectedProduct.productId || newProductId,
+        productId: selectedProduct.productId || newProductId,
         productName: selectedProduct.name || selectedProduct.productName || selectedProduct.arabicName || "Unknown",
         amount: defaultPrice,
         providerId: selectedProduct.inventoryUserId || itemsList[itemIdx].providerId,
