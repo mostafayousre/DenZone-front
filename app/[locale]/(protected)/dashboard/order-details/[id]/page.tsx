@@ -50,7 +50,7 @@ const OrderDetails = () => {
     useEffect(() => {
         if (id) {
             getOrderById(id as string);
-            getInvoiceByOrderId(id as string);
+            // getInvoiceByOrderId(id as string);
         }
     }, [id]);
 
@@ -64,15 +64,15 @@ const OrderDetails = () => {
         }
     }, [orderData]);
 
-    useEffect(() => {
-        if (id) {
-            const refreshInterval = setInterval(() => {
-                getOrderById(id as string);
-            }, 30000);
+    // useEffect(() => {
+    //     if (id) {
+    //         const refreshInterval = setInterval(() => {
+    //             getOrderById(id as string);
+    //         }, 30000);
 
-            return () => clearInterval(refreshInterval);
-        }
-    }, [id]);
+    //         return () => clearInterval(refreshInterval);
+    //     }
+    // }, [id]);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
