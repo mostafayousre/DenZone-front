@@ -400,7 +400,7 @@ const EditOrder: React.FC = () => {
                               <SelectContent>
                                 {inventoryManagers.map((user: UserType) => (
                                   <SelectItem key={user.id} value={user.id} className="text-xs">
-                                    {user.userName}
+                                    {user.fullName}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
