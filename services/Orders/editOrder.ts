@@ -6,11 +6,11 @@ interface EditOrderItem {
   productId: string;
   quantity: number;
   amount: number;
+  inventoryUserId: string;
 }
 
 interface EditOrderData {
   orderId: string;
-  inventoryUserId: string;
   items: EditOrderItem[];
 }
 

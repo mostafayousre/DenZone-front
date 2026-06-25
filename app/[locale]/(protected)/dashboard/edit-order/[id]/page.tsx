@@ -259,48 +259,46 @@ const EditOrder: React.FC = () => {
   // };
 
   const handleSave = async () => {
-    // Validate: check if any sub-order does not have an inventory manager selected
+    // Validate: check if any item does not have a provider selected
     for (const subOrder of subOrders) {
-      if (!subOrder.inventoryUserId) {
-        toast.error(`Please select an inventory manager for provider: ${subOrder.inventoryName}`);
-        return;
+      for (const item of subOrder.items) {
+        if (!item.providerId && !subOrder.inventoryUserId) {
+          toast.error(`Please select a provider for all items.`);
+          return;
+        }
       }
     }
 
     setSaving(true);
-    let successCount = 0;
-    let errors: string[] = [];
 
-    for (const subOrder of subOrders) {
-      const payload = {
-        orderId: subOrder.id,
-        inventoryUserId: subOrder.inventoryUserId,
-        items: subOrder.items.map(i => ({
-          id: i.id,
-          productId: i.productId,
-          quantity: i.quantity,
-          amount: i.amount
-        }
-      ))
-      };
-      const { success, error } = await editOrder(payload);
-      if (success) {
-        successCount++;
-      } else {
-        errors.push(`${subOrder.inventoryName}: ${error || "Failed to update"}`);
-      }
-    }
+    // Collect all items from all sub-orders into a single flat array
+    const allItems = subOrders.flatMap(subOrder =>
+      subOrder.items.map(i => ({
+        id: i.id,
+        productId: i.productId,
+        quantity: i.quantity,
+        amount: i.amount,
+        inventoryUserId: i.providerId || subOrder.inventoryUserId || "",
+      }))
+    );
+
+    const payload = {
+      orderId: order?.id || id,
+      items: allItems,
+    };
+
+    const { success, error } = await editOrder(payload);
 
     setSaving(false);
 
-    if (successCount === subOrders.length) {
-      toast.success("All orders updated successfully!");
+    if (success) {
+      toast.success("Order updated successfully!");
       router.refresh();
       setTimeout(() => {
         router.push("/dashboard/order-list");
       }, 1000);
     } else {
-      toast.error(`Saved ${successCount}/${subOrders.length} orders. Errors: ${errors.join(", ")}`);
+      toast.error(error || "Failed to update order");
     }
   };
 
