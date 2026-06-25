@@ -69,10 +69,10 @@ const TransactionsTable = ({ onAdd }: { onAdd: () => void }) => {
     },
   });
 
+
   useEffect(() => {
     getAllCoupons()
   }, [])
-
 
   return (
     <div className="w-full rounded-lg">
