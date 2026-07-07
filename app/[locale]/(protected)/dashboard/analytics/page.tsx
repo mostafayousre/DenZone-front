@@ -79,24 +79,23 @@ const DashboardPage = () => {
     totalSales: number;
   }
 
-  useEffect(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 10);
+useEffect(() => {
+  const start = new Date("2026-06-01");
+  const end = new Date();
 
-    end.setHours(23, 59, 59, 999);
+  end.setHours(23, 59, 59, 999);
 
-    setStartDate(start);
-    setEndDate(end);
+  setStartDate(start);
+  setEndDate(end);
 
-    const params = new URLSearchParams();
-    params.set("StartDate", start.toISOString());
-    params.set("EndDate", end.toISOString());
+  const params = new URLSearchParams();
+  params.set("StartDate", start.toISOString());
+  params.set("EndDate", end.toISOString());
 
-    fetchSummaryReports(params.toString());
-    fetchOrderReports(params.toString());
-    getActivityLogs();
-  }, []);
+  fetchSummaryReports(params.toString());
+  fetchOrderReports(params.toString());
+  getActivityLogs();
+}, []);
 
 
 
@@ -168,7 +167,7 @@ const DashboardPage = () => {
             <Card>
               <CardHeader className="flex flex-row justify-between space-x-1">
                 <CardTitle className="text-lg font-semibold text-default-900">
-                  {"Weekly Overview"}
+                  {"Date Range Overview"}
                 </CardTitle>
                 {startDate && endDate && (
                   <div className="text-sm text-default-500 font-normal">
@@ -330,17 +329,6 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
         </div>
-        {/*<div className="lg:col-span-8 col-span-12">*/}
-        {/*  <Card>*/}
-        {/*    <CardHeader className="flex flex-row items-center">*/}
-        {/*      <CardTitle className="flex-1">{t("company_table_title")}</CardTitle>*/}
-        {/*      <DashboardDropdown />*/}
-        {/*    </CardHeader>*/}
-        {/*    <CardContent className="p-0">*/}
-        {/*      <CompanyTable />*/}
-        {/*    </CardContent>*/}
-        {/*  </Card>*/}
-        {/*</div>*/}
         <div className="lg:col-span-8 col-span-12">
           <Card>
             <CardHeader className="flex flex-row items-center">
