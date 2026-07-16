@@ -325,7 +325,7 @@ const EditOrder: React.FC = () => {
             <div>
               <span className="block text-default-900 font-medium text-xl">{t("billTo")}:</span>
               <div className="text-default-500 font-normal mt-2 text-sm">
-                <p><b>{t("pharmacyName")}:</b> {order.pharmacyName || 'N/A'}</p>
+                <p><b>{t("doctorName")}:</b> {order.doctorName || 'N/A'}</p>
               </div>
             </div>
             <div className="space-y-1 text-sm text-default-600">

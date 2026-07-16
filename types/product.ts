@@ -22,6 +22,7 @@ export type ProductType = {
     isPopular?: boolean;
     revenuePercentage?: number;
     orderNum?: number;
+    tagName?: string;
     createdAt: string;
     updatedAt: string;
 }

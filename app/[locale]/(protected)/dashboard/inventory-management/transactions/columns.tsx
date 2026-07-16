@@ -64,7 +64,7 @@ export const baseColumns = ({ t, refresh }: {
   {
     accessorKey: "salesPrice",
     header: t("salesPrice"),
-    cell: ({ row }) => <span>{row.getValue("salesPrice")}</span>,
+    cell: ({ row }) => <span>{row.original?.priceBeforeFlashSale !==null ? row.original?.priceBeforeFlashSale : row.getValue("salesPrice")}</span>,
   },{
   accessorKey: "discountRate",
   header: t("discount"),

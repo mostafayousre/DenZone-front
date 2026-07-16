@@ -138,7 +138,14 @@ export const baseColumns = ({
           <span className="text-sm font-medium">{name || t("unknown")}</span>
         );
       },
+    }, {
+      accessorKey: "tagName",
+      header: isArabic ? "اسم التاج" : "Tag Name",
+      cell: ({ row }) => (
+        <span className="text-sm">{row.original.tagName?row.original.tagName:"-"}</span>
+      ),
     },
+
     {
       accessorKey: "productCode",
       header: isArabic ? "كود المنتج" : "Product Code",

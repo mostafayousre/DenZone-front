@@ -156,6 +156,14 @@ export function getMenuList(pathname: string, t: any, permissions: string[] = []
               permission: "Permissions.ProductPrice.View",
             },
             {
+              href: "/dashboard/flash-sale",
+              label: t("flash-sale"),
+              active: pathname === "/dashboard/flash-sale",
+              children: [],
+              icon: "",
+              permission: "Permissions.ProductPrice.Create",
+            },
+            {
               href: `/dashboard/edit-user/${id}`,
               label: t("edit-user"),
               active: pathname.startsWith(`/dashboard/edit-user/`),

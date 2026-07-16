@@ -31,6 +31,9 @@ export default function ProductDetailsPage() {
           <h1 className="text-2xl font-bold dark:text-card-foreground text-slate-800">
             {isArabic ? product.productArabicName : product.productName}
           </h1>
+          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-1 text-[12px] font-bold text-blue-700 border border-blue-200">
+            {product.tagName}
+          </span>
           <div className="flex gap-4 mt-1">
             <p className="text-slate-700 text-[13px] font-mono uppercase tracking-wider dark:text-default-600 ">Product ID: {product.productId}</p>
           </div>

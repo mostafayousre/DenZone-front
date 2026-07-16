@@ -97,7 +97,7 @@ export function UpdatePriceModal({ isOpen, onClose, priceData, onSuccess }: Upda
                             id="salesPrice"
                             name="salesPrice"
                             type="number"
-                            value={formData.salesPrice}
+                            value={priceData.priceBeforeFlashSale ?  priceData.priceBeforeFlashSale :formData.salesPrice}
                             onChange={handleChange}
                             className="col-span-3"
                         />

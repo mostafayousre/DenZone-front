@@ -6,10 +6,12 @@ function useGettingAllDeliveryTimeSlots() {
     const [error, setError] = useState(null);
     const [deliveryTimeSlots, setDeliveryTimeSlots] = useState([]);
 
-    const getAllDeliveryTimeSlots = async () => {
+    const getAllDeliveryTimeSlots = async (day?: number) => {
         setLoading(true);
         setError(null);
-        await AxiosInstance.get(`/api/DeliveryTimeSlots`).then((response) => {
+        const params: Record<string, any> = {};
+        if (day !== undefined) params.day = day;
+        await AxiosInstance.get(`/api/DeliveryTimeSlots`, { params }).then((response) => {
             if (response.status !== 200) {
                 throw new Error('Failed to fetch delivery time slots');
             }

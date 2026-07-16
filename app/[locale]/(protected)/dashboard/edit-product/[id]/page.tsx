@@ -36,6 +36,7 @@ const EditProduct = () => {
   const [formData, setFormData] = useState({
     name: "",
     arabicName: "",
+    tagName:"",
     pref: "",
     arabicPreef: "",
     description: "",
@@ -58,6 +59,7 @@ useEffect(() => {
     setFormData({
       name: product.productName || "",
       arabicName: product.productArabicName || "",
+      tagName: product.tagName || "",
       pref: product.preef || "",
       arabicPreef: product.arabicPreef || "",
       description: product.description || "",
@@ -98,6 +100,7 @@ useEffect(() => {
 
     const data = new FormData();
     data.append("Name", formData.name);
+    data.append("TagName", formData.tagName);
     data.append("ArabicName", formData.arabicName);
     data.append("Preef", formData.pref);
     data.append("ArabicPreef", formData.arabicPreef);
@@ -154,6 +157,15 @@ useEffect(() => {
                 className="flex-1 min-w-[300px]"
                 value={formData.name} 
                 onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                disabled={isInventory}
+              />
+            </div>
+            <div className="flex items-center flex-wrap gap-2">
+              <Label className="w-[180px] flex-none text-sm font-medium">{t("tagName")}</Label>
+              <Input 
+                className="flex-1 min-w-[300px]"
+                value={formData.tagName} 
+                onChange={(e) => setFormData({...formData, tagName: e.target.value})} 
                 disabled={isInventory}
               />
             </div>

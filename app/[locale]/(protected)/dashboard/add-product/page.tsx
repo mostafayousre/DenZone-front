@@ -28,6 +28,7 @@ const AddProduct = () => {
   const router = useRouter();
 
   const [name, setName] = useState<string>("");
+  const [tagName, setTagName] = useState<string>("");
   const [arabicName, setArabicName] = useState<string>("");
   const [preef, setPref] = useState<string>("");
   const [arabicPreef, setArabicPreef] = useState<string>("");
@@ -93,6 +94,7 @@ const AddProduct = () => {
 
     const formData = new FormData();
     formData.append("Name", name);
+    formData.append("TagName", tagName);
     formData.append("ArabicName", arabicName);
     formData.append("Preef", preef);
     formData.append("ArabicPreef", arabicPreef);
@@ -143,6 +145,10 @@ const AddProduct = () => {
               <div className="flex items-center gap-2">
                 <Label className="w-[120px]">{t("productName")}</Label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-[120px]">{t("tagName")}</Label>
+                <Input value={tagName} onChange={(e) => setTagName(e.target.value)} />
               </div>
               <div className="flex items-center gap-2">
                 <Label className="w-[120px]">{t("ArabicName")}</Label>

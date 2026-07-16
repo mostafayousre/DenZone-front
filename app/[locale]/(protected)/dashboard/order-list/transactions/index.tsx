@@ -30,7 +30,7 @@ import { useRouter } from "@/i18n/routing";
 import useGettingAllOrders from "@/services/Orders/gettingAllOrders";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Orders } from "@/types/orders";
 import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
@@ -46,6 +46,7 @@ import { toast } from "sonner";
 import { Save } from "lucide-react";
 import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
 import useGettingDeliveryOrders from "@/services/Orders/gettingDeliveryOrders";
+
 
 const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
   if (!rawGroups || !Array.isArray(rawGroups)) return [];
@@ -211,19 +212,46 @@ export default function TransactionsTable() {
     }
   }, [allOrdersData, selectedStatus]);
 
+  const handleRefresh = () => {
+    if (isAdmin) {
+      if (filterUserId) {
+        gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
+      } else {
+        gettingAllOrders();
+      }
+    } else if (isRepresentative || isDelivery) {
+      gettingDeliveryOrders();
+    } else {
+      gettingVendorOrders(userId);
+    }
+  };
+
   return (
     <Card className="w-full">
       <div className="px-5 py-4 flex flex-col md:flex-row items-center gap-4">
-        <div className="w-full md:w-auto flex-1">
+        <div className="flex items-center justify-end flex-1 gap-2">
           <SearchInput
             data={allOrdersData ?? []}
             setFilteredData={setFilteredOrders}
             filterKey="doctorName"
             placeholder={t("searchPlaceholder") || "Search by doctor name..."}
           />
+          {isAdmin && (
+          <Button
+            id="create-order-btn"
+            size="md"
+            className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90 transition-all rounded-md"
+            onClick={() => router.push("/dashboard/create-order")}
+          >
+            <Plus className="w-4 h-4" />
+            Create Order
+          </Button>
+        )}
         </div>
 
-        <div className="flex flex-wrap gap-2 items-center justify-center md:justify-end">
+
+      </div>
+        <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start px-5">
           <Button
             size="md"
             variant={selectedStatus === "all" ? "default" : "outline"}
@@ -311,7 +339,8 @@ export default function TransactionsTable() {
           >
             {t(`statusCode.${OrderStatusLabel[OrderStatus.Completed].toLowerCase()}`)}
           </Button>
-          {/* <Button
+          {/* HIDDEN - ReAssign filter
+          <Button
             size="md"
             variant={selectedStatus === OrderStatus.ReAssignTo ? "default" : "ghost"}
             color="default"
@@ -321,7 +350,6 @@ export default function TransactionsTable() {
             {t(`statusCode.${OrderStatusLabel[OrderStatus.ReAssignTo].toLocaleLowerCase()}`)}
           </Button> */}
         </div>
-      </div>
 
       {(isLoadingData || usersLoading) ? (
         <div className="flex items-center justify-center h-full py-8">

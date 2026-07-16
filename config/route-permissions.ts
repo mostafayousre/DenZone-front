@@ -27,6 +27,7 @@ export const routePermissions: Record<string, string | string[]> = {
   "/dashboard/edit-product/:id": "Permissions.Product.Edit",
   "/dashboard/inventory-management": "Permissions.ProductPrice.View",
   "/dashboard/add-product-price": "Permissions.ProductPrice.Create",
+  "/dashboard/flash-sale": "Permissions.ProductPrice.Create",
   "/dashboard/edit-user/:id": "Permissions.User.Edit",
   "/dashboard/register": "Permissions.User.Create",
   "/dashboard/user-rules": "Permissions.User.View",
