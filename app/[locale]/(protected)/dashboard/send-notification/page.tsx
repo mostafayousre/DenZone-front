@@ -24,6 +24,7 @@ const SendNotificationPage = () => {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [title, setTitle] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [link, setLink] = useState<string>("");
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(new Date());
 
   const { users, loading: usersLoading, getUsersByRoleId } = useGetUsersByRoleId();
@@ -55,6 +56,11 @@ const SendNotificationPage = () => {
       return;
     }
 
+    if (!link) {
+      toast.error("Please enter a link");
+      return;
+    }
+
     let recipientTypeValue = RecipientType.Specific;
     if (recipientType === "all_doctors") recipientTypeValue = RecipientType.AllDoctors;
     else if (recipientType === "all_providers") recipientTypeValue = RecipientType.AllProviders;
@@ -64,6 +70,7 @@ const SendNotificationPage = () => {
       userIds: recipientType.startsWith("specific") ? selectedUserIds : [],
       title,
       message,
+      link,
       expired: expiryDate.toISOString(),
     };
 
@@ -74,6 +81,7 @@ const SendNotificationPage = () => {
       setMessage("");
       setSelectedUserIds([]);
       setExpiryDate(new Date());
+      setLink("");
       setRecipientType("all_doctors");
     } else {
       toast.error(error || "Failed to send notification");
@@ -186,6 +194,16 @@ const SendNotificationPage = () => {
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="link">Link (Optional)</Label>
+            <Input
+              id="link"
+              placeholder="Enter a link (optional)..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
             />
           </div>
 
