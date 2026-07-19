@@ -215,7 +215,7 @@ function AddFlashSalePage() {
       setProviderProductsLoading((prev) => ({ ...prev, [providerId]: true }));
       try {
         const response = await AxiosInstance.get(`/api/ProductPrices/by-inventory-user-Provider/${providerId}`, {
-          params: { page: 1, pageSize: 250 }, // Fetch large batch for dropdown selection
+          params: { page: 0, pageSize: 0 }, // Fetch large batch for dropdown selection
         });
         const payload = response.data?.data || response.data;
         const productsList = Array.isArray(payload) ? payload : [];
