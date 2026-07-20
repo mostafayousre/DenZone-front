@@ -56,22 +56,18 @@ const SendNotificationPage = () => {
       return;
     }
 
-    if (!link) {
-      toast.error("Please enter a link");
-      return;
-    }
-
     let recipientTypeValue = RecipientType.Specific;
     if (recipientType === "all_doctors") recipientTypeValue = RecipientType.AllDoctors;
     else if (recipientType === "all_providers") recipientTypeValue = RecipientType.AllProviders;
-    
+    const expiry = new Date(expiryDate);
+    expiry.setHours(23, 59, 59, 999);
     const payload = {
       recipientType: recipientTypeValue,
       userIds: recipientType.startsWith("specific") ? selectedUserIds : [],
       title,
       message,
       link,
-      expired: expiryDate.toISOString(),
+      expired: expiry.toISOString(),
     };
 
     const { success, error } = await sendNotification(payload);
@@ -117,61 +113,60 @@ const SendNotificationPage = () => {
             <div className="space-y-2">
               <Label>Select {recipientType.includes("doctor") ? "Doctor" : "Provider"}</Label>
               <ReactSelect
-                  isMulti
+                isMulti
                 options={users?.map((user: UserType) => ({
                   value: user.id,
                   label: `${user.userName} (${user.email})`
                 })) || []}
-                onChange={(selected: MultiValue<{value: string, label: string}>) => {
+                onChange={(selected: MultiValue<{ value: string, label: string }>) => {
                   setSelectedUserIds(selected.map(item => item.value));
                 }}
                 placeholder={`Search ${recipientType.includes("doctor") ? "doctor" : "provider"}...`}
                 classNamePrefix="react-select"
                 classNames={{
-    control: () =>
-      `
+                  control: () =>
+                    `
       !bg-white dark:!bg-gray-900
       !border !border-gray-300 dark:!border-gray-700
       !shadow-none
       hover:!border-blue-500
       `,
 
-    menu: () =>
-      `
+                  menu: () =>
+                    `
       !bg-white dark:!bg-gray-900
       !border !border-gray-300 dark:!border-gray-700
       `,
 
-    option: ({ isFocused, isSelected }) =>
-      `
-      ${
-        isSelected
-          ? "!bg-blue-600 !text-white"
-          : isFocused
-          ? "!bg-gray-100 dark:!bg-gray-800"
-          : "!bg-white dark:!bg-gray-900"
-      }
+                  option: ({ isFocused, isSelected }) =>
+                    `
+      ${isSelected
+                      ? "!bg-blue-600 !text-white"
+                      : isFocused
+                        ? "!bg-gray-100 dark:!bg-gray-800"
+                        : "!bg-white dark:!bg-gray-900"
+                    }
       !text-black dark:!text-white
       `,
 
-    multiValue: () =>
-      `!bg-gray-200 dark:!bg-gray-800`,
+                  multiValue: () =>
+                    `!bg-gray-200 dark:!bg-gray-800`,
 
-    multiValueLabel: () =>
-      `!text-black dark:!text-white `,
+                  multiValueLabel: () =>
+                    `!text-black dark:!text-white `,
 
-    multiValueRemove: () =>
-      `!text-black dark:!text-white hover:!bg-red-600 hover:!text-white`,
+                  multiValueRemove: () =>
+                    `!text-black dark:!text-white hover:!bg-red-600 hover:!text-white`,
 
-    placeholder: () =>
-      `!text-gray-500 dark:!text-gray-400`,
+                  placeholder: () =>
+                    `!text-gray-500 dark:!text-gray-400`,
 
-    input: () =>
-      `!text-black dark:!text-white `,
+                  input: () =>
+                    `!text-black dark:!text-white `,
 
-    singleValue: () =>
-      ` !text-black dark:!text-white `,
-  }}
+                  singleValue: () =>
+                    ` !text-black dark:!text-white `,
+                }}
               />
             </div>
           )}
