@@ -311,11 +311,17 @@ function AddFlashSalePage() {
         return;
       }
     }
+function formatDate(date: string) {
+  const d = new Date(date);
 
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
     const payload = {
       flashSaleName: name,
-      startDate: new Date(startDate).toISOString(),
-      endDate: new Date(endDate).toISOString(),
+     startDate: formatDate(startDate),
+  endDate: formatDate(endDate),
       items: itemsArray.map(({ productPriceId, flashSalePrice, beforeSalePrice }) => ({
         productPriceId,
         flashSalePrice,
@@ -561,11 +567,10 @@ function AddFlashSalePage() {
                                           onChange={(e) =>
                                             handlePriceChange(item.productPriceId, parseFloat(e.target.value) || 0)
                                           }
-                                          className={`w-28 text-right text-xs h-7 px-2 border ${
-                                            isPriceError
+                                          className={`w-28 text-right text-xs h-7 px-2 border ${isPriceError
                                               ? "border-destructive text-destructive"
                                               : "border-primary/50 text-primary"
-                                          }`}
+                                            }`}
                                         />
                                       </TableCell>
                                       <TableCell className="py-2 text-center">
@@ -651,11 +656,10 @@ function AddFlashSalePage() {
                               onChange={(e) =>
                                 handlePriceChange(item.productPriceId, parseFloat(e.target.value) || 0)
                               }
-                              className={`w-20 text-right text-xs p-1.5 h-8 border ${
-                                isPriceError
+                              className={`w-20 text-right text-xs p-1.5 h-8 border ${isPriceError
                                   ? "border-destructive text-destructive focus-visible:ring-destructive"
                                   : "border-default-300"
-                              }`}
+                                }`}
                             />
                             <Button
                               variant="ghost"
@@ -688,11 +692,11 @@ function AddFlashSalePage() {
                       )}
                     </Button>
                   </div>
-                                      {Object.keys(selectedItems).length < 2 && (
-                      <p className="text-xs text-destructive text-center mt-1">
-                        Please add at least 2 product
-                      </p>
-                    )}
+                  {Object.keys(selectedItems).length < 2 && (
+                    <p className="text-xs text-destructive text-center mt-1">
+                      Please add at least 2 product
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>
