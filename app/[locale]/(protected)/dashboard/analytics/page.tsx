@@ -523,9 +523,9 @@ useEffect(() => {
       <Dialog open={activeUsersDialogOpen} onOpenChange={setActiveUsersDialogOpen}>
         <DialogContent size="md" className="max-h-[85vh] flex flex-col overflow-hidden">
           <DialogHeader>
-            <DialogTitle>Active Users (Last 10 Days)</DialogTitle>
+            <DialogTitle>Active Users (Last 30 Days)</DialogTitle>
             <DialogDescription>
-              <span>List of active users in the last 10 days</span>
+              <span>List of active users in the last 30 days</span>
             </DialogDescription>
           </DialogHeader>
           {loadingActiveUsers ? (
