@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   ColumnFiltersState,
+  PaginationState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -29,10 +30,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "@/i18n/routing";
 import useGettingAllOrders from "@/services/Orders/gettingAllOrders";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Loader2, Plus, Search, X } from "lucide-react";
 import { Orders } from "@/types/orders";
-import SearchInput from "@/app/[locale]/(protected)/components/SearchInput/SearchInput";
 import useGetUsersByRoleId from "@/services/users/GetUsersByRoleId";
 import Cookies from "js-cookie";
 import { normalizeRole } from "@/lib/roleRoutes";
@@ -46,6 +46,7 @@ import { toast } from "sonner";
 import { Save } from "lucide-react";
 import useGettingUserOrders from "@/services/Orders/gettingUserOrders";
 import useGettingDeliveryOrders from "@/services/Orders/gettingDeliveryOrders";
+import { useDebounce } from "use-debounce";
 
 
 const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
@@ -77,12 +78,13 @@ const mapGroupedOrders = (rawGroups: any[]): Orders[] => {
       isGrouped: true,
       orders: subOrders,
       items: mergedItems,
-      totalAmount,
+      totalAmount: totalAmount || group.totalAmountOrder || 0,
       orderNote: mergedNotes,
       deliveryName: mergedDeliveryName,
       totalAmountOrder: group.totalAmountOrder,
       totalAmountOrderAfter: group.totalAmountOrderAfter,
       phoneNumber: group.phoneNumber,
+      doctorName: group.doctorName || firstOrder.doctorName,
       coupon: group.coupon,
       shippingFees: group.shippingFees,
     };
@@ -95,8 +97,16 @@ export default function TransactionsTable() {
   const isAdmin = userRole == "Admin";
   const userId = Cookies.get("userId");
 
-  const { loading: myOrdersLoading, orders: myOrders, gettingVendorOrders, error: myOrdersError } = useVendorOrder()
-  const { gettingAllOrders, orders, loading, error } = useGettingAllOrders();
+  const { loading: myOrdersLoading, orders: myOrders, gettingVendorOrders, error: myOrdersError } = useVendorOrder();
+  const {
+    gettingAllOrders,
+    orders,
+    loading,
+    error,
+    totalPages,
+    totalItems,
+    pageNumber: apiPageNumber,
+  } = useGettingAllOrders();
   const { gettingUserOrders, orders: userOrders, loading: userOrdersLoading } = useGettingUserOrders();
   const { loading: usersLoading, users: inventoryManagers, getUsersByRoleId } = useGetUsersByRoleId();
   const { loading: deliveryOrdersLoading, orders: deliveryOrders, gettingDeliveryOrders } = useGettingDeliveryOrders();
@@ -104,11 +114,19 @@ export default function TransactionsTable() {
   const isRepresentative = userRole === "representative";
   const isDelivery = userRole?.toLowerCase() === "delivery";
 
-
   const searchParams = useSearchParams();
   const filterUserId = searchParams ? searchParams.get("userId") : null;
+  const isServerPaginated = isAdmin && !filterUserId;
 
   const router = useRouter();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -117,10 +135,9 @@ export default function TransactionsTable() {
   const [filteredOrders, setFilteredOrders] = useState<Orders[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "all">("all");
 
-
   const allOrdersData = React.useMemo(() => {
     if (filterUserId && isAdmin) {
-      return userOrders?.filter(order => order.totalAmount !== 0) || [];
+      return userOrders || [];
     }
     let rawData;
     if (isAdmin) {
@@ -130,12 +147,14 @@ export default function TransactionsTable() {
     } else {
       rawData = myOrders;
     }
-    return rawData?.filter(order => order.totalAmount !== 0) || [];
+    return rawData || [];
   }, [isAdmin, isRepresentative, isDelivery, orders, myOrders, deliveryOrders, userOrders, filterUserId]);
 
-  const isLoadingData = (isAdmin && !filterUserId) ? loading : (filterUserId ? userOrdersLoading : (isRepresentative || isDelivery ? deliveryOrdersLoading : myOrdersLoading));
+  const isLoadingData = (isAdmin && !filterUserId)
+    ? loading
+    : (filterUserId ? userOrdersLoading : (isRepresentative || isDelivery ? deliveryOrdersLoading : myOrdersLoading));
 
-  const t = useTranslations("OrderList")
+  const t = useTranslations("OrderList");
 
   const columns = baseColumns({
     refresh: () => {
@@ -158,10 +177,19 @@ export default function TransactionsTable() {
   const table = useReactTable({
     data: filteredOrders ?? [],
     columns,
+    manualPagination: isServerPaginated,
+    pageCount: isServerPaginated ? Math.max(1, totalPages || 1) : undefined,
+    onPaginationChange: (updater) => {
+      const next = typeof updater === "function" ? updater(pagination) : updater;
+      setPagination(next);
+      if (isServerPaginated) {
+        gettingAllOrders(next.pageIndex + 1, next.pageSize, debouncedSearchTerm);
+      }
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    ...(!isServerPaginated ? { getPaginationRowModel: getPaginationRowModel() } : {}),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -171,85 +199,128 @@ export default function TransactionsTable() {
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   });
 
   const filterOrdersByStatus = (status: OrderStatus | "all") => {
     setSelectedStatus(status);
-    if (!allOrdersData) return;
-
-    if (status === "all") {
-      setFilteredOrders(allOrdersData);
-    } else {
-      const filtered = allOrdersData.filter(order => {
-        return order.status === status;
-      });
-      setFilteredOrders(filtered);
-    }
   };
 
+  // Sync pageIndex if apiPageNumber changes externally
   useEffect(() => {
-    if (isAdmin) {
-      if (filterUserId) {
+    if (isServerPaginated && apiPageNumber && apiPageNumber - 1 !== pagination.pageIndex) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: apiPageNumber - 1,
+      }));
+    }
+  }, [isServerPaginated, apiPageNumber]);
+
+  // Fetch when debouncedSearchTerm changes or initial load for server-paginated
+  useEffect(() => {
+    if (isServerPaginated) {
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      gettingAllOrders(1, pagination.pageSize, debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, isServerPaginated]);
+
+  // Fetch for non-server paginated roles or filterUserId
+  useEffect(() => {
+    if (!isServerPaginated) {
+      if (isAdmin && filterUserId) {
         gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
-      } else {
-        gettingAllOrders();
-      }
-    } else if (isRepresentative || isDelivery) {
-      gettingDeliveryOrders();
-    } else {
-      if (userId) {
+      } else if (isRepresentative || isDelivery) {
+        gettingDeliveryOrders();
+      } else if (userId) {
         gettingVendorOrders(userId);
       }
     }
-  }, [isAdmin, isRepresentative, isDelivery, userId, filterUserId, gettingAllOrders, gettingVendorOrders, gettingUserOrders, gettingDeliveryOrders, selectedStatus]);
+  }, [
+    isServerPaginated,
+    isAdmin,
+    filterUserId,
+    isRepresentative,
+    isDelivery,
+    userId,
+    gettingUserOrders,
+    gettingDeliveryOrders,
+    gettingVendorOrders,
+    selectedStatus,
+  ]);
 
-
-
+  // Filter orders for server paginated
   useEffect(() => {
-    if (allOrdersData) {
-      filterOrdersByStatus(selectedStatus);
-    }
-  }, [allOrdersData, selectedStatus]);
-
-  const handleRefresh = () => {
-    if (isAdmin) {
-      if (filterUserId) {
-        gettingUserOrders(filterUserId, selectedStatus === "all" ? null : selectedStatus);
-      } else {
-        gettingAllOrders();
+    if (isServerPaginated) {
+      if (!allOrdersData) {
+        setFilteredOrders([]);
+        return;
       }
-    } else if (isRepresentative || isDelivery) {
-      gettingDeliveryOrders();
-    } else {
-      gettingVendorOrders(userId);
+      if (selectedStatus === "all") {
+        setFilteredOrders(allOrdersData);
+      } else {
+        const filtered = allOrdersData.filter((order) => order.status === selectedStatus);
+        setFilteredOrders(filtered);
+      }
     }
-  };
+  }, [isServerPaginated, allOrdersData, selectedStatus]);
+
+  // Filter orders for non-server paginated roles
+  useEffect(() => {
+    if (!isServerPaginated) {
+      let data = allOrdersData || [];
+      if (selectedStatus !== "all") {
+        data = data.filter((order) => order.status === selectedStatus);
+      }
+      if (debouncedSearchTerm) {
+        const lower = debouncedSearchTerm.toLowerCase();
+        data = data.filter(
+          (order) =>
+            order.doctorName?.toLowerCase().includes(lower) ||
+            order.orderNumber?.toLowerCase().includes(lower) ||
+            order.phoneNumber?.toLowerCase().includes(lower)
+        );
+      }
+      setFilteredOrders(data);
+    }
+  }, [isServerPaginated, allOrdersData, selectedStatus, debouncedSearchTerm]);
 
   return (
     <Card className="w-full">
-      <div className="px-5 py-4 flex flex-col md:flex-row items-center gap-4">
-        <div className="flex items-center justify-end flex-1 gap-2">
-          <SearchInput
-            data={allOrdersData ?? []}
-            setFilteredData={setFilteredOrders}
-            filterKey="doctorName"
-            placeholder={t("searchPlaceholder") || "Search by doctor name..."}
-          />
+      <div className="px-5 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between flex-1 gap-4 w-full">
+          <div className="relative flex-1 w-full max-w-sm">
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="text"
+              placeholder={t("searchPlaceholder") || "Search by doctor name, phone, order number..."}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ps-9 pe-9 w-full"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                title="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
           {isAdmin && (
-          <Button
-            id="create-order-btn"
-            size="md"
-            className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90 transition-all rounded-md"
-            onClick={() => router.push("/dashboard/create-order")}
-          >
-            <Plus className="w-4 h-4" />
-            Create Order
-          </Button>
-        )}
+            <Button
+              id="create-order-btn"
+              size="md"
+              className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90 transition-all rounded-md w-full sm:w-auto"
+              onClick={() => router.push("/dashboard/create-order")}
+            >
+              <Plus className="w-4 h-4" />
+              Create Order
+            </Button>
+          )}
         </div>
-
-
       </div>
         <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start px-5">
           <Button
@@ -407,7 +478,10 @@ export default function TransactionsTable() {
           </div>
         </CardContent>
       )}
-      <TablePagination table={table} />
+      <TablePagination
+        table={table}
+        totalItems={isServerPaginated ? totalItems : (filteredOrders?.length ?? 0)}
+      />
     </Card>
   );
 };

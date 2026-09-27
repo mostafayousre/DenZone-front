@@ -4,11 +4,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DataTablePaginationProps {
   table: Table<any>;
+  totalItems?: number;
 }
 
-const TablePagination = ({ table }: DataTablePaginationProps) => {
+const TablePagination = ({ table, totalItems }: DataTablePaginationProps) => {
   const currentPage = table.getState().pagination.pageIndex;
-  const totalPages = table.getPageCount();
+  const rawTotalPages = table.getPageCount();
+  const totalPages = Math.max(1, rawTotalPages || 1);
   
   const renderPageNumbers = () => {
     const pages = [];
@@ -162,6 +164,9 @@ const TablePagination = ({ table }: DataTablePaginationProps) => {
       
       <div className="text-sm text-muted-foreground">
         Page {currentPage + 1} of {totalPages}
+        {totalItems !== undefined && (
+          <span className="ms-1.5 opacity-80">({totalItems} items)</span>
+        )}
       </div>
     </div>
   );
