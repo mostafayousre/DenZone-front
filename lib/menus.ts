@@ -103,6 +103,14 @@ export function getMenuList(pathname: string, t: any, permissions: string[] = []
               permission: "Permissions.Brand.View",
             },
             {
+              href: "/dashboard/mobile-home",
+              label: t("mobileHomePage"),
+              active: pathname === "/dashboard/mobile-home",
+              children: [],
+              icon: "heroicons-outline:device-phone-mobile",
+              permission: "",
+            },
+            {
                 href: "/dashboard/banners",
                 label: t("ads"),
                 active: pathname.includes("/dashboard/banners") || pathname.includes("/dashboard/special-offers"),
