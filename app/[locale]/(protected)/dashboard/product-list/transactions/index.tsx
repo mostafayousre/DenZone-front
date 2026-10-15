@@ -42,6 +42,8 @@ const TransactionsTable = () => {
   const userRole = Cookies.get("userRole");
   const isAdmin = userRole === "Admin";
   const ispreparationrepresentative = userRole === "Preparation representative";
+  const accoutManger = userRole === "account manager"
+
   
   // ✅ state واحد للسيرش فقط
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,7 +126,7 @@ const TransactionsTable = () => {
           />
         </div>
 
-        {(ispreparationrepresentative || isAdmin)   && (
+        {(ispreparationrepresentative || isAdmin || accoutManger)   && (
           <div className="flex items-center gap-2 flex-wrap">
             <Link href="/dashboard/add-product">
               <Button size="md" variant="outline" className="gap-2">
