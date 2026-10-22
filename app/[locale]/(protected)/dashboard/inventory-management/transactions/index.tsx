@@ -99,7 +99,8 @@ const TransactionsTable = () => {
 
   const isAdmin = userRole === "Admin";
   const ispreparationrepresentative = userRole === "Preparation representative";
-  const showProviderSelect = isAdmin || ispreparationrepresentative;
+  const accoutManger = userRole === "account manager"
+  const showProviderSelect = isAdmin || ispreparationrepresentative || accoutManger;
   const tableData = showProviderSelect ? adminPrices : managerPrices;
   const isLoading = showProviderSelect ? inventoryIdLoading : managerLoading;
 
@@ -185,7 +186,7 @@ const TransactionsTable = () => {
   return (
     <Card className="w-full">
       <div className="flex flex-wrap gap-4 items-center py-4 px-5">
-        {isAdmin || ispreparationrepresentative ? (
+        {isAdmin || ispreparationrepresentative || accoutManger ? (
           <div className="flex-1 flex flex-wrap justify-between items-center gap-4">
             <Select onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[200px] cursor-pointer">

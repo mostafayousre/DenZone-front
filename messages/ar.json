@@ -1184,6 +1184,8 @@
   },
   "NotificationsList": {
     "title": "قائمة الإشعارات",
+    "group": "المجموعة",
+    "recipients": "المستلمون",
     "id": "الرقم التعريفي",
     "user": "اسم المستخدم",
     "notificationTitle": "العنوان",

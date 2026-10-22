@@ -1186,6 +1186,8 @@
   },
   "NotificationsList": {
     "title": "Notifications List",
+    "group": "Group",
+    "recipients": "Recipients",
     "id": "ID",
     "user": "User Name",
     "notificationTitle": "Title",
