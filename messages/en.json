@@ -1233,10 +1233,14 @@
     "moveUp": "Move Up",
     "moveDown": "Move Down",
     "edit": "Edit",
+    "addItem": "Add Item",
+    "editItem": "Edit Item",
     "delete": "Delete",
+    "fixedSection": "Fixed Section",
     "deleteSuccess": "Section deleted successfully",
     "addSuccess": "Added section:",
     "editSuccess": "Section changes saved successfully",
+
     "sectionTypes": {
       "hero_banner": "Hero Banners Slider",
       "flash_sale": "Flash Sale Deals",
@@ -1287,7 +1291,19 @@
       "productPrice": "Price (EGP)",
       "productImage": "Image URL",
       "cancel": "Cancel",
-      "save": "Save Changes"
+      "save": "Save Changes",
+      "linkActionType": "Link Action",
+      "linkTypeExternal": "External URL",
+      "linkTypeProduct": "Product",
+      "linkTypeSection": "Section",
+      "externalUrlPlaceholder": "https://example.com",
+      "selectProduct": "Select Product",
+      "selectProductPlaceholder": "Search and select a product...",
+      "selectSection": "Select Section",
+      "selectSectionPlaceholder": "Choose a section...",
+      "searchProducts": "Search products...",
+      "noProductsFound": "No products found",
+      "noSectionsFound": "No sections available"
     },
     "preview": {
       "title": "Mobile Screen Preview",
@@ -1301,7 +1317,23 @@
       "categories": "Categories",
       "deals": "Deals",
       "orders": "Orders",
-      "profile": "Profile"
+      "profile": "Profile",
+      "categoriesPlaceholder": "Browse categories and specialties",
+      "certifiedDoctors": "Certified Doctors",
+      "dealsSectionTitle": "Today's Deals",
+      "dealsSectionDesc": "Special offers and discounts available today only",
+      "categoriesSectionTitle": "Product Categories & Specialties",
+      "categoriesSectionDesc": "Easily browse available categories",
+      "featuredProductsTitle": "Featured Products",
+      "featuredProductsDesc": "Recommended products from doctors",
+      "promoGridTitle": "Exclusive Offers",
+      "promoGridDesc": "Don't miss these special offers",
+      "brandsTitle": "Available Brands",
+      "brandsDesc": "Trusted, high-quality brands",
+      "storiesTitle": "Doctor Stories & Video Reels",
+      "storiesDesc": "Educational and demo content from doctors",
+      "reviewsTitle": "Doctor Reviews & Feedback",
+      "reviewsDesc": "Reviews from trusted doctors"
     }
   }
 }

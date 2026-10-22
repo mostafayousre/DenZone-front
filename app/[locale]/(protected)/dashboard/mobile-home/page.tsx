@@ -1,40 +1,171 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useTranslations } from "next-intl";
 import {
   Smartphone,
   Plus,
-  Save,
-  RotateCcw,
   Search,
   Layers,
   LayoutTemplate,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { HomeSection } from "./types";
-import { INITIAL_SECTIONS } from "./initial-data";
+import { HomeSection, SectionType, SectionConfig } from "./types";
+import { BASE_INITIAL_SECTIONS } from "./initial-data";
 import { SectionCard } from "./components/SectionCard";
 import { MobilePhonePreview } from "./components/MobilePhonePreview";
 import { AddSectionModal } from "./components/AddSectionModal";
 import { EditSectionModal } from "./components/EditSectionModal";
+import { EditItemModal } from "./components/EditItemModal";
+import useGetHomeSections, { HomeSectionApiItem } from "@/services/homeSections/getHomeSections";
+import useDeleteHomeSection from "@/services/homeSections/deleteHomeSection";
+import useUpdateHomeSection from "@/services/homeSections/updateHomeSection";
+import useMoveHomeSection from "@/services/homeSections/moveHomeSection";
+
+const getDefaultConfigForType = (secType: SectionType, apiId: string): SectionConfig => {
+  if (secType === "hero_banner") {
+    return {
+      autoplay: true,
+      layout: "carousel",
+      banners: [],
+    };
+  }
+
+  if (secType === "featured_products") {
+    return {
+      layout: "grid_2",
+      showViewAll: true,
+      products: [],
+    };
+  }
+
+  return {};
+};
 
 export default function MobileHomePageBuilder() {
   const t = useTranslations("MobileHome");
-  const [sections, setSections] = useState<HomeSection[]>(INITIAL_SECTIONS);
+  const [sections, setSections] = useState<HomeSection[]>(BASE_INITIAL_SECTIONS);
   const [selectedSectionId, setSelectedSectionId] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { getHomeSections, loading: isLoadingSections } = useGetHomeSections();
+  const { deleteHomeSection } = useDeleteHomeSection();
+  const { updateHomeSection } = useUpdateHomeSection();
+  const { moveHomeSection } = useMoveHomeSection();
+
   // Modals
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addItemModalOpen, setAddItemModalOpen] = useState(false);
+  const [editItemModalOpen, setEditItemModalOpen] = useState(false);
   const [editingSection, setEditingSection] = useState<HomeSection | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+
+  // Load API sections on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSections = async () => {
+      try {
+        const apiData = await getHomeSections();
+        if (!isMounted) return;
+
+        if (Array.isArray(apiData) && apiData.length > 0) {
+          const apiMappedSections: HomeSection[] = apiData.map((item: HomeSectionApiItem, idx: number) => {
+            const secType: SectionType =
+              (item.typeKey as SectionType) ||
+              (item.type === 1 ? "hero_banner" : "featured_products");
+
+            const config = getDefaultConfigForType(secType, item.id);
+            if (Array.isArray(item.items) && item.items.length > 0) {
+              if (secType === "hero_banner" || item.type === 1) {
+                config.banners = item.items.map((it: any) => ({
+                  id: it.id || `b_${Date.now()}`,
+                  kind: it.kind ?? 1,
+                  title: it.title || "",
+                  subtitle: it.subtitle || "",
+                  price: it.price ?? 0,
+                  imageUrl: it.imageUrl || it.imageName || it.imageFile || it.image || "",
+                  linkUrl: it.linkUrl || it.link || "",
+                  productPriceId: it.productPriceId || null,
+                  linkSectionId: it.linkSectionId || null,
+                  categoryId: it.categoryId || null,
+                  brandId: it.brandId || null,
+                }));
+              } else if (secType === "featured_products" || item.type === 4) {
+                config.products = item.items.map((it: any) => {
+                  let img = it.imageUrl || it.image || it.productImage || "";
+                  if (!img && Array.isArray(it.images) && it.images.length > 0) {
+                    const first = it.images[0];
+                    img =
+                      typeof first === "string"
+                        ? first
+                        : first?.url || first?.imageUrl || first?.imagePath || "";
+                  }
+                  return {
+                    id: it.id || `p_${Date.now()}`,
+                    kind: it.kind ?? 2,
+                    productPriceId: it.productPriceId || it.id,
+                    title: it.title || "Product",
+                    subtitle: it.subtitle || "",
+                    category: it.categoryName || it.category || "Supplies",
+                    price: it.price ?? 0,
+                    salesPrice: it.salesPrice ?? it.oldPrice ?? null,
+                    oldPrice: it.oldPrice ?? it.salesPrice ?? null,
+                    discountRate: it.discountRate ?? null,
+                    imageUrl: img,
+                    linkUrl: it.linkUrl || "",
+                    categoryId: it.categoryId || null,
+                    brandId: it.brandId || null,
+                    inStock: true,
+                  };
+                });
+              }
+            }
+
+            return {
+              id: item.id,
+              type: secType,
+              typeNumber: item.type,
+              title: item.title,
+              subtitle: item.subtitle,
+              enabled: item.isVisible ?? true,
+              order: BASE_INITIAL_SECTIONS.length + idx + 1,
+              config,
+              items: item.items || [],
+              lastUpdated: item.createdAt,
+              startDate: item.startDate,
+              endDate: item.endDate,
+            };
+          });
+
+          // Combine the 4 base fixed sections + dynamic sections from /api/HomeSections
+          const combined = [...BASE_INITIAL_SECTIONS, ...apiMappedSections].map((s, idx) => ({
+            ...s,
+            order: idx + 1,
+            isStatic: s.isStatic ?? idx < 4,
+          }));
+
+          setSections(combined);
+        } else {
+          setSections(BASE_INITIAL_SECTIONS);
+        }
+      } catch (err) {
+        console.error("Failed to load sections from /api/HomeSections:", err);
+      }
+    };
+
+    loadSections();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
 
   // Helper to re-index and update
   const updateSections = (newSections: HomeSection[]) => {
@@ -43,44 +174,118 @@ export default function MobileHomePageBuilder() {
   };
 
   // Reorder Up
-  const handleMoveUp = (id: string) => {
+  const handleMoveUp = async (id: string) => {
     const idx = sections.findIndex((s) => s.id === id);
     if (idx <= 0) return;
+    if (sections[idx]?.isStatic) return;
+    if (sections[idx - 1]?.isStatic) return;
+
+    const previousSections = [...sections];
     const newSections = [...sections];
     const [moved] = newSections.splice(idx, 1);
     newSections.splice(idx - 1, 0, moved);
     updateSections(newSections);
+
+    try {
+      await moveHomeSection(id, "up");
+    } catch (err: any) {
+      updateSections(previousSections);
+      toast.error(
+        err?.response?.data?.message || err?.message || "Failed to move section up"
+      );
+    }
   };
 
   // Reorder Down
-  const handleMoveDown = (id: string) => {
+  const handleMoveDown = async (id: string) => {
     const idx = sections.findIndex((s) => s.id === id);
     if (idx < 0 || idx >= sections.length - 1) return;
+    if (sections[idx]?.isStatic) return;
+
+    const previousSections = [...sections];
     const newSections = [...sections];
     const [moved] = newSections.splice(idx, 1);
     newSections.splice(idx + 1, 0, moved);
     updateSections(newSections);
+
+    try {
+      await moveHomeSection(id, "down");
+    } catch (err: any) {
+      updateSections(previousSections);
+      toast.error(
+        err?.response?.data?.message || err?.message || "Failed to move section down"
+      );
+    }
   };
 
   // Toggle Visibility
-  const handleToggleEnabled = (id: string) => {
-    const newSections = sections.map((s) =>
-      s.id === id ? { ...s, enabled: !s.enabled } : s
+  const handleToggleEnabled = async (id: string) => {
+    const target = sections.find((s) => s.id === id);
+    if (!target || target.isStatic) return;
+
+    const nextVisibility = !target.enabled;
+
+    // Optimistically update UI
+    const updatedSections = sections.map((s) =>
+      s.id === id ? { ...s, enabled: nextVisibility } : s
     );
-    updateSections(newSections);
+    updateSections(updatedSections);
+
+    const payload = {
+      title: target.title || "",
+      subtitle: target.subtitle || "",
+      isVisible: nextVisibility,
+      startDate: target.startDate || new Date().toISOString(),
+      endDate: target.endDate || new Date().toISOString(),
+    };
+
+    try {
+      await updateHomeSection(id, payload);
+      toast.success(t("editSuccess"));
+    } catch (err: any) {
+      // Revert if API call fails
+      const reverted = sections.map((s) =>
+        s.id === id ? { ...s, enabled: target.enabled } : s
+      );
+      updateSections(reverted);
+      toast.error(
+        err?.response?.data?.message || err?.message || "Failed to update section visibility"
+      );
+    }
   };
 
   // Delete Section
-  const handleDelete = (id: string) => {
-    const newSections = sections.filter((s) => s.id !== id);
-    updateSections(newSections);
-    toast.success(t("deleteSuccess"));
+  const handleDelete = async (id: string) => {
+    const target = sections.find((s) => s.id === id);
+    if (!target || target.isStatic) return;
+
+    try {
+      await deleteHomeSection(id);
+      const newSections = sections.filter((s) => s.id !== id);
+      updateSections(newSections);
+      if (selectedSectionId === id) {
+        setSelectedSectionId(undefined);
+      }
+      toast.success(t("deleteSuccess"));
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || err?.message || "Failed to delete section"
+      );
+    }
   };
 
-  // Edit Section
-  const handleEdit = (section: HomeSection) => {
+  // Add Items to Section (formerly edit button)
+  const handleAddItem = (section: HomeSection) => {
+    if (section.isStatic) return;
     setEditingSection(section);
-    setEditModalOpen(true);
+    setAddItemModalOpen(true);
+  };
+
+  // Edit Section Item via /api/HomeSections/{id}/items/{itemId}
+  const handleEdit = (section: HomeSection) => {
+    if (section.isStatic) return;
+    setEditingSection(section);
+    setEditItemModalOpen(true);
   };
 
   const handleSaveEditedSection = (updated: HomeSection) => {
@@ -95,23 +300,6 @@ export default function MobileHomePageBuilder() {
     updateSections(newSections);
     setSelectedSectionId(newSection.id);
     toast.success(`${t("addSuccess")} ${newSection.title}`);
-  };
-
-  // Reset to default
-  const handleResetToDefault = () => {
-    if (confirm(t("resetConfirm"))) {
-      updateSections(INITIAL_SECTIONS);
-      toast.success(t("resetSuccess"));
-    }
-  };
-
-  // Save changes
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      toast.success(t("saveSuccess"));
-    }, 600);
   };
 
   // Filter sections by search query
@@ -135,32 +323,16 @@ export default function MobileHomePageBuilder() {
             <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 text-xs font-semibold">
               {t("liveBadge")}
             </Badge>
+            {isLoadingSections && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground animate-pulse ml-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                <span>Loading API sections...</span>
+              </div>
+            )}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             {t("pageDescription")}
           </p>
-        </div>
-
-        <div className="flex items-center gap-2.5">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetToDefault}
-            className="text-xs h-9 gap-1.5 text-muted-foreground"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>{t("resetDefault")}</span>
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="text-xs h-9 px-4 gap-1.5 font-bold bg-primary text-primary-foreground"
-          >
-            <Save className="h-3.5 w-3.5" />
-            <span>{isSaving ? t("saving") : t("saveChanges")}</span>
-          </Button>
         </div>
       </div>
 
@@ -200,21 +372,32 @@ export default function MobileHomePageBuilder() {
                 <p className="text-xs text-muted-foreground mt-0.5">{t("noResultsSub")}</p>
               </div>
             ) : (
-              displayedSections.map((section, index) => (
-                <SectionCard
-                  key={section.id}
-                  section={section}
-                  index={index}
-                  totalSections={displayedSections.length}
-                  onMoveUp={handleMoveUp}
-                  onMoveDown={handleMoveDown}
-                  onToggleEnabled={handleToggleEnabled}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  isSelected={selectedSectionId === section.id}
-                  onSelect={(id) => setSelectedSectionId(id)}
-                />
-              ))
+              displayedSections.map((section, index) => {
+                const fullIdx = sections.findIndex((s) => s.id === section.id);
+                const canMoveUp =
+                  !section.isStatic && fullIdx > 0 && !sections[fullIdx - 1]?.isStatic;
+                const canMoveDown =
+                  !section.isStatic && fullIdx >= 0 && fullIdx < sections.length - 1;
+
+                return (
+                  <SectionCard
+                    key={section.id}
+                    section={section}
+                    index={index}
+                    totalSections={displayedSections.length}
+                    canMoveUp={canMoveUp}
+                    canMoveDown={canMoveDown}
+                    onMoveUp={handleMoveUp}
+                    onMoveDown={handleMoveDown}
+                    onToggleEnabled={handleToggleEnabled}
+                    onAddItem={handleAddItem}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    isSelected={selectedSectionId === section.id}
+                    onSelect={(id) => setSelectedSectionId(id)}
+                  />
+                );
+              })
             )}
           </div>
 
@@ -262,12 +445,25 @@ export default function MobileHomePageBuilder() {
         onAddSection={handleAddSection}
       />
 
+      {/* Add Items to Section Modal (POST /api/HomeSections/{id}/items) */}
       <EditSectionModal
         section={editingSection}
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
+        open={addItemModalOpen}
+        onOpenChange={setAddItemModalOpen}
         onSave={handleSaveEditedSection}
+        availableSections={sections}
+      />
+
+      {/* Edit Section Item Modal (PUT /api/HomeSections/{id}/items/{itemId}) */}
+      <EditItemModal
+        section={editingSection}
+        open={editItemModalOpen}
+        onOpenChange={setEditItemModalOpen}
+        onSaveSuccess={handleSaveEditedSection}
+        onOpenAddItem={handleAddItem}
+        availableSections={sections}
       />
     </div>
   );
 }
+

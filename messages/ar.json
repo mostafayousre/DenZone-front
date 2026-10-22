@@ -1231,7 +1231,10 @@
     "moveUp": "تحريك لأعلى",
     "moveDown": "تحريك لأسفل",
     "edit": "تعديل",
+    "addItem": "إضافة عنصر",
+    "editItem": "تعديل العنصر",
     "delete": "حذف",
+    "fixedSection": "قسم ثابت",
     "deleteSuccess": "تم حذف القسم بنجاح",
     "addSuccess": "تمت إضافة قسم:",
     "editSuccess": "تم حفظ تعديلات القسم بنجاح",
@@ -1285,7 +1288,19 @@
       "productPrice": "السعر (ج.م)",
       "productImage": "رابط الصورة",
       "cancel": "إلغاء",
-      "save": "حفظ التعديلات"
+      "save": "حفظ التعديلات",
+      "linkActionType": "نوع التوجيه عند الضغط",
+      "linkTypeExternal": "رابط خارجي",
+      "linkTypeProduct": "منتج",
+      "linkTypeSection": "قسم",
+      "externalUrlPlaceholder": "https://example.com",
+      "selectProduct": "اختيار منتج",
+      "selectProductPlaceholder": "ابحث واختر منتجاً...",
+      "selectSection": "اختيار قسم",
+      "selectSectionPlaceholder": "اختر قسماً من الصفحة الرئيسية...",
+      "searchProducts": "بحث عن منتج...",
+      "noProductsFound": "لم يتم العثور على منتجات",
+      "noSectionsFound": "لا توجد أقسام متاحة"
     },
     "preview": {
       "title": "معاينة شاشة الموبايل",
@@ -1299,7 +1314,23 @@
       "categories": "الأقسام",
       "deals": "العروض",
       "orders": "الطلبات",
-      "profile": "حسابي"
+      "profile": "حسابي",
+      "certifiedDoctors": "أطباء معتمدين",
+      "dealsSectionTitle": "عروض اليوم",
+      "dealsSectionDesc": "عروض وخصومات خاصة متاحة اليوم فقط",
+      "categoriesSectionTitle": "أقسام وتصنيفات المنتجات",
+      "categoriesSectionDesc": "تصفح الأقسام المتاحة بسهولة",
+      "featuredProductsTitle": "منتجات مميزة",
+      "featuredProductsDesc": "منتجات موصى بها من الأطباء",
+      "promoGridTitle": "عروض حصرية",
+      "promoGridDesc": "عروض خاصة لا تفوت",
+      "brandsTitle": "الماركات المتوفرة",
+      "brandsDesc": "ماركات موثوقة وعالية الجودة",
+      "storiesTitle": "فيديوهات وقصص الأطباء",
+      "storiesDesc": "محتوى تعليمي وتجريبي من الأطباء",
+      "reviewsTitle": "آراء وتقييمات الأطباء",
+      "reviewsDesc": "تقييمات من أطباء موثوقين"
+      
     }
   }
 }

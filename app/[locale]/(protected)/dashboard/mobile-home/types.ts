@@ -8,31 +8,53 @@ export type SectionType =
   | "brand_slider"
   | "video_stories"
   | "doctor_reviews"
-  | "deal_grid_2x";
+  | "deal_grid_2x"
+  | (string & {});
 
 export interface BannerItem {
   id: string;
+  kind?: number;
   title: string;
   subtitle?: string;
+  price?: number;
   imageUrl: string;
+  imageFile?: File | null;
+  linkUrl?: string;
+  productPriceId?: string | null;
+  linkSectionId?: string | null;
+  categoryId?: string | null;
+  brandId?: string | null;
   badge?: string;
-  linkType: "category" | "product" | "brand" | "external" | "flash_sale";
+  linkType?: "external" | "product" | "section" | "category" | "brand" | "flash_sale" | (string & {});
   targetId?: string;
   buttonText?: string;
   bgColor?: string;
+  selectedProductName?: string;
+  selectedProductImage?: string;
+  selectedSectionTitle?: string;
 }
 
 export interface ProductItem {
   id: string;
+  kind?: number;
   title: string;
+  subtitle?: string;
   category: string;
   price: number;
+  salesPrice?: number | null;
+  oldPrice?: number | null;
+  discountRate?: number | null;
   originalPrice?: number;
   discountPercentage?: number;
-  rating: number;
-  reviewsCount: number;
+  rating?: number;
+  reviewsCount?: number;
   imageUrl: string;
-  inStock: boolean;
+  imageFile?: File | null;
+  linkUrl?: string;
+  productPriceId?: string;
+  categoryId?: string;
+  brandId?: string;
+  inStock?: boolean;
   brand?: string;
   badge?: string;
 }
@@ -100,9 +122,20 @@ export interface SectionConfig {
   scheduleEnd?: string;
 }
 
+export interface HomeSectionTypeDto {
+  type: number;
+  key: string;
+  name: string;
+  defaultTitle: string;
+  defaultSubtitle: string;
+  itemKind: number;
+}
+
 export interface HomeSection {
   id: string;
   type: SectionType;
+  typeNumber?: number;
+  itemKind?: number;
   title: string;
   subtitle?: string;
   badge?: string;
@@ -111,6 +144,10 @@ export interface HomeSection {
   order: number;
   config: SectionConfig;
   lastUpdated?: string;
+  isStatic?: boolean;
+  startDate?: string | null;
+  endDate?: string | null;
+  items?: any[];
 }
 
 export interface LayoutPreset {
