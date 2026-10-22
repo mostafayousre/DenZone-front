@@ -8,7 +8,6 @@ import {
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
@@ -23,67 +22,15 @@ import {
 } from "@/components/ui/table";
 import TablePagination from "../../brand/transactions/table-pagination"; 
 import { CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useGetAllNotifications, { NotificationItem } from "@/services/notifications/useGetAllNotifications";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
+import { useDebounce } from "use-debounce";
 
-// تعريف الـ Interface الجديد للداتا المدمجة
-export interface TransformedNotificationItem {
-    id: string;
-    ids: string[];
-    title: string;
-    message: string;
-    createdAt: string;
-    expired: string;
-    groupName: string;
-    users: { userId: string; userName: string }[];
-}
-
-// دالة تجميع الإشعارات بناءً على العنوان ونص الرسالة
-const transformNotifications = (rawData: NotificationItem[]): TransformedNotificationItem[] => {
-    const grouped: { [key: string]: TransformedNotificationItem } = {};
-
-    rawData.forEach((item) => {
-        // مفتاح الدمج هو العنوان والرسالة معاً لضمان التطابق
-        const key = `${item.title || ""}_${item.message || ""}`;
-
-        if (!grouped[key]) {
-            grouped[key] = {
-                id: item.id,
-                ids: [item.id],
-                title: item.title,
-                message: item.message,
-                createdAt: item.createdAt,
-                expired: item.expired,
-                groupName: "All Doctors", 
-                users: [],
-            };
-        } else {
-            grouped[key].ids.push(item.id);
-        }
-
-        // إضافة المستخدم الحالي لقائمة مستلمي هذا الإشعار
-        if (item.userId) {
-            grouped[key].users.push({
-                userId: item.userId,
-                userName: item.userName || "—",
-            });
-        }
-    });
-
-    const result = Object.values(grouped);
-    result.forEach((item) => {
-        if (item.users.length === 1) {
-            item.groupName = "Specific";
-        } else {
-            item.groupName = "All Doctors";
-        }
-    });
-
-    return result;
-};
+// تصدير للنوع لضمان التوافق مع أي استيرادات أخرى
+export type TransformedNotificationItem = NotificationItem;
 
 const NotificationsTable = () => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -91,22 +38,44 @@ const NotificationsTable = () => {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
 
-    const { data, loading, getAllNotifications } = useGetAllNotifications();
-    const t = useTranslations("NotificationsList");
-    
-    // تمرير دالة التحديث والترجمة للأعمدة
-    const columns = baseColumns({ refresh: getAllNotifications, t });
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
-    const [filteredNotifications, setFilteredNotifications] = useState<TransformedNotificationItem[]>([]);
-    const [searchValue, setSearchValue] = useState("");
+    const {
+        data,
+        totalItems,
+        totalPages,
+        pageNumber,
+        loading,
+        getAllNotifications,
+    } = useGetAllNotifications();
+
+    const t = useTranslations("NotificationsList");
+
+    const handleRefresh = useCallback(() => {
+        getAllNotifications(pagination.pageIndex + 1, pagination.pageSize, debouncedSearchTerm);
+    }, [getAllNotifications, pagination.pageIndex, pagination.pageSize, debouncedSearchTerm]);
+
+    // تمرير دالة التحديث والترجمة للأعمدة
+    const columns = baseColumns({ refresh: handleRefresh, t });
 
     const table = useReactTable({
-        data: filteredNotifications ?? [],
+        data: data ?? [],
         columns,
+        manualPagination: true,
+        pageCount: Math.max(1, totalPages || 1),
+        onPaginationChange: (updater) => {
+            const next = typeof updater === "function" ? updater(pagination) : updater;
+            setPagination(next);
+            getAllNotifications(next.pageIndex + 1, next.pageSize, debouncedSearchTerm);
+        },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -116,60 +85,43 @@ const NotificationsTable = () => {
             columnFilters,
             columnVisibility,
             rowSelection,
+            pagination,
         },
     });
 
+    // جلب البيانات عند البحث أو التحميل الأولي
     useEffect(() => {
-        getAllNotifications();
-    }, [getAllNotifications]);
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        getAllNotifications(1, pagination.pageSize, debouncedSearchTerm);
+    }, [debouncedSearchTerm, getAllNotifications]);
 
-    // تحويل البيانات عند وصولها من السيرفر لأول مرة
+    // مزامنة pageIndex إذا تغير pageNumber من السيرفر
     useEffect(() => {
-        if (data) {
-            setFilteredNotifications(transformNotifications(data));
+        if (pageNumber && pageNumber - 1 !== pagination.pageIndex) {
+            setPagination((prev) => ({
+                ...prev,
+                pageIndex: pageNumber - 1,
+            }));
         }
-    }, [data]);
-
-    // تعديل الفلترة والبحث لتتوافق مع البيانات المدمجة والجروب واليوزرز
-    useEffect(() => {
-        if (!data) return;
-        
-        const transformed = transformNotifications(data);
-
-        if (!searchValue) {
-            setFilteredNotifications(transformed);
-        } else {
-            const query = searchValue.toLowerCase();
-            const filtered = transformed.filter((item) =>
-                (item.title && item.title.toLowerCase().includes(query)) ||
-                (item.message && item.message.toLowerCase().includes(query)) ||
-                (item.groupName && item.groupName.toLowerCase().includes(query)) ||
-                item.users.some(u => u.userName && u.userName.toLowerCase().includes(query))
-            );
-            setFilteredNotifications(filtered);
-        }
-    }, [searchValue, data]);
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center py-20">
-                <Loader2 size={36} className="animate-spin text-primary" />
-            </div>
-        );
-    }
+    }, [pageNumber]);
 
     return (
         <div className="w-full">
-            <div className="flex flex-wrap justify-between items-center py-4 px-6 border-b border-solid border-default-200">
+            <div className="flex flex-wrap justify-between items-center py-4 px-6 border-b border-solid border-default-200 gap-4">
                 <div className="flex-1 max-w-sm">
                     <Input
                         type="text"
                         placeholder={t("searchPlaceholder") || "Search by title, group, or user..."}
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full max-w-xl"
                     />
                 </div>
+                {totalItems > 0 && (
+                    <div className="text-xs text-muted-foreground font-medium">
+                        {totalItems.toLocaleString()} {t("title") || "Notifications"}
+                    </div>
+                )}
             </div>
 
             <CardContent className="pt-6">
@@ -189,7 +141,16 @@ const NotificationsTable = () => {
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {table.getRowModel().rows?.length ? (
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Loader2 className="animate-spin text-primary" size={20} />
+                                            <span>{t("loading") || "Loading notifications..."}</span>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow key={row.id}>
                                         {row.getVisibleCells().map((cell) => (

@@ -18,10 +18,10 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { TransformedNotificationItem } from "./NotificationsTable";
+import { NotificationItem, NotificationUser } from "@/services/notifications/useGetAllNotifications";
 
 // مكون فرعي لعرض قائمة اليوزرز داخل Modal نضيف ومصمم بالكامل بـ AlertDialog
-const UsersListCell = ({ users, t }: { users: { userId: string; userName: string }[]; t: (key: string) => string }) => {
+const UsersListCell = ({ users, t }: { users: (NotificationUser | { id?: string; userId?: string; userName: string })[]; t: (key: string) => string }) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -44,12 +44,17 @@ const UsersListCell = ({ users, t }: { users: { userId: string; userName: string
                 
                 {/* قائمة منسدلة بـ Scroll داخلي ناصع النظافة لعرض اليوزرز */}
                 <div className="max-h-[250px] overflow-y-auto space-y-2 pr-1 dir-rtl" dir="rtl">
-                    {users.map((user, idx) => (
-                        <div key={idx} className="flex justify-between items-center p-2.5 bg-default-100 dark:bg-default-800 rounded-lg border border-solid border-default-200">
-                            <span className="text-sm font-medium text-default-800">{user.userName}</span>
-                            <span className="text-xs text-muted-foreground font-mono">ID: {user.userId.slice(0, 8)}...</span>
-                        </div>
-                    ))}
+                    {users.map((user: any, idx) => {
+                        const uid = user.id || user.userId || "";
+                        return (
+                            <div key={idx} className="flex justify-between items-center p-2.5 bg-default-100 dark:bg-default-800 rounded-lg border border-solid border-default-200">
+                                <span className="text-sm font-medium text-default-800">{user.userName || "—"}</span>
+                                {uid && (
+                                    <span className="text-xs text-muted-foreground font-mono">ID: {uid.slice(0, 8)}...</span>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <AlertDialogFooter className="mt-4 flex justify-end">
@@ -61,8 +66,11 @@ const UsersListCell = ({ users, t }: { users: { userId: string; userName: string
 };
 
 const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (key: string) => string }) => {
-    const ids = row.original.ids || [row.original.id];
+    const ids = row.original.notificationIds?.length
+        ? row.original.notificationIds
+        : (row.original.ids || [row.original.id]);
     const users = row.original.users || [];
+    const count = row.original.recipientsCount ?? users.length;
     const { deleteNotification, loading: deleting } = useDeleteNotification();
     const { resendNotification } = useResendNotification();
     const [resending, setResending] = useState(false);
@@ -108,8 +116,8 @@ const ActionCell = ({ row, refresh, t }: { row: any; refresh: () => void; t: (ke
 
     return (
         <div className="flex items-center gap-2">
-            {/* If group is All Doctors (users.length > 1), show users popup button in Actions */}
-            {users.length > 1 && (
+            {/* If group is multiple recipients or users list available, show users popup button in Actions */}
+            {(count > 1 || users.length > 1) && users.length > 0 && (
                 <UsersListCell users={users} t={t} />
             )}
 
@@ -204,47 +212,49 @@ const MessageCell = ({ message, t }: { message: string; t: (key: string) => stri
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="text-primary text-xs font-semibold hover:underline mt-1 cursor-pointer block"
                 >
-                    {isExpanded ?  "See less" :  "See more"}
+                    {isExpanded ? "See less" : "See more"}
                 </button>
             )}
         </div>
     );
 };
 
-export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<TransformedNotificationItem>[] => [
+export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: string) => string }): ColumnDef<NotificationItem>[] => [
     {
-        accessorKey: "groupName",
-        header: "group",
+        accessorKey: "group",
+        header: t("group") || "Group",
         cell: ({ row }) => {
-            const groupName = row.getValue("groupName") as string;
-            const displayGroup = groupName === "Specific" ? (t("specific") || "Specific") : (t("allDoctors") || "All Doctors");
-            const isSpecific = groupName === "Specific";
+            const group = (row.original.group || (row.original as any).groupName) as string;
+            const displayGroup = group === "Specific" 
+                ? (t("specific") || "Specific") 
+                : group === "Doctors" || group === "All Doctors"
+                    ? (t("allDoctors") || "All Doctors")
+                    : (group || "—");
             return (
-                <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    isSpecific
-                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-                        : " bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-                }`}>
+                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                     {displayGroup}
                 </div>
             );
         },
     },
     {
-        accessorKey: "users",
-        header: "recipients",
+        accessorKey: "recipients",
+        header: t("recipients") || "Recipients",
         cell: ({ row }) => {
-            const users = row.original.users || [];
-            if (users.length === 1) {
+            const count = row.original.recipientsCount ?? row.original.users?.length ?? 0;
+            const recipients = row.original.recipients;
+
+            if (count > 1) {
                 return (
-                    <div className="text-sm font-semibold text-default-700 dark:text-default-300">
-                        {users[0].userName || "—"}
+                    <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1.5">
+                        <span>{recipients || t("allDoctors") || "All Doctors"}</span>
+                        <span className="text-xs font-normal text-muted-foreground">({count})</span>
                     </div>
                 );
             }
             return (
-                <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
-                    {t("allDoctors") || "All Doctors"}
+                <div className="text-sm font-semibold text-default-700 dark:text-default-300">
+                    {recipients || row.original.users?.[0]?.userName || "—"}
                 </div>
             );
         },
@@ -284,11 +294,11 @@ export const baseColumns = ({ refresh, t }: { refresh: () => void; t: (key: stri
         },
     },
     {
-        accessorKey: "expired",
+        accessorKey: "expiredAt",
         header: t("expired"),
         cell: ({ row }) => {
-            const expired = row.getValue("expired") as string;
-            if (!expired) return <span className="text-muted-foreground">—</span>;
+            const expired = (row.original.expiredAt || (row.original as any).expired) as string;
+            if (!expired || expired.startsWith("0001-01-01")) return <span className="text-muted-foreground">—</span>;
             try {
                 return (
                     <div className="text-xs text-default-500 whitespace-nowrap">
