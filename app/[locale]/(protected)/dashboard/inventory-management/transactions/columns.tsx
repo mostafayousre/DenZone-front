@@ -88,7 +88,7 @@ export const baseColumns = ({ t, refresh }: {
     accessorKey: "creationDate",
     header: t("createdAt"),
     cell: ({ row }) => {
-      return <span>{formatDateToDMY(row.original.creationDate)}</span>;
+      return <span>{formatDateToDMY(row.original.creationDate || "null")}</span>;
     },
   },
 
