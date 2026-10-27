@@ -52,9 +52,8 @@ import useDeleteHomeSectionItem from "@/services/homeSections/deleteHomeSectionI
 import useUpdateHomeSection from "@/services/homeSections/updateHomeSection";
 import useGetHomeSectionById from "@/services/homeSections/getHomeSectionById";
 import useGetProviders from "@/services/users/getProviders";
-import useGetProductsByInventoryUser, {
-  InventoryProductPriceDto,
-} from "@/services/productPrice/getProductsByInventoryUser";
+import useGettingPricesByInventoryId from "@/services/productPrice/gettingPricesByInventoryId";
+import { Price } from "@/types/price";
 
 interface EditItemModalProps {
   section: HomeSection | null;
@@ -92,12 +91,12 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   // Featured Products - Providers & Products services
   const { providers, loading: loadingProviders, getProviders } = useGetProviders();
   const {
-    products: providerProducts,
+    prices: providerProducts,
     loading: loadingProducts,
-    getProductsByInventoryUser,
+    gettingPricesByInventoryId,
     totalPages,
     totalCount,
-  } = useGetProductsByInventoryUser();
+  } = useGettingPricesByInventoryId();
 
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
@@ -219,9 +218,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   useEffect(() => {
     if (open && isFeaturedProducts && selectedProviderId) {
       const timer = setTimeout(() => {
-        getProductsByInventoryUser(selectedProviderId, productPage, 10, productSearch).catch(
-          () => {}
-        );
+        gettingPricesByInventoryId(
+          selectedProviderId,
+          productPage,
+          10,
+          undefined,
+          productSearch
+        ).catch(() => {});
       }, 300);
       return () => clearTimeout(timer);
     }
@@ -292,27 +295,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
       if (isFeaturedProducts) {
         const productsList = formData.config.products || [];
 
-        // Validation: Discount Rate % cannot be empty and cannot be less than 1
-        for (let i = 0; i < productsList.length; i++) {
-          const p = productsList[i];
-          const rate = p.discountRate;
-          if (
-            rate === undefined ||
-            rate === null ||
-            String(rate).trim() === "" ||
-            isNaN(Number(rate)) ||
-            Number(rate) < 1
-          ) {
-            toast.error(
-              isAr
-                ? `نسبة الخصم للمنتج رقم ${i + 1} (${p.title || "المنتج"}) مطلوبة ولا يمكن أن تقل عن 1%`
-                : `Discount Rate % for product #${i + 1} (${p.title || "Product"}) is required and cannot be less than 1%`
-            );
-            setIsSaving(false);
-            return;
-          }
-        }
-
         productsList.forEach((p, idx) => {
           const effectiveOldPrice =
             p.oldPrice !== undefined && p.oldPrice !== null
@@ -321,13 +303,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
               ? p.salesPrice
               : p.price ?? null;
 
+          const effectiveDiscountRate =
+            p.discountRate !== undefined &&
+            p.discountRate !== null &&
+            String(p.discountRate).trim() !== "" &&
+            !isNaN(Number(p.discountRate))
+              ? Number(p.discountRate)
+              : null;
+
           itemsPayload.push({
             id: p.id,
             kind: p.kind ?? 2,
             title: p.title || "",
             subtitle: p.subtitle || "",
             oldPrice: effectiveOldPrice,
-            discountRate: Number(p.discountRate),
+            discountRate: effectiveDiscountRate,
             imageFile:
               p.imageFile instanceof File
                 ? p.imageFile
@@ -508,7 +498,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   };
 
   // Product Helpers
-  const handleAddProductFromProvider = (item: InventoryProductPriceDto) => {
+  const handleAddProductFromProvider = (item: Price | any) => {
     const isAlreadyAdded = formData.config.products?.some(
       (p) => (p.productPriceId && p.productPriceId === item.id) || p.id === item.id
     );
@@ -892,7 +882,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                         const prodTitle = prod.productName || prod.title || "Product";
                         const prodPrice = prod.salesPrice ?? prod.price ?? 0;
                         const prodCategory = prod.categoryName || "";
+                        const prodQuantity = prod.stockQuantity;
                         const prodImage = extractProductImage(prod);
+                        
 
                         return (
                           <div
@@ -918,6 +910,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                                 <h5 className="text-xs font-semibold text-foreground truncate">
                                   {prodTitle}
                                 </h5>
+                                <p className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+product Quantity : <span className="font-bold text-red-600 dark:text-emerald-400">{prodQuantity}</span>
+</p>
                                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
                                   {prodCategory && <span>{prodCategory}</span>}
                                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
@@ -1064,41 +1059,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                         </div>
 
                         <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[10px] text-muted-foreground">
-                              {isAr ? "نسبة الخصم % (discountRate)" : "Discount Rate %"}
-                            </Label>
-                            <span className="text-[9px] text-destructive font-medium">
-                              * {isAr ? "مطلوبة (1% كحد أدنى)" : "Min 1%"}
-                            </span>
-                          </div>
+                          <Label className="text-[10px] text-muted-foreground">
+                            {isAr ? "نسبة الخصم % (discountRate)" : "Discount Rate %"}
+                          </Label>
                           <Input
-                            placeholder={isAr ? "نسبة الخصم (1% كحد أدنى)" : "Discount % (min 1%)"}
+                            placeholder={isAr ? "نسبة الخصم %" : "Discount %"}
                             type="number"
-                            min={1}
+                            min={0}
                             max={100}
                             value={p.discountRate ?? ""}
                             onChange={(e) => {
                               const val = e.target.value === "" ? null : Number(e.target.value);
                               handleUpdateProduct(idx, "discountRate", val);
                             }}
-                            className={cn(
-                              "h-8 text-xs",
-                              (p.discountRate === undefined ||
-                                p.discountRate === null ||
-                                Number(p.discountRate) < 1) &&
-                                "border-destructive/60 bg-destructive/5 focus-visible:ring-destructive/30"
-                            )}
+                            className="h-8 text-xs"
                           />
-                          {(p.discountRate === undefined ||
-                            p.discountRate === null ||
-                            Number(p.discountRate) < 1) && (
-                            <p className="text-[9px] text-destructive">
-                              {isAr
-                                ? "يجب إدخال نسبة خصم لا تقل عن 1%"
-                                : "Must enter a discount rate of at least 1%"}
-                            </p>
-                          )}
                         </div>
 
                         <div className="space-y-1 col-span-2 sm:col-span-1">
